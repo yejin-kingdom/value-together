@@ -1,16 +1,20 @@
 package com.vt.valuetogether.domain.sample.dto.request;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SampleSaveReq {
 
     private String title;
     private String text;
+
+    @Builder
+    private SampleSaveReq(String title, String text) {
+        this.title = title;
+        this.text = text;
+    }
 }

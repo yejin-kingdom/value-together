@@ -1,17 +1,21 @@
 package com.vt.valuetogether.domain.sample.dto.response;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SampleGetResList {
 
     private List<SampleGetRes> sampleGetReses;
     private int total;
+
+    @Builder
+    private SampleGetResList(List<SampleGetRes> sampleGetReses, int total) {
+        this.sampleGetReses = sampleGetReses;
+        this.total = total;
+    }
 }
