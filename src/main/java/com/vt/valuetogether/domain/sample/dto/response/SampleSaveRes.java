@@ -1,4 +1,4 @@
-package com.vt.valuetogether.domain.sample.dto;
+package com.vt.valuetogether.domain.sample.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

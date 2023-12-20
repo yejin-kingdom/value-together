@@ -1,4 +1,4 @@
-package com.vt.valuetogether.domain.sample.dto;
+package com.vt.valuetogether.domain.sample.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SampleSaveReq {
+public class SampleGetRes {
+
+    private Long sampleId;
     private String title;
     private String text;
 }
