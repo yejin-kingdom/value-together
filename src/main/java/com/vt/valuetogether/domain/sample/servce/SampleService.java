@@ -35,10 +35,17 @@ public class SampleService {
             .build();
     }
 
+    public SampleGetRes getSample(Long sampleId) {
+        return SampleServiceMapper.INSTANCE.toSampleGetRes(
+            sampleRepository.findBySampleId(sampleId));
+    }
+
     @Mapper
     public interface SampleServiceMapper {
 
         SampleServiceMapper INSTANCE = Mappers.getMapper(SampleServiceMapper.class);
+
+        SampleGetRes toSampleGetRes(SampleEntity sampleEntity);
 
         List<SampleGetRes> toSampleGetReses(List<SampleEntity> sampleEntities);
     }
