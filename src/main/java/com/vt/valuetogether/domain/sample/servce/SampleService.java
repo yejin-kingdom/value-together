@@ -19,25 +19,25 @@ public class SampleService {
     private final SampleRepository sampleRepository;
 
     public SampleSaveRes saveSample(SampleSaveReq sampleSaveReq) {
-        sampleRepository.save(SampleEntity.builder()
-            .title(sampleSaveReq.getTitle())
-            .text(sampleSaveReq.getText())
-            .build());
+        sampleRepository.save(
+                SampleEntity.builder()
+                        .title(sampleSaveReq.getTitle())
+                        .text(sampleSaveReq.getText())
+                        .build());
         return new SampleSaveRes();
     }
 
     public SampleGetResList getAllSamples() {
-        List<SampleGetRes> sampleGetReses = SampleServiceMapper.INSTANCE.toSampleGetReses(
-            sampleRepository.findAll());
+        List<SampleGetRes> sampleGetReses =
+                SampleServiceMapper.INSTANCE.toSampleGetReses(sampleRepository.findAll());
         return SampleGetResList.builder()
-            .sampleGetReses(sampleGetReses)
-            .total(sampleGetReses.size())
-            .build();
+                .sampleGetReses(sampleGetReses)
+                .total(sampleGetReses.size())
+                .build();
     }
 
     public SampleGetRes getSample(Long sampleId) {
-        return SampleServiceMapper.INSTANCE.toSampleGetRes(
-            sampleRepository.findBySampleId(sampleId));
+        return SampleServiceMapper.INSTANCE.toSampleGetRes(sampleRepository.findBySampleId(sampleId));
     }
 
     @Mapper

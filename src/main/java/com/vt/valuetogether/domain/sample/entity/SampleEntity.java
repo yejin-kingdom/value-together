@@ -20,6 +20,7 @@ public class SampleEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sampleId;
+
     private String title;
     private String text;
 

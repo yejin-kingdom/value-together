@@ -21,18 +21,18 @@ public class RestResponse<T> implements Serializable {
 
     public static <T> RestResponse<T> success(T data) {
         return RestResponse.<T>builder()
-            .status(ResultCode.SUCCESS.getStatus())
-            .code(ResultCode.SUCCESS.getCode())
-            .message(ResultCode.SUCCESS.getMessage())
-            .data(data)
-            .build();
+                .status(ResultCode.SUCCESS.getStatus())
+                .code(ResultCode.SUCCESS.getCode())
+                .message(ResultCode.SUCCESS.getMessage())
+                .data(data)
+                .build();
     }
 
     public static <T> RestResponse<T> error(ResultCode resultCode) {
         return RestResponse.<T>builder()
-            .status(resultCode.getStatus())
-            .code(resultCode.getCode())
-            .message(resultCode.getMessage())
-            .build();
+                .status(resultCode.getStatus())
+                .code(resultCode.getCode())
+                .message(resultCode.getMessage())
+                .build();
     }
 }
