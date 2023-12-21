@@ -62,3 +62,4 @@ endif::[]
 
 include::{snippets}/sample-controller-test/샘플_저장/auto-section.adoc[]
 include::{snippets}/sample-controller-test/샘플_전체_조회/auto-section.adoc[]
+include::{snippets}/sample-controller-test/샘플_단건_조회/auto-section.adoc[]
