@@ -30,7 +30,7 @@ class SampleControllerTest extends BaseMvcTest {
     @Test
     void 샘플_저장() throws Exception {
         SampleSaveReq sampleSaveReq = SampleSaveReq.builder().title("title").text("text").build();
-        SampleSaveRes sampleSaveRes = new SampleSaveRes();
+        SampleSaveRes sampleSaveRes = SampleSaveRes.builder().sampleId(1L).build();
         when(sampleService.saveSample(any())).thenReturn(sampleSaveRes);
         this.mockMvc
                 .perform(

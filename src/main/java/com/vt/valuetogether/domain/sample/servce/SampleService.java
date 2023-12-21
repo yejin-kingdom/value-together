@@ -19,12 +19,12 @@ public class SampleService {
     private final SampleRepository sampleRepository;
 
     public SampleSaveRes saveSample(SampleSaveReq sampleSaveReq) {
-        sampleRepository.save(
-                SampleEntity.builder()
-                        .title(sampleSaveReq.getTitle())
-                        .text(sampleSaveReq.getText())
-                        .build());
-        return new SampleSaveRes();
+        return SampleServiceMapper.INSTANCE.toSampleSaveRes(
+                sampleRepository.save(
+                        SampleEntity.builder()
+                                .title(sampleSaveReq.getTitle())
+                                .text(sampleSaveReq.getText())
+                                .build()));
     }
 
     public SampleGetResList getAllSamples() {
@@ -44,6 +44,8 @@ public class SampleService {
     public interface SampleServiceMapper {
 
         SampleServiceMapper INSTANCE = Mappers.getMapper(SampleServiceMapper.class);
+
+        SampleSaveRes toSampleSaveRes(SampleEntity sampleEntity);
 
         SampleGetRes toSampleGetRes(SampleEntity sampleEntity);
 
