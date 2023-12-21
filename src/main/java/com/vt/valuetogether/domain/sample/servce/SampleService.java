@@ -37,6 +37,7 @@ public class SampleService {
     }
 
     public SampleGetRes getSample(Long sampleId) {
+        // TODO ADD validator
         return SampleServiceMapper.INSTANCE.toSampleGetRes(sampleRepository.findBySampleId(sampleId));
     }
 
