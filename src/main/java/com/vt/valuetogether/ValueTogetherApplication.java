@@ -9,5 +9,4 @@ public class ValueTogetherApplication {
     public static void main(String[] args) {
         SpringApplication.run(ValueTogetherApplication.class, args);
     }
-
 }
