@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.entity.User;
@@ -142,7 +141,7 @@ class UserServiceImplTest implements UserTest {
                         .build();
 
         given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(null);
-        when(userRepository.save(any(User.class))).thenReturn(TEST_USER);
+        given(userRepository.save(any(User.class))).willReturn(TEST_USER);
 
         // when
         userService.signup(req);
