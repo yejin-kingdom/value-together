@@ -1,6 +1,17 @@
 package com.vt.valuetogether.domain.sample.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@JsonIgnoreProperties
-public class SampleSaveRes {}
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class SampleSaveRes {
+    private Long sampleId;
+
+    @Builder
+    private SampleSaveRes(Long sampleId) {
+        this.sampleId = sampleId;
+    }
+}
