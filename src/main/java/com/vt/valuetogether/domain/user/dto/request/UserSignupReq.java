@@ -16,7 +16,7 @@ public class UserSignupReq {
     private String email;
 
     @Builder
-    public UserSignupReq(String username, String password, String email) {
+    private UserSignupReq(String username, String password, String email) {
         this.username = username;
         this.password = password;
         this.email = email;

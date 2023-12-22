@@ -19,7 +19,7 @@ public class UserSignupRes {
     private Role role;
 
     @Builder
-    public UserSignupRes(Long userId, String username, String email, Role role) {
+    private UserSignupRes(Long userId, String username, String email, Role role) {
         this.userId = userId;
         this.username = username;
         this.email = email;

@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserSignupRes signup(UserSignupReq req) {
         UserValidator.validate(req);
+
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.checkDuplicatedUsername(user);
 
