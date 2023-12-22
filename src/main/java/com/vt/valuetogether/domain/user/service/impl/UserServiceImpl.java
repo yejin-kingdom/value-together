@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
                                 .username(req.getUsername())
                                 .password(passwordEncoder.encode(req.getPassword()))
                                 .email(req.getEmail())
-                                .role(Role.ROLE_USER)
+                                .role(Role.USER)
                                 .build());
 
         return UserServiceMapper.INSTANCE.toUserSignupRes(saveUser);
