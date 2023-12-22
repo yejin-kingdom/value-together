@@ -7,7 +7,7 @@ import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
 import com.vt.valuetogether.domain.user.service.UserServiceMapper;
-import com.vt.valuetogether.domain.user.validator.UserValidator;
+import com.vt.valuetogether.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
