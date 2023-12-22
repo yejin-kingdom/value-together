@@ -15,6 +15,18 @@ public interface UserTest {
     String TEST_ANOTHER_USER_PASSWORD = "12345678";
     String TEST_ANOTHER_USER_EMAIL = "another@gmail.com";
 
-    User TEST_USER = User.builder().userId(TEST_USER_ID).username(TEST_USER_NAME).password(TEST_USER_PASSWORD).email(TEST_USER_EMAIL).build();
-    User ANOTHER_TEST_USER = User.builder().userId(ANOTHER_TEST_USER_ID).username(TEST_ANOTHER_USER_NAME).password(TEST_ANOTHER_USER_PASSWORD).email(TEST_ANOTHER_USER_EMAIL).build();
+    User TEST_USER =
+            User.builder()
+                    .userId(TEST_USER_ID)
+                    .username(TEST_USER_NAME)
+                    .password(TEST_USER_PASSWORD)
+                    .email(TEST_USER_EMAIL)
+                    .build();
+    User ANOTHER_TEST_USER =
+            User.builder()
+                    .userId(ANOTHER_TEST_USER_ID)
+                    .username(TEST_ANOTHER_USER_NAME)
+                    .password(TEST_ANOTHER_USER_PASSWORD)
+                    .email(TEST_ANOTHER_USER_EMAIL)
+                    .build();
 }
