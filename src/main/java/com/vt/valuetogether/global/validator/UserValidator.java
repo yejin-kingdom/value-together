@@ -11,9 +11,15 @@ public class UserValidator {
     private static final String EMAIL_REGEX = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
 
     public static void validate(UserSignupReq req) {
-        validateUsername(req.getUsername());
-        validatePassword(req.getPassword());
-        validateEmail(req.getEmail());
+        if (!checkIsValidateUsername(req.getUsername())) {
+            throw new IllegalArgumentException("username 형식에 맞지 않습니다.");
+        }
+        if (!checkIsValidatePassword(req.getPassword())) {
+            throw new IllegalArgumentException("password 형식에 맞지 않습니다.");
+        }
+        if (!checkIsValidateEmail(req.getEmail())) {
+            throw new IllegalArgumentException("email 형식에 맞지 않습니다.");
+        }
     }
 
     public static void checkDuplicatedUsername(User user) {
@@ -26,21 +32,15 @@ public class UserValidator {
         return user == null;
     }
 
-    private static void validateUsername(String username) {
-        if (!Pattern.matches(USERNAME_REGEX, username)) {
-            throw new IllegalArgumentException("username 형식에 맞지 않습니다.");
-        }
+    private static boolean checkIsValidateUsername(String username) {
+        return Pattern.matches(USERNAME_REGEX, username);
     }
 
-    private static void validatePassword(String password) {
-        if (!Pattern.matches(PASSWORD_REGEX, password)) {
-            throw new IllegalArgumentException("password 형식에 맞지 않습니다.");
-        }
+    private static boolean checkIsValidatePassword(String password) {
+        return Pattern.matches(PASSWORD_REGEX, password);
     }
 
-    private static void validateEmail(String email) {
-        if (!Pattern.matches(EMAIL_REGEX, email)) {
-            throw new IllegalArgumentException("email 형식에 맞지 않습니다.");
-        }
+    private static boolean checkIsValidateEmail(String email) {
+        return Pattern.matches(EMAIL_REGEX, email);
     }
 }
