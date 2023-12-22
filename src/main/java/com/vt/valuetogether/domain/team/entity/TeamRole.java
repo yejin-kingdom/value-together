@@ -7,7 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
 public class TeamRole {
 
@@ -22,4 +27,13 @@ public class TeamRole {
     @ManyToOne
     @JoinColumn(name = "teamId")
     private Team team;
+
+    private Role role;
+
+    @Builder
+    private TeamRole(User user, Team team, Role role) {
+        this.user = user;
+        this.team = team;
+        this.role = role;
+    }
 }

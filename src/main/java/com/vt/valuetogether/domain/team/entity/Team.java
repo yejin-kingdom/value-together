@@ -6,9 +6,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @Entity
 public class Team extends BaseEntity {
 
@@ -20,5 +24,18 @@ public class Team extends BaseEntity {
     private String teamDescription;
 
     @OneToMany(mappedBy = "team")
-    private List<TeamRole> teamRoleList = new ArrayList<>();
+    private List<TeamRole> teamRoleList;
+
+    @Builder
+    private Team(Long teamId,
+        String teamName,
+        String teamDescription) {
+        this.teamId = teamId;
+        this.teamName = teamName;
+        this.teamDescription = teamDescription;
+    }
+
+    public void addTeamRole(TeamRole teamRole) {
+        this.teamRoleList.add(teamRole);
+    }
 }
