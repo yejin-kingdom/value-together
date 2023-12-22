@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.user.entity;
 
+import com.vt.valuetogether.domain.model.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,9 +16,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "tb_user")
-public class User {
+public class User extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     private String username;
@@ -32,8 +33,13 @@ public class User {
     private Role role;
 
     @Builder
-    private User(Long userId, String username, String password, String email, String profileImageUrl,
-        Role role) {
+    private User(
+            Long userId,
+            String username,
+            String password,
+            String email,
+            String profileImageUrl,
+            Role role) {
         this.userId = userId;
         this.username = username;
         this.password = password;
