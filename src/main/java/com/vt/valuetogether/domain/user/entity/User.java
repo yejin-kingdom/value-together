@@ -27,24 +27,15 @@ public class User extends BaseEntity {
 
     private String email;
 
-    private String profileImageUrl;
-
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
     @Builder
-    private User(
-            Long userId,
-            String username,
-            String password,
-            String email,
-            String profileImageUrl,
-            Role role) {
+    private User(Long userId, String username, String password, String email, Role role) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.profileImageUrl = profileImageUrl;
         this.role = role;
     }
 }

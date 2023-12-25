@@ -6,8 +6,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.infra.mail.MailUtil;
 import com.vt.valuetogether.test.UserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,6 +27,8 @@ class UserServiceImplTest implements UserTest {
     @Mock UserRepository userRepository;
 
     @Mock PasswordEncoder passwordEncoder;
+
+    @Mock MailUtil mailUtil;
 
     @InjectMocks UserServiceImpl userService;
 
@@ -140,8 +144,12 @@ class UserServiceImplTest implements UserTest {
                         .email(TEST_USER_EMAIL)
                         .build();
 
+        EmailAuth emailAuth =
+                EmailAuth.builder().email(TEST_USER_EMAIL).code("aaa").isChecked(true).build();
+
         given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(null);
         given(userRepository.save(any(User.class))).willReturn(TEST_USER);
+        given(mailUtil.getEmailAuth(TEST_USER_EMAIL)).willReturn(emailAuth);
 
         // when
         userService.signup(req);

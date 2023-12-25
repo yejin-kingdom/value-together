@@ -1,13 +1,18 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
+import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
+import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
+import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
 import com.vt.valuetogether.domain.user.service.UserServiceMapper;
 import com.vt.valuetogether.global.validator.UserValidator;
+import com.vt.valuetogether.infra.mail.MailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,24 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final MailUtil mailUtil;
+
+    @Override
+    public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
+        UserValidator.validate(req);
+
+        mailUtil.sendMessage(req.getEmail(), "이메일 인증");
+
+        return UserVerifyEmailRes.builder().email(req.getEmail()).build();
+    }
+
+    @Override
+    public UserConfirmEmailRes confirmEmail(String email, String code) {
+        mailUtil.checkCode(email, code);
+
+        return UserConfirmEmailRes.builder().email(email).build();
+    }
+
     @Override
     public UserSignupRes signup(UserSignupReq req) {
         UserValidator.validate(req);
@@ -27,7 +50,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.checkDuplicatedUsername(user);
 
-        // req.getEmail()이 인증된 이메일인지 확인 필요
+        checkAuthorizedEmail(req.getEmail());
 
         User saveUser =
                 userRepository.save(
@@ -39,5 +62,12 @@ public class UserServiceImpl implements UserService {
                                 .build());
 
         return UserServiceMapper.INSTANCE.toUserSignupRes(saveUser);
+    }
+
+    private void checkAuthorizedEmail(String email) {
+        EmailAuth authEmail = mailUtil.getEmailAuth(email);
+        if (!authEmail.isChecked()) {
+            throw new IllegalArgumentException(("이메일 인증을 완료해주세요."));
+        }
     }
 }

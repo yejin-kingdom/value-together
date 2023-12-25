@@ -1,6 +1,7 @@
 package com.vt.valuetogether.global.validator;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.entity.User;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,12 @@ public class UserValidator {
     private static final String USERNAME_REGEX = "^[0-9a-zA-z]{4,15}$";
     private static final String PASSWORD_REGEX = "^[0-9a-zA-z$@!%*#?&]{8,15}$";
     private static final String EMAIL_REGEX = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
+
+    public static void validate(UserVerifyEmailReq req) {
+        if (!checkIsValidateEmail(req.getEmail())) {
+            throw new IllegalArgumentException("email 형식에 맞지 않습니다.");
+        }
+    }
 
     public static void validate(UserSignupReq req) {
         if (!checkIsValidateUsername(req.getUsername())) {
