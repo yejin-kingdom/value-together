@@ -62,9 +62,7 @@ public class MailUtil {
     }
 
     public EmailAuth getEmailAuth(String email) {
-        return emailService
-                .findById(email)
-                .orElseThrow(() -> new GlobalException(NOT_FOUND_EMAIL));
+        return emailService.findById(email).orElseThrow(() -> new GlobalException(NOT_FOUND_EMAIL));
     }
 
     private MimeMessage createMessage(String to, String subject, String code)

@@ -9,6 +9,7 @@ import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.infra.mail.MailUtil;
 import com.vt.valuetogether.test.UserTest;
 import org.junit.jupiter.api.DisplayName;
@@ -50,15 +51,15 @@ class UserServiceImplTest implements UserTest {
                             .build();
 
             // when
-            IllegalArgumentException exception =
+            GlobalException exception =
                     assertThrows(
-                            IllegalArgumentException.class,
+                            GlobalException.class,
                             () -> {
                                 userService.signup(req);
                             });
 
             // then
-            assertEquals("username 형식에 맞지 않습니다.", exception.getMessage());
+            assertEquals("username 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
         }
 
         @Test
@@ -73,15 +74,15 @@ class UserServiceImplTest implements UserTest {
                             .build();
 
             // when
-            IllegalArgumentException exception =
+            GlobalException exception =
                     assertThrows(
-                            IllegalArgumentException.class,
+                            GlobalException.class,
                             () -> {
                                 userService.signup(req);
                             });
 
             // then
-            assertEquals("password 형식에 맞지 않습니다.", exception.getMessage());
+            assertEquals("password 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
         }
 
         @Test
@@ -96,15 +97,15 @@ class UserServiceImplTest implements UserTest {
                             .build();
 
             // when
-            IllegalArgumentException exception =
+            GlobalException exception =
                     assertThrows(
-                            IllegalArgumentException.class,
+                            GlobalException.class,
                             () -> {
                                 userService.signup(req);
                             });
 
             // then
-            assertEquals("email 형식에 맞지 않습니다.", exception.getMessage());
+            assertEquals("email 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
         }
     }
 
@@ -122,15 +123,15 @@ class UserServiceImplTest implements UserTest {
         given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(TEST_USER);
 
         // when
-        IllegalArgumentException exception =
+        GlobalException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        GlobalException.class,
                         () -> {
                             userService.signup(req);
                         });
 
         // then
-        assertEquals("중복된 username입니다.", exception.getMessage());
+        assertEquals("중복된 username 입니다.", exception.getResultCode().getMessage());
     }
 
     @Test

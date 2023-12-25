@@ -15,7 +15,7 @@ public enum ResultCode {
     NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, 2004, "해당 이메일을 찾을 수 없습니다."),
 
     INVALID_USERNAME_PATTERN(HttpStatus.BAD_REQUEST, 3001, "username 형식에 맞지 않습니다."),
-    INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, 3002, "email 형식에 맞지 않습니다"),
+    INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, 3002, "email 형식에 맞지 않습니다."),
     INVALID_PASSWORD_PATTERN(HttpStatus.BAD_REQUEST, 3003, "password 형식에 맞지 않습니다."),
     DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, 3004, "중복된 username 입니다."),
     INVALID_CODE(HttpStatus.BAD_REQUEST, 3005, "인증코드가 일치하지 않습니다."),

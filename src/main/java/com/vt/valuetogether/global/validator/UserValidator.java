@@ -42,8 +42,8 @@ public class UserValidator {
         }
     }
 
-    public static void checkAuthorizedEmail(boolean isChecked){
-        if (!isChecked){
+    public static void checkAuthorizedEmail(boolean isChecked) {
+        if (!isChecked) {
             throw new GlobalException(UNAUTHORIZED_EMAIL);
         }
     }
