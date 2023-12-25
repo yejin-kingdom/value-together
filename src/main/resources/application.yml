@@ -36,3 +36,9 @@ cloud:
       accessKey: accessKey
       secretKey: secretKey
     region: region
+
+# HS256 알고리즘을 사용할 것이기 때문에 256bit, 즉 32byte 이상의 secret key를 사용해야 한다.
+# Base64 로 인코딩한 값 사용
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
