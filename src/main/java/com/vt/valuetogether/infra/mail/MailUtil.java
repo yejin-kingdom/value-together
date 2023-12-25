@@ -1,7 +1,11 @@
 package com.vt.valuetogether.infra.mail;
 
+import static com.vt.valuetogether.global.meta.ResultCode.INVALID_CODE;
+import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_EMAIL;
+
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.service.EmailAuthService;
+import com.vt.valuetogether.global.exception.GlobalException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
@@ -48,7 +52,7 @@ public class MailUtil {
         EmailAuth emailAuth = getEmailAuth(email);
 
         if (!emailAuth.getCode().equals(code)) {
-            throw new IllegalArgumentException("인증코드가 일치하지 않습니다.");
+            throw new GlobalException(INVALID_CODE);
         }
 
         emailService.delete(email);
@@ -60,7 +64,7 @@ public class MailUtil {
     public EmailAuth getEmailAuth(String email) {
         return emailService
                 .findById(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GlobalException(NOT_FOUND_EMAIL));
     }
 
     private MimeMessage createMessage(String to, String subject, String code)

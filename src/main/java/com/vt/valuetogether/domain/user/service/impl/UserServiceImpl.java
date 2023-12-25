@@ -66,8 +66,6 @@ public class UserServiceImpl implements UserService {
 
     private void checkAuthorizedEmail(String email) {
         EmailAuth authEmail = mailUtil.getEmailAuth(email);
-        if (!authEmail.isChecked()) {
-            throw new IllegalArgumentException(("이메일 인증을 완료해주세요."));
-        }
+        UserValidator.checkAuthorizedEmail(authEmail.isChecked());
     }
 }
