@@ -11,8 +11,6 @@ public class UserConfirmEmailRes {
 
     private String email;
 
-    private final String message = "이메일 인증이 완료되었습니다.";
-
     @Builder
     private UserConfirmEmailRes(String email) {
         this.email = email;

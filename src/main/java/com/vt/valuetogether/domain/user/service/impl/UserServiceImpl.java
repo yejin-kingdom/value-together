@@ -10,7 +10,6 @@ import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
-import com.vt.valuetogether.domain.user.service.UserServiceMapper;
 import com.vt.valuetogether.global.validator.UserValidator;
 import com.vt.valuetogether.infra.mail.MailUtil;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
         mailUtil.sendMessage(req.getEmail(), "이메일 인증");
 
-        return UserVerifyEmailRes.builder().email(req.getEmail()).build();
+        return new UserVerifyEmailRes();
     }
 
     @Override
@@ -52,16 +51,15 @@ public class UserServiceImpl implements UserService {
 
         checkAuthorizedEmail(req.getEmail());
 
-        User saveUser =
-                userRepository.save(
-                        User.builder()
-                                .username(req.getUsername())
-                                .password(passwordEncoder.encode(req.getPassword()))
-                                .email(req.getEmail())
-                                .role(Role.USER)
-                                .build());
+        userRepository.save(
+                User.builder()
+                        .username(req.getUsername())
+                        .password(passwordEncoder.encode(req.getPassword()))
+                        .email(req.getEmail())
+                        .role(Role.USER)
+                        .build());
 
-        return UserServiceMapper.INSTANCE.toUserSignupRes(saveUser);
+        return new UserSignupRes();
     }
 
     private void checkAuthorizedEmail(String email) {

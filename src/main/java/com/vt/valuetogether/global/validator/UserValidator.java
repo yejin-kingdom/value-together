@@ -19,8 +19,8 @@ public class UserValidator {
     private static final String EMAIL_REGEX = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
 
     public static void validate(UserVerifyEmailReq req) {
-        if (checkIsValidateEmail(req.getEmail())) {
-            throw new GlobalException(INVALID_USERNAME_PATTERN);
+        if (!checkIsValidateEmail(req.getEmail())) {
+            throw new GlobalException(INVALID_EMAIL_PATTERN);
         }
     }
 
