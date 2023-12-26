@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
@@ -34,6 +35,40 @@ class UserServiceImplTest implements UserTest {
     @InjectMocks UserServiceImpl userService;
 
     @Captor ArgumentCaptor<User> argumentCaptor;
+
+    @Nested
+    @DisplayName("이메일 인증 관련 테스트")
+    class emailAuthorization {
+
+        @Test
+        @DisplayName("메일 전송")
+        void sendEmailTest() {
+            // given
+            UserVerifyEmailReq req =
+                UserVerifyEmailReq.builder()
+                    .email(TEST_USER_EMAIL)
+                    .build();
+
+            // when
+            userService.sendEmail(req);
+
+            // then
+            verify(mailUtil).sendMessage(TEST_USER_EMAIL, "이메일 인증");
+        }
+
+        @Test
+        @DisplayName("메일 코드 확인")
+        void confirmEmailTest() {
+            // given
+            String code = "code";
+
+            // when
+            userService.confirmEmail(TEST_USER_EMAIL, code);
+
+            // then
+            verify(mailUtil).checkCode(TEST_USER_EMAIL, code);
+        }
+    }
 
     @Nested
     @DisplayName("회원가입 - req 검증")
