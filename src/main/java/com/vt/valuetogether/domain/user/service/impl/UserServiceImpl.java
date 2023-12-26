@@ -1,8 +1,10 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
+import static com.vt.valuetogether.domain.user.entity.Provider.LOCAL;
+import static com.vt.valuetogether.domain.user.entity.Role.USER;
+
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
-import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
@@ -35,7 +37,8 @@ public class UserServiceImpl implements UserService {
                                 .username(req.getUsername())
                                 .password(passwordEncoder.encode(req.getPassword()))
                                 .email(req.getEmail())
-                                .role(Role.USER)
+                                .role(USER)
+                                .provider(LOCAL)
                                 .build());
 
         return UserServiceMapper.INSTANCE.toUserSignupRes(saveUser);
