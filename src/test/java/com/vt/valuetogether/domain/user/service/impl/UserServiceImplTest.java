@@ -44,10 +44,7 @@ class UserServiceImplTest implements UserTest {
         @DisplayName("메일 전송")
         void sendEmailTest() {
             // given
-            UserVerifyEmailReq req =
-                UserVerifyEmailReq.builder()
-                    .email(TEST_USER_EMAIL)
-                    .build();
+            UserVerifyEmailReq req = UserVerifyEmailReq.builder().email(TEST_USER_EMAIL).build();
 
             // when
             userService.sendEmail(req);
