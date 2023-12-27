@@ -1,21 +1,6 @@
 package com.vt.valuetogether.domain.user.dto.response;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserLocalLoginRes {
-
-    private String accessToken;
-
-    private String refreshToken;
-
-    @Builder
-    private UserLocalLoginRes(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-    }
-}
+@JsonIgnoreProperties
+public class UserLocalLoginRes {}
