@@ -1,21 +1,22 @@
-package com.vt.valuetogether.domain.team.dto.reponse;
+package com.vt.valuetogether.domain.team.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreateTeamRes {
+public class TeamCreateReq {
 
-    private Long teamId;
     private String teamName;
     private String teamDescription;
+    private String username;
 
     @Builder
-    private CreateTeamRes(Long teamId, String teamName, String teamDescription) {
-        this.teamId = teamId;
+    private TeamCreateReq(String teamName, String teamDescription) {
         this.teamName = teamName;
         this.teamDescription = teamDescription;
     }
