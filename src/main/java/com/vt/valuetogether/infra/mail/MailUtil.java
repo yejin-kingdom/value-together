@@ -9,9 +9,11 @@ import com.vt.valuetogether.global.validator.MailValidator;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,8 @@ public class MailUtil {
 
     private final JavaMailSender mailSender;
     private final EmailAuthService emailService;
-    private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/confirm-email";
+    private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/confirm-email?";
+    private static final String PATH_AND = "&";
     private static final String PATH_KEY_EMAIL = "email=";
     private static final String PATH_KEY_CODE = "authCode=";
 
@@ -74,9 +77,10 @@ public class MailUtil {
 
         message.setFrom(email);
         message.addRecipients(RecipientType.TO, to);
-        message.setSubject(subject);
-        message.setText(
-                EMAIL_LINK + "?" + PATH_KEY_EMAIL + to + "&" + PATH_KEY_CODE + code, "UTF-8", "html");
+        message.setSubject(subject, StandardCharsets.UTF_8.name());
+        message.setContent(
+                EMAIL_LINK + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
+                ContentType.TEXT_HTML.getMimeType());
 
         return message;
     }

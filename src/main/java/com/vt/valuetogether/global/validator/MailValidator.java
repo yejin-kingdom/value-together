@@ -8,7 +8,7 @@ import com.vt.valuetogether.global.exception.GlobalException;
 
 public class MailValidator {
     public static void validate(EmailAuth emailAuth) {
-        if (!checkIsNull(emailAuth)) {
+        if (checkIsNull(emailAuth)) {
             throw new GlobalException(NOT_FOUND_EMAIL);
         }
     }
