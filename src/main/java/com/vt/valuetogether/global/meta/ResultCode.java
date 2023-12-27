@@ -20,6 +20,7 @@ public enum ResultCode {
     INVALID_PASSWORD_PATTERN(HttpStatus.BAD_REQUEST, 3003, "password 형식에 맞지 않습니다."),
     DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, 3004, "중복된 username 입니다."),
     INVALID_CODE(HttpStatus.BAD_REQUEST, 3005, "인증코드가 일치하지 않습니다."),
+    MISMATCHED_PASSWORD(HttpStatus.BAD_REQUEST, 3006, "비밀번호가 일치하지 않습니다."),
 
     ACCESS_DENY(HttpStatus.FORBIDDEN, 4001, "접근 권한이 없습니다."),
     UNAUTHORIZED_EMAIL(HttpStatus.UNAUTHORIZED, 4002, "인증 완료되지 않은 email 입니다.");

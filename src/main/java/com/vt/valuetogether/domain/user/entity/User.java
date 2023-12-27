@@ -27,6 +27,8 @@ public class User extends BaseEntity {
 
     private String email;
 
+    private String introduce = "";
+
     private String profileImageUrl;
 
     @Enumerated(value = EnumType.STRING)
@@ -38,12 +40,14 @@ public class User extends BaseEntity {
             String username,
             String password,
             String email,
+            String introduce,
             String profileImageUrl,
             Role role) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
+        this.introduce = introduce;
         this.profileImageUrl = profileImageUrl;
         this.role = role;
     }
