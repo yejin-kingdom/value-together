@@ -8,6 +8,8 @@ import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -19,8 +21,12 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamRoleRepository teamRoleRepository;
+    private final UserRepository userRepository;
 
-    public CreateTeamRes createTeam(CreateTeamReq req, User user) {
+    public CreateTeamRes createTeam(CreateTeamReq req) {
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
         Team team =
                 Team.builder()
                         .teamName(req.getTeamName())
@@ -29,11 +35,11 @@ public class TeamService {
 
         TeamRole teamRole = TeamRole.builder().user(user).team(team).role(Role.LEADER).build();
 
+        teamRepository.save(team);
+
         teamRoleRepository.save(teamRole);
 
-        team.addTeamRole(teamRole);
-
-        return TeamServiceMapper.INSTANCE.toCreateTeamRes(teamRepository.save(team));
+        return TeamServiceMapper.INSTANCE.toCreateTeamRes(team);
     }
 
     @Mapper

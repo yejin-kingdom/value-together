@@ -20,6 +20,7 @@ public class TeamController {
 
     @PostMapping("/teams")
     public RestResponse<CreateTeamRes> createTeam(@RequestBody CreateTeamReq req, User user) {
-        return RestResponse.success(teamService.createTeam(req, user));
+        req.setUsername(user.getUsername());
+        return RestResponse.success(teamService.createTeam(req));
     }
 }
