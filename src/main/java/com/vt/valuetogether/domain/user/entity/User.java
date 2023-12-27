@@ -37,7 +37,7 @@ public class User extends BaseEntity {
     private Provider provider;
 
     @Builder
-    public User(
+    private User(
             Long userId,
             String username,
             String password,
