@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.vt.valuetogether.domain.checklist.dto.request.ChecklistDeleteReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistSaveReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistUpdateReq;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
@@ -50,5 +51,21 @@ class ChecklistServiceTest implements ChecklistTest {
 
         // then
         verify(checklistRepository).findByChecklistId(any());
+    }
+
+    @Test
+    @DisplayName("checklist 삭제 테스트")
+    void checklist_삭제() {
+        // given
+        Long checklistId = 1L;
+        ChecklistDeleteReq checklistDeleteReq =
+                ChecklistDeleteReq.builder().checklistId(checklistId).build();
+        when(checklistRepository.findByChecklistId(any())).thenReturn(TEST_CHECKLIST);
+
+        // when
+        checklistService.deleteChecklist(checklistDeleteReq);
+
+        // then
+        verify(checklistRepository).delete(any());
     }
 }

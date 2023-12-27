@@ -1,7 +1,9 @@
 package com.vt.valuetogether.domain.checklist.service;
 
+import com.vt.valuetogether.domain.checklist.dto.request.ChecklistDeleteReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistSaveReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistUpdateReq;
+import com.vt.valuetogether.domain.checklist.dto.response.ChecklistDeleteRes;
 import com.vt.valuetogether.domain.checklist.dto.response.ChecklistSaveRes;
 import com.vt.valuetogether.domain.checklist.dto.response.ChecklistUpdateRes;
 import com.vt.valuetogether.domain.checklist.entity.Checklist;
@@ -35,6 +37,14 @@ public class ChecklistService {
                         .title(checklistUpdateReq.getTitle())
                         .build());
         return new ChecklistUpdateRes();
+    }
+
+    public ChecklistDeleteRes deleteChecklist(ChecklistDeleteReq checklistDeleteReq) {
+        Checklist checklist =
+                checklistRepository.findByChecklistId(checklistDeleteReq.getChecklistId());
+        ChecklistValidator.validate(checklist);
+        checklistRepository.delete(checklist);
+        return new ChecklistDeleteRes();
     }
 
     @Mapper

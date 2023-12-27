@@ -2,14 +2,17 @@ package com.vt.valuetogether.domain.checklist.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
+import com.vt.valuetogether.domain.checklist.dto.request.ChecklistDeleteReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistSaveReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistUpdateReq;
+import com.vt.valuetogether.domain.checklist.dto.response.ChecklistDeleteRes;
 import com.vt.valuetogether.domain.checklist.dto.response.ChecklistSaveRes;
 import com.vt.valuetogether.domain.checklist.dto.response.ChecklistUpdateRes;
 import com.vt.valuetogether.domain.checklist.service.ChecklistService;
@@ -54,6 +57,23 @@ class ChecklistControllerTest extends BaseMvcTest {
                         patch("/api/v1/checklists")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(checklistUpdateReq)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("checklist 삭제 테스트")
+    void checklist_삭제() throws Exception {
+        Long checklistId = 1L;
+        ChecklistDeleteReq checklistDeleteReq =
+                ChecklistDeleteReq.builder().checklistId(checklistId).build();
+        ChecklistDeleteRes checklistDeleteRes = new ChecklistDeleteRes();
+        when(checklistService.deleteChecklist(any())).thenReturn(checklistDeleteRes);
+        this.mockMvc
+                .perform(
+                        delete("/api/v1/checklists")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(checklistDeleteReq)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
