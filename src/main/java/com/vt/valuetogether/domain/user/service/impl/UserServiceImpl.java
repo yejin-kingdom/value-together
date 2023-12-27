@@ -6,6 +6,7 @@ import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
+import com.vt.valuetogether.domain.user.entity.Provider;
 import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
@@ -58,6 +59,7 @@ public class UserServiceImpl implements UserService {
                         .username(req.getUsername())
                         .password(passwordEncoder.encode(req.getPassword()))
                         .email(req.getEmail())
+                        .provider(Provider.LOCAL)
                         .role(Role.USER)
                         .build());
 

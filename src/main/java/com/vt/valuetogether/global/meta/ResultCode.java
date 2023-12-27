@@ -27,6 +27,7 @@ public enum ResultCode {
     DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, 2008, "중복된 username 입니다."),
     UNAUTHORIZED_EMAIL(HttpStatus.UNAUTHORIZED, 2009, "인증 완료되지 않은 email 입니다."),
     INVALID_CODE(HttpStatus.BAD_REQUEST, 2010, "인증코드가 일치하지 않습니다."),
+    INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, 2011, "올바르지 않은 로그인 접근입니다."),
 
     // 팀 3000번대
     NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 팀입니다.");

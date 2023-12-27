@@ -1,5 +1,8 @@
 package com.vt.valuetogether.global.config;
 
+import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginFailureHandler;
+import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginSuccessHandler;
+import com.vt.valuetogether.domain.oauth.service.OAuth2Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.global.exception.ExceptionHandlerFilter;
 import com.vt.valuetogether.global.jwt.JwtAuthenticationFilter;
@@ -32,6 +35,10 @@ public class WebSecurityConfig {
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+
+    private final OAuth2Service oAuth2Service;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -79,6 +86,13 @@ public class WebSecurityConfig {
                                 .anyRequest()
                                 .authenticated() // 그 외 모든 요청 인증처리
                 );
+        httpSecurity.oauth2Login(
+                (oauth2) ->
+                        oauth2
+                                .successHandler(oAuth2LoginSuccessHandler)
+                                .failureHandler(oAuth2LoginFailureHandler)
+                                .userInfoEndpoint(
+                                        userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service)));
 
         // 필터 관리
         httpSecurity.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
