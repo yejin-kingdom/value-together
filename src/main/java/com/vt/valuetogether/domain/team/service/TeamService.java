@@ -27,14 +27,17 @@ public class TeamService {
     private final UserRepository userRepository;
 
     public TeamCreateRes createTeam(TeamCreateReq req) {
+        TeamValidator.validate(req);
+
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.validate(user);
 
         Team team =
-                Team.builder()
-                        .teamName(req.getTeamName())
-                        .teamDescription(req.getTeamDescription())
-                        .build();
+            Team.builder()
+                .teamName(req.getTeamName())
+                .teamDescription(req.getTeamDescription())
+                .backgroundColor(req.getBackgroundColor())
+                .build();
 
         TeamRole teamRole = TeamRole.builder().user(user).team(team).role(Role.LEADER).build();
 
