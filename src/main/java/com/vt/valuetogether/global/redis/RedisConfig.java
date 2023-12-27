@@ -1,4 +1,4 @@
-package com.vt.valuetogether.global.config;
+package com.vt.valuetogether.global.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
