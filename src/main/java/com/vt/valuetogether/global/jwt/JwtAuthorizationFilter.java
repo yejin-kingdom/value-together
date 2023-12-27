@@ -1,5 +1,12 @@
 package com.vt.valuetogether.global.jwt;
 
+import static com.vt.valuetogether.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
+import static com.vt.valuetogether.global.jwt.JwtUtil.AUTHORIZATION_KEY;
+import static com.vt.valuetogether.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
+
+import com.vt.valuetogether.domain.user.entity.Role;
+import com.vt.valuetogether.global.redis.RedisUtil;
+import com.vt.valuetogether.global.validator.TokenValidator;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,13 +29,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /** 헤더에서 JWT 가져와서 인증 객체 생성 */
-@Slf4j(topic = "JWT 인증")
+@Slf4j(topic = "JWT 검증 및 인가")
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private static final List<RequestMatcher> whiteList =
             List.of(new AntPathRequestMatcher("/api/v1/users/signup", HttpMethod.POST.name()));
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -36,24 +44,51 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String accessToken = request.getHeader(JwtUtil.ACCESS_TOKEN_HEADER); // 헤더에서 JWT 가져오기
+        String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         log.info("accessToken : {}", accessToken);
 
-        if (!StringUtils.hasText(accessToken)) {
+        // access token 없거나, 블랙리스트면 인증 미처리
+        if (!StringUtils.hasText(accessToken) || redisUtil.containBlackList(accessToken)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        accessToken = jwtUtil.substringToken(accessToken); // Bearer 접두사 제거
+        // 로그아웃 처리된 경우
+        TokenValidator.checkInvalidToken(redisUtil.containBlackList(accessToken));
+        // access token 유효하지 않은 경우
+        TokenValidator.checkInvalidToken(jwtUtil.isTokenValid(accessToken));
 
-        if (!jwtUtil.isTokenValid(accessToken)) {
-            throw new IllegalArgumentException("잘못된 토큰");
+        // access token 만료되어 재발급 받는 경우
+        if (jwtUtil.isTokenExpired(accessToken)) {
+            String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
+            log.info("refreshToken : {}", refreshToken);
+
+            TokenValidator.checkInvalidToken(isRefreshTokenValid(refreshToken));
+            TokenValidator.checkExpiredToken(jwtUtil.isTokenExpired(refreshToken));
+
+            accessToken = renewAccessToken(accessToken);
+            response.addHeader(ACCESS_TOKEN_HEADER, accessToken);
         }
 
-        Claims info = jwtUtil.getUserInfoFromToken(accessToken);
-        setAuthentication(info.getSubject());
+        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
+        String username = claims.getSubject();
+        setAuthentication(username);
 
         filterChain.doFilter(request, response);
+    }
+
+    private String renewAccessToken(String accessToken) {
+        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
+        String username = claims.getSubject();
+        Role role = (Role) claims.get(AUTHORIZATION_KEY);
+
+        return jwtUtil.createAccessToken(username, role);
+    }
+
+    private boolean isRefreshTokenValid(String refreshToken) {
+        return StringUtils.hasText(refreshToken)
+                && jwtUtil.isTokenValid(refreshToken)
+                && redisUtil.hasKey(refreshToken);
     }
 
     /**
