@@ -16,12 +16,12 @@ import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.global.exception.GlobalException;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserValidator {
 
-    private static final String USERNAME_REGEX = "^[0-9a-zA-z]{4,15}$";
-    private static final String PASSWORD_REGEX = "^[0-9a-zA-z$@!%*#?&]{8,15}$";
+    private static final String USERNAME_REGEX = "^[가-힣0-9a-zA-z]{2,8}$";
+    private static final String PASSWORD_REGEX =
+        "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%#?&])[A-Za-z\\d@$!%*#?&]{8,15}$";
     private static final String EMAIL_REGEX = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
 
     public static void validate(UserVerifyEmailReq req) {
