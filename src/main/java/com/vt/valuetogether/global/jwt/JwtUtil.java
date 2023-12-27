@@ -1,6 +1,5 @@
 package com.vt.valuetogether.global.jwt;
 
-import com.vt.valuetogether.domain.user.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
@@ -44,7 +43,7 @@ public class JwtUtil {
     }
 
     /** AccessToken 생성 */
-    public String createAccessToken(String username, Role role) {
+    public String createAccessToken(String username, String role) {
         Date now = new Date();
 
         return BEARER_PREFIX

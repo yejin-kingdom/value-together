@@ -4,7 +4,6 @@ import static com.vt.valuetogether.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
 import static com.vt.valuetogether.global.jwt.JwtUtil.AUTHORIZATION_KEY;
 import static com.vt.valuetogether.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
 
-import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.global.redis.RedisUtil;
 import com.vt.valuetogether.global.validator.TokenValidator;
 import io.jsonwebtoken.Claims;
@@ -80,7 +79,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private String renewAccessToken(String accessToken) {
         Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
         String username = claims.getSubject();
-        Role role = (Role) claims.get(AUTHORIZATION_KEY);
+        String role = (String) claims.get(AUTHORIZATION_KEY);
 
         return jwtUtil.createAccessToken(username, role);
     }
