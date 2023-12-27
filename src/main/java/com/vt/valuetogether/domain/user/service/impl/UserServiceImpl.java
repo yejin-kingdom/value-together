@@ -1,13 +1,18 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
+import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
+import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
+import com.vt.valuetogether.domain.user.entity.EmailAuth;
+import com.vt.valuetogether.domain.user.entity.Provider;
 import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
-import com.vt.valuetogether.domain.user.service.UserServiceMapper;
 import com.vt.valuetogether.global.validator.UserValidator;
+import com.vt.valuetogether.infra.mail.MailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +24,26 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final MailUtil mailUtil;
+
+    private static final String EMAIL_AUTHORIZATION = "이메일 인증";
+
+    @Override
+    public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
+        UserValidator.validate(req);
+
+        mailUtil.sendMessage(req.getEmail(), EMAIL_AUTHORIZATION);
+
+        return new UserVerifyEmailRes();
+    }
+
+    @Override
+    public UserConfirmEmailRes confirmEmail(String email, String code) {
+        mailUtil.checkCode(email, code);
+
+        return UserConfirmEmailRes.builder().email(email).build();
+    }
 
     @Override
     public UserSignupRes signup(UserSignupReq req) {
@@ -34,6 +59,7 @@ public class UserServiceImpl implements UserService {
                         .username(req.getUsername())
                         .password(passwordEncoder.encode(req.getPassword()))
                         .email(req.getEmail())
+                        .provider(Provider.LOCAL)
                         .role(Role.USER)
                         .build());
 
