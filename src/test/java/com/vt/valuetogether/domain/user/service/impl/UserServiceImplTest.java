@@ -6,8 +6,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.dto.request.UserUpdateIntroduceReq;
+import com.vt.valuetogether.domain.user.dto.request.UserUpdatePasswordReq;
+import com.vt.valuetogether.domain.user.dto.request.UserUpdateUsernameReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
+import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.global.exception.GlobalException;
@@ -194,5 +198,111 @@ class UserServiceImplTest implements UserTest {
 
         verify(userRepository).save(argumentCaptor.capture());
         assertEquals(TEST_USER_NAME, argumentCaptor.getValue().getUsername());
+    }
+
+    @Nested
+    @DisplayName("프로필 수정")
+    class profileUpdateTest {
+        @Test
+        @DisplayName("username 수정")
+        void updateUsernameTest() {
+            // given
+            UserUpdateUsernameReq req = UserUpdateUsernameReq.builder()
+                .userId(TEST_USER_ID)
+                .username(TEST_ANOTHER_USER_NAME)
+                .build();
+
+            User user =
+                User.builder()
+                    .userId(TEST_USER_ID)
+                    .username(TEST_ANOTHER_USER_NAME)
+                    .password(TEST_USER_PASSWORD)
+                    .email(TEST_USER_EMAIL)
+                    .introduce(TEST_USER_INTRODUCE)
+                    .role(Role.USER)
+                    .build();
+
+            given(userRepository.findByUserId(TEST_USER_ID)).willReturn(TEST_USER);
+            given(userRepository.findByUsername(TEST_ANOTHER_USER_NAME)).willReturn(null);
+            given(userRepository.save(any(User.class))).willReturn(user);
+
+            // when
+            userService.updateUsername(req);
+
+            // then
+            verify(userRepository).save(argumentCaptor.capture());
+            assertEquals(TEST_ANOTHER_USER_NAME, argumentCaptor.getValue().getUsername());
+        }
+
+        @Test
+        @DisplayName("introduce 수정")
+        void updateIntroduceTest() {
+            // given
+            UserUpdateIntroduceReq req = UserUpdateIntroduceReq.builder()
+                .userId(TEST_USER_ID)
+                .introduce(TEST_ANOTHER_USER_INTRODUCE)
+                .build();
+
+            User user =
+                User.builder()
+                    .userId(TEST_USER_ID)
+                    .username(TEST_ANOTHER_USER_NAME)
+                    .password(TEST_USER_PASSWORD)
+                    .email(TEST_USER_EMAIL)
+                    .introduce(TEST_ANOTHER_USER_INTRODUCE)
+                    .role(Role.USER)
+                    .build();
+
+            given(userRepository.findByUserId(TEST_USER_ID)).willReturn(TEST_USER);
+            given(userRepository.save(any(User.class))).willReturn(user);
+
+            // when
+            userService.updateIntroduce(req);
+
+            // then
+            verify(userRepository).save(argumentCaptor.capture());
+            assertEquals(TEST_ANOTHER_USER_INTRODUCE, argumentCaptor.getValue().getIntroduce());
+        }
+
+        @Test
+        @DisplayName("password 수정")
+        void updatePasswordTest() {
+            // given
+            UserUpdatePasswordReq req = UserUpdatePasswordReq.builder()
+                .userId(TEST_USER_ID)
+                .password(TEST_USER_PASSWORD)
+                .newPassword(TEST_ANOTHER_USER_PASSWORD)
+                .build();
+
+            User TEST_USER_1 =
+                User.builder()
+                    .userId(TEST_USER_ID)
+                    .username(TEST_USER_NAME)
+                    .password(passwordEncoder.encode(TEST_USER_PASSWORD))
+                    .email(TEST_USER_EMAIL)
+                    .introduce(TEST_USER_INTRODUCE)
+                    .role(Role.USER)
+                    .build();
+
+            User TEST_USER_2 =
+                User.builder()
+                    .userId(TEST_USER_ID)
+                    .username(TEST_USER_NAME)
+                    .password(passwordEncoder.encode(TEST_ANOTHER_USER_PASSWORD))
+                    .email(TEST_USER_EMAIL)
+                    .introduce(TEST_USER_INTRODUCE)
+                    .role(Role.USER)
+                    .build();
+
+            given(userRepository.findByUserId(TEST_USER_ID)).willReturn(TEST_USER_1);
+            given(userRepository.save(any(User.class))).willReturn(TEST_USER_2);
+
+            // when
+            userService.updatePassword(req);
+
+            // then
+            verify(userRepository).save(argumentCaptor.capture());
+            assertEquals(passwordEncoder.encode(TEST_ANOTHER_USER_PASSWORD), argumentCaptor.getValue().getPassword());
+        }
     }
 }
