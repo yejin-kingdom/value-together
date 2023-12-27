@@ -30,7 +30,7 @@ public enum ResultCode {
     INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, 2011, "올바르지 않은 로그인 접근입니다."),
 
     // 팀 3000번대
-    NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 팀입니다.");
+    NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 팀입니다."),
 
     // 카테고리 4000번대
 
@@ -39,7 +39,7 @@ public enum ResultCode {
     // 작업자 6000번대
 
     // 체크리스트 7000번대
-
+    NOT_FOUND_CHECKLIST(HttpStatus.NOT_FOUND, 7000, "체크리스트를 찾을 수 없습니다.");
     // 할일 8000대
 
     // 댓글 9000대
