@@ -3,7 +3,6 @@ package com.vt.valuetogether.domain.user.service.impl;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.repository.EmailAuthRepository;
 import com.vt.valuetogether.domain.user.service.EmailAuthService;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ public class EmailAuthServiceImpl implements EmailAuthService {
     private final EmailAuthRepository emailAuthRepository;
 
     @Override
-    public Optional<EmailAuth> findById(String email) {
+    public EmailAuth findById(String email) {
         return emailAuthRepository.findById(email);
     }
 
@@ -29,7 +28,7 @@ public class EmailAuthServiceImpl implements EmailAuthService {
     }
 
     @Override
-    public void delete(String email) {
-        emailAuthRepository.deleteById(email);
+    public EmailAuth delete(String email) {
+        return emailAuthRepository.deleteById(email);
     }
 }

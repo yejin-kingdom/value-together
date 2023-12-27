@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 public enum ResultCode {
     SUCCESS(HttpStatus.OK, 0, "정상 처리 되었습니다"),
 
-    SYSTEM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 1000, "알 수 없는 에러가 발생했습니다."),
+    SYSTEM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 1001, "알 수 없는 에러가 발생했습니다."),
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 1002, "이메일 전송에 실패하였습니다."),
 
     NOT_FOUND_SAMPLE(HttpStatus.NOT_FOUND, 2001, "샘플 데이터가 없습니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 2002, "존재하지 않는 유저입니다."),

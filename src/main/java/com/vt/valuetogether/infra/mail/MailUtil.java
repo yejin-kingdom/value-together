@@ -1,5 +1,6 @@
 package com.vt.valuetogether.infra.mail;
 
+import static com.vt.valuetogether.global.meta.ResultCode.EMAIL_SEND_FAILED;
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_CODE;
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_EMAIL;
 
@@ -23,6 +24,9 @@ public class MailUtil {
 
     private final JavaMailSender mailSender;
     private final EmailAuthService emailService;
+    private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/confirm-email";
+    private static final String PATH_KEY_EMAIL = "email=";
+    private static final String PATH_KEY_CODE = "authCode=";
 
     @Value("${spring.mail.username}")
     private String email;
@@ -44,7 +48,7 @@ public class MailUtil {
             emailService.save(emailAuth);
             mailSender.send(message);
         } catch (MessagingException e) {
-            log.warn(e.getMessage());
+            throw new GlobalException(EMAIL_SEND_FAILED);
         }
     }
 
@@ -62,7 +66,9 @@ public class MailUtil {
     }
 
     public EmailAuth getEmailAuth(String email) {
-        return emailService.findById(email).orElseThrow(() -> new GlobalException(NOT_FOUND_EMAIL));
+        EmailAuth emailAuth = emailService.findById(email);
+        if (emailAuth == null) throw new GlobalException(NOT_FOUND_EMAIL);
+        return emailAuth;
     }
 
     private MimeMessage createMessage(String to, String subject, String code)
@@ -73,9 +79,7 @@ public class MailUtil {
         message.addRecipients(RecipientType.TO, to);
         message.setSubject(subject);
         message.setText(
-                "http://localhost:8080/api/v1/users/confirm-email?email=" + to + "&authCode=" + code,
-                "UTF-8",
-                "html");
+                EMAIL_LINK + "?" + PATH_KEY_EMAIL + to + "&" + PATH_KEY_CODE + code, "UTF-8", "html");
 
         return message;
     }

@@ -26,11 +26,13 @@ public class UserServiceImpl implements UserService {
 
     private final MailUtil mailUtil;
 
+    private static final String EMAIL_AUTHORIZATION = "이메일 인증";
+
     @Override
     public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
         UserValidator.validate(req);
 
-        mailUtil.sendMessage(req.getEmail(), "이메일 인증");
+        mailUtil.sendMessage(req.getEmail(), EMAIL_AUTHORIZATION);
 
         return new UserVerifyEmailRes();
     }
