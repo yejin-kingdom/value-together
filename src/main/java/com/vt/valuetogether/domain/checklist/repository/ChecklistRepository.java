@@ -8,4 +8,6 @@ public interface ChecklistRepository {
     Checklist save(Checklist checklist);
 
     Checklist findByChecklistId(Long checklistId);
+
+    void delete(Checklist checklist);
 }
