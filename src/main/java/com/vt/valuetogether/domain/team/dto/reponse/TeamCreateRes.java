@@ -10,13 +10,9 @@ import lombok.NoArgsConstructor;
 public class TeamCreateRes {
 
     private Long teamId;
-    private String teamName;
-    private String teamDescription;
 
     @Builder
-    private TeamCreateRes(Long teamId, String teamName, String teamDescription) {
+    private TeamCreateRes(Long teamId) {
         this.teamId = teamId;
-        this.teamName = teamName;
-        this.teamDescription = teamDescription;
     }
 }
