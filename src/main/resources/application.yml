@@ -27,6 +27,19 @@ spring:
       host: localhost
       port: 6379
 
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${EMAIL_ID}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+        ssl:
+          enable: true
+
 logging:
   level:
     org.hibernate.SQL: debug

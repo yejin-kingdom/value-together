@@ -6,8 +6,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
+import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.global.exception.GlobalException;
+import com.vt.valuetogether.infra.mail.MailUtil;
 import com.vt.valuetogether.test.UserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,9 +30,42 @@ class UserServiceImplTest implements UserTest {
 
     @Mock PasswordEncoder passwordEncoder;
 
+    @Mock MailUtil mailUtil;
+
     @InjectMocks UserServiceImpl userService;
 
     @Captor ArgumentCaptor<User> argumentCaptor;
+
+    @Nested
+    @DisplayName("이메일 인증 관련 테스트")
+    class emailAuthorization {
+
+        @Test
+        @DisplayName("메일 전송")
+        void sendEmailTest() {
+            // given
+            UserVerifyEmailReq req = UserVerifyEmailReq.builder().email(TEST_USER_EMAIL).build();
+
+            // when
+            userService.sendEmail(req);
+
+            // then
+            verify(mailUtil).sendMessage(TEST_USER_EMAIL, "이메일 인증");
+        }
+
+        @Test
+        @DisplayName("메일 코드 확인")
+        void confirmEmailTest() {
+            // given
+            String code = "code";
+
+            // when
+            userService.confirmEmail(TEST_USER_EMAIL, code);
+
+            // then
+            verify(mailUtil).checkCode(TEST_USER_EMAIL, code);
+        }
+    }
 
     @Nested
     @DisplayName("회원가입 - req 검증")
@@ -46,15 +83,15 @@ class UserServiceImplTest implements UserTest {
                             .build();
 
             // when
-            IllegalArgumentException exception =
+            GlobalException exception =
                     assertThrows(
-                            IllegalArgumentException.class,
+                            GlobalException.class,
                             () -> {
                                 userService.signup(req);
                             });
 
             // then
-            assertEquals("username 형식에 맞지 않습니다.", exception.getMessage());
+            assertEquals("username 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
         }
 
         @Test
@@ -69,15 +106,15 @@ class UserServiceImplTest implements UserTest {
                             .build();
 
             // when
-            IllegalArgumentException exception =
+            GlobalException exception =
                     assertThrows(
-                            IllegalArgumentException.class,
+                            GlobalException.class,
                             () -> {
                                 userService.signup(req);
                             });
 
             // then
-            assertEquals("password 형식에 맞지 않습니다.", exception.getMessage());
+            assertEquals("password 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
         }
 
         @Test
@@ -92,15 +129,15 @@ class UserServiceImplTest implements UserTest {
                             .build();
 
             // when
-            IllegalArgumentException exception =
+            GlobalException exception =
                     assertThrows(
-                            IllegalArgumentException.class,
+                            GlobalException.class,
                             () -> {
                                 userService.signup(req);
                             });
 
             // then
-            assertEquals("email 형식에 맞지 않습니다.", exception.getMessage());
+            assertEquals("email 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
         }
     }
 
@@ -118,15 +155,15 @@ class UserServiceImplTest implements UserTest {
         given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(TEST_USER);
 
         // when
-        IllegalArgumentException exception =
+        GlobalException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        GlobalException.class,
                         () -> {
                             userService.signup(req);
                         });
 
         // then
-        assertEquals("중복된 username입니다.", exception.getMessage());
+        assertEquals("중복된 username 입니다.", exception.getResultCode().getMessage());
     }
 
     @Test
@@ -140,8 +177,12 @@ class UserServiceImplTest implements UserTest {
                         .email(TEST_USER_EMAIL)
                         .build();
 
+        EmailAuth emailAuth =
+                EmailAuth.builder().email(TEST_USER_EMAIL).code("aaa").isChecked(true).build();
+
         given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(null);
         given(userRepository.save(any(User.class))).willReturn(TEST_USER);
+        given(mailUtil.getEmailAuth(TEST_USER_EMAIL)).willReturn(emailAuth);
 
         // when
         userService.signup(req);
