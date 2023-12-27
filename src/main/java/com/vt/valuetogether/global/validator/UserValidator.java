@@ -10,7 +10,6 @@ import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.global.exception.GlobalException;
-import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.meta.ResultCode;
 import java.util.regex.Pattern;
 

@@ -22,7 +22,7 @@ public enum ResultCode {
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, 2003, "이메일 전송에 실패하였습니다."),
     NOT_FOUND_EMAIL(HttpStatus.NOT_FOUND, 2004, "해당 이메일을 찾을 수 없습니다."),
     INVALID_USERNAME_PATTERN(HttpStatus.BAD_REQUEST, 2005, "username 형식에 맞지 않습니다."),
-    INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, 2006, "email 형식에 맞지 않습니다"),
+    INVALID_EMAIL_PATTERN(HttpStatus.BAD_REQUEST, 2006, "email 형식에 맞지 않습니다."),
     INVALID_PASSWORD_PATTERN(HttpStatus.BAD_REQUEST, 2007, "password 형식에 맞지 않습니다."),
     DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, 2008, "중복된 username 입니다."),
     UNAUTHORIZED_EMAIL(HttpStatus.UNAUTHORIZED, 2009, "인증 완료되지 않은 email 입니다."),
