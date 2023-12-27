@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -13,7 +14,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @CreatedDate public LocalDateTime createdAt;
+    @Column(updatable = false)
+    @CreatedDate
+    public LocalDateTime createdAt;
 
     @LastModifiedDate public LocalDateTime modifiedAt;
 }
