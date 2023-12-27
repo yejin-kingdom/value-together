@@ -58,13 +58,11 @@ public class JwtUtil {
     }
 
     /** RefreshToken 생성 */
-    public String createRefreshToken(String username, Role role) {
+    public String createRefreshToken() {
         Date now = new Date();
 
         return BEARER_PREFIX
                 + Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                         .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(now) // 발급일
                         .signWith(key, SignatureAlgorithm.HS256) // 암호화 알고리즘 (HS256)
