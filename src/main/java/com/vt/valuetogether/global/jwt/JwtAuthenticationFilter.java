@@ -1,10 +1,12 @@
 package com.vt.valuetogether.global.jwt;
 
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_USER;
+import static com.vt.valuetogether.global.meta.ResultCode.SYSTEM_ERROR;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.domain.user.dto.request.UserLocalLoginReq;
 import com.vt.valuetogether.domain.user.dto.response.UserLocalLoginRes;
+import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.redis.RedisUtil;
 import com.vt.valuetogether.global.response.RestResponse;
 import com.vt.valuetogether.global.security.UserDetailsImpl;
@@ -53,8 +55,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                             new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword(), null));
 
         } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw new GlobalException(SYSTEM_ERROR);
         }
     }
 
