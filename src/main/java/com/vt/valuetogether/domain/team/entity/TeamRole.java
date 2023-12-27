@@ -3,6 +3,8 @@ package com.vt.valuetogether.domain.team.entity;
 import com.vt.valuetogether.domain.model.BaseEntity;
 import com.vt.valuetogether.domain.user.entity.User;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,6 +34,7 @@ public class TeamRole extends BaseEntity {
     @JoinColumn(name = "teamId")
     private Team team;
 
+    @Enumerated(value = EnumType.STRING)
     private Role role;
 
     @Builder
