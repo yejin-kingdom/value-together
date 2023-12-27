@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private static final int REFRESH_TOKEN_TIME = 60 * 24 * 14;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
     public void setup() {
