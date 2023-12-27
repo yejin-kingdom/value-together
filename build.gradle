@@ -59,8 +59,7 @@ dependencies {
 
     // aws
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.623'
-//    implementation group: 'com.amazonaws', name: 'aws-java-sdk-secretsmanager', version: '1.12.625'
-//    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
+//    implementation group: 'io.awspring.cloud', name: 'spring-cloud-starter-aws-secrets-manager-config', version: '2.4.4'
 
     // restdocs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
