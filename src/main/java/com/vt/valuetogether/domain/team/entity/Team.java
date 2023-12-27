@@ -6,13 +6,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Team extends BaseEntity {
 
@@ -24,12 +26,10 @@ public class Team extends BaseEntity {
     private String teamDescription;
 
     @OneToMany(mappedBy = "team")
-    private List<TeamRole> teamRoleList;
+    private List<TeamRole> teamRoleList = new ArrayList<>();
 
     @Builder
-    private Team(Long teamId,
-        String teamName,
-        String teamDescription) {
+    private Team(Long teamId, String teamName, String teamDescription) {
         this.teamId = teamId;
         this.teamName = teamName;
         this.teamDescription = teamDescription;

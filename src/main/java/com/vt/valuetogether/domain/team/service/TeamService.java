@@ -21,20 +21,17 @@ public class TeamService {
     private final TeamRoleRepository teamRoleRepository;
 
     public CreateTeamRes createTeam(CreateTeamReq req, User user) {
-        Team team = Team.builder()
-            .teamName(req.getTeamName())
-            .teamDescription(req.getTeamDescription())
-            .build();
+        Team team =
+                Team.builder()
+                        .teamName(req.getTeamName())
+                        .teamDescription(req.getTeamDescription())
+                        .build();
 
-        TeamRole teamRole = TeamRole.builder()
-            .user(user)
-            .team(team)
-            .role(Role.LEADER)
-            .build();
-
-        team.addTeamRole(teamRole);
+        TeamRole teamRole = TeamRole.builder().user(user).team(team).role(Role.LEADER).build();
 
         teamRoleRepository.save(teamRole);
+
+        team.addTeamRole(teamRole);
 
         return TeamServiceMapper.INSTANCE.toCreateTeamRes(teamRepository.save(team));
     }
