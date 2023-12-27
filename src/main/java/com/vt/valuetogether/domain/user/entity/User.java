@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "tb_user")
 public class User extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -32,6 +33,9 @@ public class User extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @Enumerated(value = EnumType.STRING)
+    private Provider provider;
+
     @Builder
     private User(
             Long userId,
@@ -39,12 +43,14 @@ public class User extends BaseEntity {
             String password,
             String email,
             String profileImageUrl,
-            Role role) {
+            Role role,
+            Provider provider) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
         this.profileImageUrl = profileImageUrl;
         this.role = role;
+        this.provider = provider;
     }
 }
