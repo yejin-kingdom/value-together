@@ -1,10 +1,12 @@
 package com.vt.valuetogether.global.jwt;
 
+import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_USER;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.domain.user.dto.request.UserLocalLoginReq;
 import com.vt.valuetogether.domain.user.dto.response.UserLocalLoginRes;
 import com.vt.valuetogether.domain.user.entity.Role;
-import com.vt.valuetogether.global.meta.ResultCode;
+import com.vt.valuetogether.global.redis.RedisUtil;
 import com.vt.valuetogether.global.response.RestResponse;
 import com.vt.valuetogether.global.security.UserDetailsImpl;
 import jakarta.annotation.PostConstruct;
@@ -12,8 +14,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -23,7 +28,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    private static final int REFRESH_TOKEN_TIME = 60 * 24 * 14;
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
     private final ObjectMapper objectMapper;
 
     @PostConstruct
@@ -33,15 +40,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(
-            HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         try {
             UserLocalLoginReq req =
-                    new ObjectMapper().readValue(request.getInputStream(), UserLocalLoginReq.class);
+                new ObjectMapper().readValue(request.getInputStream(), UserLocalLoginReq.class);
 
             return getAuthenticationManager()
-                    .authenticate(
-                            new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword(), null));
+                .authenticate(
+                    new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword(),
+                        null));
 
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -51,40 +59,49 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain,
-            Authentication authResult)
-            throws IOException {
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain chain,
+        Authentication authResult)
+        throws IOException {
 
-        UserLocalLoginRes res = createTokens(authResult);
+        UserLocalLoginRes res = addTokensInHeader(authResult, response);
         settingResponse(response, RestResponse.success(res));
     }
 
-    private UserLocalLoginRes createTokens(Authentication authResult) {
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        Role role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+    private UserLocalLoginRes addTokensInHeader(
+        Authentication authResult, HttpServletResponse response) {
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
+        String username = userDetails.getUsername();
+        Role role = userDetails.getUser().getRole();
 
         String accessToken = jwtUtil.createAccessToken(username, role);
-        String refreshToken = jwtUtil.createRefreshToken(username, role);
+        String refreshToken = jwtUtil.createRefreshToken();
 
-        return UserLocalLoginRes.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+        response.addHeader(JwtUtil.ACCESS_TOKEN_HEADER, accessToken);
+        response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken);
+
+        redisUtil.set(refreshToken, username, REFRESH_TOKEN_TIME);
+
+        return new UserLocalLoginRes();
     }
 
     @Override
     protected void unsuccessfulAuthentication(
-            HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
-            throws IOException {
+        HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+        throws IOException {
 
-        response.setStatus(401);
-        settingResponse(response, RestResponse.error(ResultCode.NOT_FOUND_USER));
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+        settingResponse(response, RestResponse.error(NOT_FOUND_USER));
     }
 
     private void settingResponse(HttpServletResponse response, RestResponse<?> res)
-            throws IOException {
+        throws IOException {
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         String result = objectMapper.writeValueAsString(res);
         response.getWriter().write(result);
