@@ -1,6 +1,7 @@
 package com.vt.valuetogether.domain.team.entity;
 
 import com.vt.valuetogether.domain.model.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +26,7 @@ public class Team extends BaseEntity {
     private String teamName;
     private String teamDescription;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<TeamRole> teamRoleList = new ArrayList<>();
 
     @Builder
@@ -33,9 +34,5 @@ public class Team extends BaseEntity {
         this.teamId = teamId;
         this.teamName = teamName;
         this.teamDescription = teamDescription;
-    }
-
-    public void addTeamRole(TeamRole teamRole) {
-        this.teamRoleList.add(teamRole);
     }
 }
