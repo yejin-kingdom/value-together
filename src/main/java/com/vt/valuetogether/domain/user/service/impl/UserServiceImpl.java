@@ -1,10 +1,8 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
-import static com.vt.valuetogether.domain.user.entity.Provider.LOCAL;
-import static com.vt.valuetogether.domain.user.entity.Role.USER;
-
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
+import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
@@ -29,18 +27,21 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.checkDuplicatedUsername(user);
 
-        // req.getEmail()이 인증된 이메일인지 확인 필요
+        checkAuthorizedEmail(req.getEmail());
 
-        User saveUser =
-                userRepository.save(
-                        User.builder()
-                                .username(req.getUsername())
-                                .password(passwordEncoder.encode(req.getPassword()))
-                                .email(req.getEmail())
-                                .role(USER)
-                                .provider(LOCAL)
-                                .build());
+        userRepository.save(
+                User.builder()
+                        .username(req.getUsername())
+                        .password(passwordEncoder.encode(req.getPassword()))
+                        .email(req.getEmail())
+                        .role(Role.USER)
+                        .build());
 
-        return UserServiceMapper.INSTANCE.toUserSignupRes(saveUser);
+        return new UserSignupRes();
+    }
+
+    private void checkAuthorizedEmail(String email) {
+        EmailAuth authEmail = mailUtil.getEmailAuth(email);
+        UserValidator.checkAuthorizedEmail(authEmail.isChecked());
     }
 }
