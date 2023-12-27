@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistSaveReq;
+import com.vt.valuetogether.domain.checklist.dto.request.ChecklistUpdateReq;
 import com.vt.valuetogether.domain.checklist.dto.response.ChecklistSaveRes;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
 import com.vt.valuetogether.test.ChecklistTest;
@@ -36,5 +37,20 @@ class ChecklistServiceTest implements ChecklistTest {
         // then
         assertThat(checklistSaveRes.getChecklistId()).isEqualTo(TEST_CHECKLIST_ID);
         verify(checklistRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("checklist 수정 테스트")
+    void checklist_수정() {
+        // given
+        Long checklistId=1L;
+        String title = "title";
+        ChecklistUpdateReq checklistUpdateReq = ChecklistUpdateReq.builder().checklistId(checklistId).title(title).build();
+        when(checklistRepository.findByChecklistId(any())).thenReturn(TEST_CHECKLIST);
+        // when
+        checklistService.updateChecklist(checklistUpdateReq);
+
+        // then
+        verify(checklistRepository).findByChecklistId(any());
     }
 }
