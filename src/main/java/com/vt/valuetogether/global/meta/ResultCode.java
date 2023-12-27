@@ -1,9 +1,11 @@
 package com.vt.valuetogether.global.meta;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@RequiredArgsConstructor
 public enum ResultCode {
     SUCCESS(HttpStatus.OK, 0, "정상 처리 되었습니다"),
 
@@ -20,17 +22,12 @@ public enum ResultCode {
     INVALID_PASSWORD_PATTERN(HttpStatus.BAD_REQUEST, 3003, "password 형식에 맞지 않습니다."),
     DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, 3004, "중복된 username 입니다."),
     INVALID_CODE(HttpStatus.BAD_REQUEST, 3005, "인증코드가 일치하지 않습니다."),
+    INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, 3005, "올바르지 않은 로그인 접근입니다."),
 
     ACCESS_DENY(HttpStatus.FORBIDDEN, 4001, "접근 권한이 없습니다."),
     UNAUTHORIZED_EMAIL(HttpStatus.UNAUTHORIZED, 4002, "인증 완료되지 않은 email 입니다.");
 
-    private HttpStatus status;
-    private Integer code;
-    private String message;
-
-    ResultCode(HttpStatus status, Integer code, String errorMessage) {
-        this.status = status;
-        this.code = code;
-        this.message = errorMessage;
-    }
+    private final HttpStatus status;
+    private final Integer code;
+    private final String message;
 }
