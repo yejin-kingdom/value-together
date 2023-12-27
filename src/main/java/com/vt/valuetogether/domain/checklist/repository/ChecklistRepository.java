@@ -6,4 +6,6 @@ import org.springframework.data.repository.RepositoryDefinition;
 @RepositoryDefinition(domainClass = Checklist.class, idClass = Long.class)
 public interface ChecklistRepository {
     Checklist save(Checklist checklist);
+
+    Checklist findByChecklistId(Long checklistId);
 }
