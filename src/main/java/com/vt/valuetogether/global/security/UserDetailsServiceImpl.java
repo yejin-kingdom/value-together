@@ -2,6 +2,7 @@ package com.vt.valuetogether.global.security;
 
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,10 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        
-        if (user == null) {
-            throw new IllegalArgumentException("없는 username");
-        }
+        UserValidator.checkExistingUsername(user);
 
         return new UserDetailsImpl(user);
     }
