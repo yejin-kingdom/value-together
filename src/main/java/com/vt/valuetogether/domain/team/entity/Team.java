@@ -2,6 +2,7 @@ package com.vt.valuetogether.domain.team.entity;
 
 import com.vt.valuetogether.domain.model.BaseEntity;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,7 +24,9 @@ public class Team extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamId;
 
+    @Column(unique = true)
     private String teamName;
+
     private String teamDescription;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)

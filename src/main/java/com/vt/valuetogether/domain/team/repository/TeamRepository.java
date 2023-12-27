@@ -6,5 +6,9 @@ import org.springframework.data.repository.RepositoryDefinition;
 @RepositoryDefinition(domainClass = Team.class, idClass = Long.class)
 public interface TeamRepository {
 
+    Team findByTeamName(String teamName);
+
     Team save(Team team);
+
+    void deleteTeamByTeamId(Long teamId);
 }

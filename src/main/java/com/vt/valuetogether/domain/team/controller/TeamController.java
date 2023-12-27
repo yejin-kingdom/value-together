@@ -1,11 +1,14 @@
 package com.vt.valuetogether.domain.team.controller;
 
-import com.vt.valuetogether.domain.team.dto.reponse.CreateTeamRes;
-import com.vt.valuetogether.domain.team.dto.request.CreateTeamReq;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
+import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.global.response.RestResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +22,14 @@ public class TeamController {
     private final TeamService teamService;
 
     @PostMapping("/teams")
-    public RestResponse<CreateTeamRes> createTeam(@RequestBody CreateTeamReq req, User user) {
+    public RestResponse<TeamCreateRes> createTeam(@RequestBody TeamCreateReq req, User user) {
         req.setUsername(user.getUsername());
         return RestResponse.success(teamService.createTeam(req));
+    }
+
+    @DeleteMapping("/teams")
+    public RestResponse<TeamDeleteRes> deleteTeam(@RequestBody TeamDeleteReq req, User user) {
+        req.setUsername(user.getUsername());
+        return RestResponse.success(teamService.deleteTeam(req));
     }
 }
