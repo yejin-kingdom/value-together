@@ -5,7 +5,6 @@ import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_USER;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.domain.user.dto.request.UserLocalLoginReq;
 import com.vt.valuetogether.domain.user.dto.response.UserLocalLoginRes;
-import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.global.redis.RedisUtil;
 import com.vt.valuetogether.global.response.RestResponse;
 import com.vt.valuetogether.global.security.UserDetailsImpl;
@@ -15,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
@@ -40,16 +42,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(
-        HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+            HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         try {
             UserLocalLoginReq req =
-                new ObjectMapper().readValue(request.getInputStream(), UserLocalLoginReq.class);
+                    new ObjectMapper().readValue(request.getInputStream(), UserLocalLoginReq.class);
 
             return getAuthenticationManager()
-                .authenticate(
-                    new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword(),
-                        null));
+                    .authenticate(
+                            new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword(), null));
 
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -59,22 +60,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        FilterChain chain,
-        Authentication authResult)
-        throws IOException {
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain,
+            Authentication authResult)
+            throws IOException {
 
         UserLocalLoginRes res = addTokensInHeader(authResult, response);
         settingResponse(response, RestResponse.success(res));
     }
 
     private UserLocalLoginRes addTokensInHeader(
-        Authentication authResult, HttpServletResponse response) {
+            Authentication authResult, HttpServletResponse response) {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
         String username = userDetails.getUsername();
-        Role role = userDetails.getUser().getRole();
+
+        List<? extends GrantedAuthority> list = new ArrayList<>(authResult.getAuthorities());
+        String role = list.get(0).getAuthority();
 
         String accessToken = jwtUtil.createAccessToken(username, role);
         String refreshToken = jwtUtil.createRefreshToken();
@@ -89,8 +92,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void unsuccessfulAuthentication(
-        HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
-        throws IOException {
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+            throws IOException {
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
@@ -98,7 +101,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     private void settingResponse(HttpServletResponse response, RestResponse<?> res)
-        throws IOException {
+            throws IOException {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
