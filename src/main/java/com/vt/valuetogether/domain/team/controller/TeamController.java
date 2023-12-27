@@ -16,18 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/teams")
 public class TeamController {
 
     private final TeamService teamService;
 
-    @PostMapping("/teams")
+    @PostMapping
     public RestResponse<TeamCreateRes> createTeam(@RequestBody TeamCreateReq req, User user) {
         req.setUsername(user.getUsername());
         return RestResponse.success(teamService.createTeam(req));
     }
 
-    @DeleteMapping("/teams")
+    @DeleteMapping
     public RestResponse<TeamDeleteRes> deleteTeam(@RequestBody TeamDeleteReq req, User user) {
         req.setUsername(user.getUsername());
         return RestResponse.success(teamService.deleteTeam(req));

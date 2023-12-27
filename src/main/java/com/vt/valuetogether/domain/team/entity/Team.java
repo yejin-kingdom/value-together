@@ -29,9 +29,6 @@ public class Team extends BaseEntity {
 
     private String teamDescription;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private List<TeamRole> teamRoleList = new ArrayList<>();
-
     @Builder
     private Team(Long teamId, String teamName, String teamDescription) {
         this.teamId = teamId;
