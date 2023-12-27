@@ -1,6 +1,5 @@
 package com.vt.valuetogether.global.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginFailureHandler;
 import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginSuccessHandler;
 import com.vt.valuetogether.domain.oauth.service.OAuth2Service;
@@ -68,14 +67,14 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
 
-        httpSecurity.sessionManagement(
+        http.sessionManagement(
                 (sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        httpSecurity.authorizeHttpRequests(
+        http.authorizeHttpRequests(
                 (authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
@@ -85,7 +84,8 @@ public class WebSecurityConfig {
                                 .anyRequest()
                                 .authenticated() // 그 외 모든 요청 인증처리
                 );
-        httpSecurity.oauth2Login(
+
+        http.oauth2Login(
                 (oauth2) ->
                         oauth2
                                 .successHandler(oAuth2LoginSuccessHandler)
@@ -94,11 +94,10 @@ public class WebSecurityConfig {
                                         userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service)));
 
         // 필터 관리
-        httpSecurity.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
-        httpSecurity.addFilterBefore(
-                jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        httpSecurity.addFilterBefore(exceptionHandlerFilter(), JwtAuthorizationFilter.class);
+        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(exceptionHandlerFilter(), JwtAuthorizationFilter.class);
 
-        return httpSecurity.build();
+        return http.build();
     }
 }
