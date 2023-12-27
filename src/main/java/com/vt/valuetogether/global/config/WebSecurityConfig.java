@@ -1,9 +1,11 @@
 package com.vt.valuetogether.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vt.valuetogether.global.exception.ExceptionHandlerFilter;
 import com.vt.valuetogether.global.jwt.JwtAuthenticationFilter;
 import com.vt.valuetogether.global.jwt.JwtAuthorizationFilter;
 import com.vt.valuetogether.global.jwt.JwtUtil;
+import com.vt.valuetogether.global.redis.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -42,23 +46,28 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, objectMapper);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, redisUtil, objectMapper);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtUtil, redisUtil, userDetailsService);
+    }
+
+    @Bean
+    public ExceptionHandlerFilter exceptionHandlerFilter() {
+        return new ExceptionHandlerFilter();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf((csrf) -> csrf.disable());
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         httpSecurity.sessionManagement(
-                (sessionManageMent) ->
-                        sessionManageMent.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                (sessionManagement) ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         httpSecurity.authorizeHttpRequests(
                 (authorizeHttpRequests) ->
@@ -75,6 +84,7 @@ public class WebSecurityConfig {
         httpSecurity.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         httpSecurity.addFilterBefore(
                 jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(exceptionHandlerFilter(), JwtAuthorizationFilter.class);
 
         return httpSecurity.build();
     }
