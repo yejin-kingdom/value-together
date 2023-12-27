@@ -1,12 +1,11 @@
 package com.vt.valuetogether.infra.mail;
 
 import static com.vt.valuetogether.global.meta.ResultCode.EMAIL_SEND_FAILED;
-import static com.vt.valuetogether.global.meta.ResultCode.INVALID_CODE;
-import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_EMAIL;
 
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.service.EmailAuthService;
 import com.vt.valuetogether.global.exception.GlobalException;
+import com.vt.valuetogether.global.validator.MailValidator;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
@@ -55,9 +54,7 @@ public class MailUtil {
     public void checkCode(String email, String code) {
         EmailAuth emailAuth = getEmailAuth(email);
 
-        if (!emailAuth.getCode().equals(code)) {
-            throw new GlobalException(INVALID_CODE);
-        }
+        MailValidator.checkCode(emailAuth.getCode(), code);
 
         emailService.delete(email);
         EmailAuth newEmailAuth = EmailAuth.builder().email(email).code(code).isChecked(true).build();
@@ -67,7 +64,7 @@ public class MailUtil {
 
     public EmailAuth getEmailAuth(String email) {
         EmailAuth emailAuth = emailService.findById(email);
-        if (emailAuth == null) throw new GlobalException(NOT_FOUND_EMAIL);
+        MailValidator.validate(emailAuth);
         return emailAuth;
     }
 
