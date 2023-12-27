@@ -1,9 +1,9 @@
 package com.vt.valuetogether.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginFailureHandler;
 import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginSuccessHandler;
 import com.vt.valuetogether.domain.oauth.service.OAuth2Service;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.global.exception.ExceptionHandlerFilter;
 import com.vt.valuetogether.global.jwt.JwtAuthenticationFilter;
 import com.vt.valuetogether.global.jwt.JwtAuthorizationFilter;
