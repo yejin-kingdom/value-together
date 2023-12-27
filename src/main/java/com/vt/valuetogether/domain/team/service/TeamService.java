@@ -33,11 +33,11 @@ public class TeamService {
         UserValidator.validate(user);
 
         Team team =
-            Team.builder()
-                .teamName(req.getTeamName())
-                .teamDescription(req.getTeamDescription())
-                .backgroundColor(req.getBackgroundColor())
-                .build();
+                Team.builder()
+                        .teamName(req.getTeamName())
+                        .teamDescription(req.getTeamDescription())
+                        .backgroundColor(req.getBackgroundColor())
+                        .build();
 
         TeamRole teamRole = TeamRole.builder().user(user).team(team).role(Role.LEADER).build();
 
