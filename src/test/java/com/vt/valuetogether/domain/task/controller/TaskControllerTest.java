@@ -2,14 +2,17 @@ package com.vt.valuetogether.domain.task.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
+import com.vt.valuetogether.domain.task.dto.request.TaskDeleteReq;
 import com.vt.valuetogether.domain.task.dto.request.TaskSaveReq;
 import com.vt.valuetogether.domain.task.dto.request.TaskUpdateReq;
+import com.vt.valuetogether.domain.task.dto.response.TaskDeleteRes;
 import com.vt.valuetogether.domain.task.dto.response.TaskSaveRes;
 import com.vt.valuetogether.domain.task.dto.response.TaskUpdateRes;
 import com.vt.valuetogether.domain.task.service.TaskService;
@@ -57,6 +60,22 @@ class TaskControllerTest extends BaseMvcTest {
                         patch("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(taskUpdateReq)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("task 삭제 테스트")
+    void task_삭제() throws Exception {
+        Long taskId = 1L;
+        TaskDeleteReq taskDeleteReq = TaskDeleteReq.builder().taskId(taskId).build();
+        TaskDeleteRes taskDeleteRes = new TaskDeleteRes();
+        when(taskService.deleteTask(any())).thenReturn(taskDeleteRes);
+        this.mockMvc
+                .perform(
+                        delete("/api/v1/tasks")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(taskDeleteReq)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
