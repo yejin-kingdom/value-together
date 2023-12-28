@@ -1,9 +1,11 @@
 package com.vt.valuetogether.domain.user.service;
 
+import com.vt.valuetogether.domain.user.dto.request.UserCheckDuplicateUsernameReq;
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
+import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
@@ -17,6 +19,8 @@ public interface UserService {
     UserConfirmEmailRes confirmEmail(String email, String code);
 
     UserSignupRes signup(UserSignupReq req);
+
+    UserCheckDuplicateUsernameRes checkDuplicateUsername(UserCheckDuplicateUsernameReq req);
 
     UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req);
 

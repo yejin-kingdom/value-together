@@ -7,10 +7,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.vt.valuetogether.domain.user.dto.request.UserCheckDuplicateUsernameReq;
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
+import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.Role;
@@ -213,6 +215,22 @@ class UserServiceImplTest implements UserTest {
     }
 
     @Test
+    @DisplayName("사용자 이름 중복 확인")
+    void checkDuplicateUsernameTest() {
+        // given
+        UserCheckDuplicateUsernameReq req =
+                UserCheckDuplicateUsernameReq.builder().username(TEST_ANOTHER_USER_NAME).build();
+
+        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_ANOTHER_USER);
+
+        // when
+        UserCheckDuplicateUsernameRes res = userService.checkDuplicateUsername(req);
+
+        // then
+        assertTrue(res.isDuplicated());
+    }
+
+    @Test
     @DisplayName("비밀번호 확인 - 일치")
     void verifyPasswordTest() {
         // given
@@ -261,7 +279,6 @@ class UserServiceImplTest implements UserTest {
                         .build();
 
         given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
-        given(userRepository.findByUsername(req.getUsername())).willReturn(null);
         given(passwordEncoder.encode(req.getPassword())).willReturn(req.getPassword());
         given(s3Util.uploadFile(multipartFile, FilePath.PROFILE))
                 .willReturn(TEST_ANOTHER_USER_PROFILE_URL);

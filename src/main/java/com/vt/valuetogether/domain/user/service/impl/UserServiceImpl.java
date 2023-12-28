@@ -1,9 +1,11 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
+import com.vt.valuetogether.domain.user.dto.request.UserCheckDuplicateUsernameReq;
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
+import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
@@ -82,6 +84,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserCheckDuplicateUsernameRes checkDuplicateUsername(UserCheckDuplicateUsernameReq req) {
+        UserValidator.validate(req);
+        User user = userRepository.findByUsername(req.getUsername());
+        boolean isDuplicated = (user != null);
+
+        return UserCheckDuplicateUsernameRes.builder().isDuplicated(isDuplicated).build();
+    }
+
+    @Override
     public UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req) {
         User savedUser = getUser(req.getUserId());
         boolean isMatched = passwordEncoder.matches(req.getPassword(), savedUser.getPassword());
@@ -91,14 +102,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile) {
-        User savedUser = getUser(req.getUserId());
 
         UserValidator.validate(req);
-        S3Validator.isProfileImageFile(multipartFile);
+        User savedUser = getUser(req.getUserId());
 
-        if (!req.getUsername().equals(savedUser.getUsername())) {
-            UserValidator.checkDuplicatedUsername(userRepository.findByUsername(req.getUsername()));
-        }
+        S3Validator.isProfileImageFile(multipartFile);
 
         String imageUrl = savedUser.getProfileImageUrl();
         if (!imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {

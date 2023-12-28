@@ -30,7 +30,7 @@ public interface UserTest {
                     .profileImageUrl(TEST_USER_PROFILE_URL)
                     .role(Role.USER)
                     .build();
-    User ANOTHER_TEST_USER =
+    User TEST_ANOTHER_USER =
             User.builder()
                     .userId(TEST_ANOTHER_USER_ID)
                     .username(TEST_ANOTHER_USER_NAME)
