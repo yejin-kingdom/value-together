@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final S3Util s3Util;
+    private final Double NEXT_SEQUENCE = 1.0;
 
     @Override
     public CardSaveRes saveCard(CardSaveReq cardSaveReq, MultipartFile multipartFile) {
@@ -36,8 +37,6 @@ public class CardServiceImpl implements CardService {
     }
 
     private Double getMaxSequence(Long categoryId) {
-        Double sequence = cardRepository.getMaxSequence(categoryId);
-        if (sequence == null) return 1.0;
-        return sequence + 1.0;
+        return cardRepository.getMaxSequence(categoryId) + NEXT_SEQUENCE;
     }
 }
