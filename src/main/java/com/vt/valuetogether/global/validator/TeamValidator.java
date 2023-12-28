@@ -14,7 +14,7 @@ public class TeamValidator {
     private static final String TEAM_BACKGROUNDCOLOR_REGEX = "^#[0-9]{5}$";
 
     public static void validate(Team team) {
-        if (!checkIsNull(team)) {
+        if (checkIsNull(team)) {
             throw new GlobalException(NOT_FOUND_TEAM);
         }
     }
@@ -40,7 +40,7 @@ public class TeamValidator {
     }
 
     public static void checkIsDuplicateTeamName(Team team) {
-        if (checkIsNull(team)) {
+        if (!checkIsNull(team)) {
             throw new GlobalException(DUPLICATED_TEAMNAME);
         }
     }

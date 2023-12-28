@@ -39,7 +39,7 @@ public class UserValidator {
     }
 
     public static void validate(User user) {
-        if (!checkIsNull(user)) {
+        if (checkIsNull(user)) {
             throw new GlobalException(NOT_FOUND_USER);
         }
     }

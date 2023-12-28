@@ -18,6 +18,7 @@ import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.meta.ResultCode;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -42,11 +43,11 @@ public class TeamServiceImpl implements TeamService {
         UserValidator.validate(user);
 
         Team team =
-            Team.builder()
-                .teamName(req.getTeamName())
-                .teamDescription(req.getTeamDescription())
-                .backgroundColor(req.getBackgroundColor())
-                .build();
+                Team.builder()
+                        .teamName(req.getTeamName())
+                        .teamDescription(req.getTeamDescription())
+                        .backgroundColor(req.getBackgroundColor())
+                        .build();
 
         TeamRole teamRole = TeamRole.builder().user(user).team(team).role(Role.LEADER).build();
 
@@ -58,6 +59,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     // team의 leader와 user가 일치할 경우에만 팀을 삭제할 수 있다.
+    @Transactional
     @Override
     public TeamDeleteRes deleteTeam(TeamDeleteReq req) {
         User user = userRepository.findByUsername(req.getUsername());
@@ -67,33 +69,29 @@ public class TeamServiceImpl implements TeamService {
         TeamValidator.validate(team);
 
         team.getTeamRoleList().stream()
-            .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
-            .findAny()
-            .ifPresentOrElse(
-                t -> {
-                    teamRepository.save(
-                        Team.builder()
-                            .teamId(team.getTeamId())
-                            .teamName(team.getTeamName())
-                            .teamDescription(team.getTeamDescription())
-                            .isDeleted(true)
-                            .build());
+                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
+                .findAny()
+                .ifPresentOrElse(
+                        t -> {
+                            teamRepository.save(
+                                    Team.builder()
+                                            .teamId(team.getTeamId())
+                                            .teamName(team.getTeamName())
+                                            .teamDescription(team.getTeamDescription())
+                                            .isDeleted(true)
+                                            .build());
 
-                    teamRoleRepository.save(
-                        TeamRole.builder()
-                            .team(team)
-                            .user(user)
-                            .isDeleted(true)
-                            .build());
-                },
-
-                () -> {
-                    throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
-                });
+                            teamRoleRepository.save(
+                                    TeamRole.builder().team(team).user(user).isDeleted(true).build());
+                        },
+                        () -> {
+                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                        });
 
         return new TeamDeleteRes();
     }
 
+    @Transactional
     @Override
     public TeamEditRes editTeam(TeamEditReq req) {
         TeamValidator.validate(req);
@@ -108,20 +106,20 @@ public class TeamServiceImpl implements TeamService {
         TeamValidator.checkIsDuplicateTeamName(findTeam);
 
         team.getTeamRoleList().stream()
-            .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
-            .findAny()
-            .ifPresentOrElse(
-                t ->
-                    teamRepository.save(
-                        Team.builder()
-                            .teamId(team.getTeamId())
-                            .teamName(req.getTeamName())
-                            .teamDescription(req.getTeamDescription())
-                            .backgroundColor(req.getBackgroundColor())
-                            .build()),
-                () -> {
-                    throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
-                });
+                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
+                .findAny()
+                .ifPresentOrElse(
+                        t ->
+                                teamRepository.save(
+                                        Team.builder()
+                                                .teamId(team.getTeamId())
+                                                .teamName(req.getTeamName())
+                                                .teamDescription(req.getTeamDescription())
+                                                .backgroundColor(req.getBackgroundColor())
+                                                .build()),
+                        () -> {
+                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                        });
 
         return new TeamEditRes();
     }
