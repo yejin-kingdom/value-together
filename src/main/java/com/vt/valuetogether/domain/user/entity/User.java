@@ -30,7 +30,7 @@ public class User extends BaseEntity {
 
     private String profileImageUrl;
 
-    private String oAuthId;
+    private String oauthId;
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
@@ -45,7 +45,7 @@ public class User extends BaseEntity {
             String password,
             String email,
             String profileImageUrl,
-            String oAuthId,
+            String oauthId,
             Role role,
             Provider provider) {
         this.userId = userId;
@@ -53,7 +53,7 @@ public class User extends BaseEntity {
         this.password = password;
         this.email = email;
         this.profileImageUrl = profileImageUrl;
-        this.oAuthId = oAuthId;
+        this.oauthId = oauthId;
         this.role = role;
         this.provider = provider;
     }

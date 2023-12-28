@@ -14,6 +14,7 @@ public enum OAuth2Attributes {
         @Override
         public OAuth2UserProfile of(Map<String, Object> attributes) {
             return OAuth2UserProfile.builder()
+                    .oauthId(attributes.get("id").toString())
                     .email((String) attributes.get("email"))
                     .name((String) attributes.get("login"))
                     .imageUrl((String) attributes.get("avatar_url"))
@@ -27,6 +28,7 @@ public enum OAuth2Attributes {
         public OAuth2UserProfile of(Map<String, Object> attributes) {
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
             return OAuth2UserProfile.builder()
+                    .oauthId((String) response.get("id"))
                     .email((String) response.get("email"))
                     .name((String) response.get("nickname"))
                     .imageUrl((String) response.get("profile_image"))
@@ -38,6 +40,7 @@ public enum OAuth2Attributes {
         @Override
         public OAuth2UserProfile of(Map<String, Object> attributes) {
             return OAuth2UserProfile.builder()
+                    .oauthId((String) attributes.get("sub"))
                     .email((String) attributes.get("email"))
                     .name((String) attributes.get("name"))
                     .imageUrl((String) attributes.get("picture"))
@@ -49,12 +52,12 @@ public enum OAuth2Attributes {
     private final String providerName;
 
     public static OAuth2UserProfile extract(String providerName, Map<String, Object> attributes) {
-        return Arrays.stream(values()) // 해당 enum 의 요소들을 순서대로 순회
+        return Arrays.stream(values())
                 .filter(provider -> providerName.equals(provider.providerName))
                 .findFirst()
                 .orElseThrow(() -> new OAuth2ProviderInvalidException(ResultCode.INVALID_OAUTH_PROVIDER))
                 .of(attributes);
     }
 
-    public abstract OAuth2UserProfile of(Map<String, Object> attributes); // 추상 메서드로 구현
+    public abstract OAuth2UserProfile of(Map<String, Object> attributes);
 }

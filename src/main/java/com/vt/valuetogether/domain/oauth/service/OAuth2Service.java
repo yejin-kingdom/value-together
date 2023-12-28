@@ -26,13 +26,9 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest); // Oauth 서비스에서 가져온 유저 정보를 담고 있음
+        OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        String providerType =
-                userRequest
-                        .getClientRegistration() // ex) naver, google, github
-                        .getRegistrationId()
-                        .toUpperCase();
+        String providerType = userRequest.getClientRegistration().getRegistrationId().toUpperCase();
 
         String userNameAttributeName =
                 userRequest
@@ -40,13 +36,12 @@ public class OAuth2Service extends DefaultOAuth2UserService {
                         .getProviderDetails()
                         .getUserInfoEndpoint()
                         .getUserNameAttributeName();
-        // google = sub 가 고유값, naver = id 가 고유값
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         OAuth2UserProfile oauthUserProfile = OAuth2Attributes.extract(providerType, attributes);
 
-        User saveUser = userRepository.findByEmail(oauthUserProfile.getEmail());
+        User saveUser = userRepository.findByOauthId(oauthUserProfile.getOauthId());
 
         if (saveUser == null || saveUser.getProvider() == Provider.LOCAL) {
             save(oauthUserProfile);
@@ -62,13 +57,12 @@ public class OAuth2Service extends DefaultOAuth2UserService {
     }
 
     private void save(OAuth2UserProfile oauthUserProfile) {
-        //        String password = passwordEncoder.encode("oauth2Password"); // TODO: constant
         User user =
                 User.builder()
                         .username(oauthUserProfile.getName())
                         .email(oauthUserProfile.getEmail())
-                        .password("abcD1234@")
                         .profileImageUrl(oauthUserProfile.getImageUrl())
+                        .oauthId(oauthUserProfile.getOauthId())
                         .provider(oauthUserProfile.getProvider())
                         .role(Role.USER)
                         .build();
@@ -85,6 +79,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         customAttribute.put("provider", oauthUserProfile.getProvider());
         customAttribute.put("name", oauthUserProfile.getName());
         customAttribute.put("email", oauthUserProfile.getEmail());
+        customAttribute.put("oAuthId", oauthUserProfile.getOauthId());
         return customAttribute;
     }
 }

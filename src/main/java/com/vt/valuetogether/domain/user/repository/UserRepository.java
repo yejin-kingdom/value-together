@@ -9,5 +9,5 @@ public interface UserRepository {
 
     User save(User user);
 
-    User findByOAuthId(String oAuthId);
+    User findByOauthId(String oauthId);
 }

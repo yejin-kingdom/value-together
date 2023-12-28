@@ -10,15 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OAuth2UserProfile {
 
-    private String oAuthId;
+    private String oauthId;
     private String email;
     private String name;
     private String imageUrl;
     private Provider provider;
 
     @Builder
-    private OAuth2UserProfile(String oAuthId, String email, String name, String imageUrl, Provider provider) {
-        this.oAuthId = oAuthId;
+    private OAuth2UserProfile(
+            String oauthId, String email, String name, String imageUrl, Provider provider) {
+        this.oauthId = oauthId;
         this.email = email;
         this.name = name;
         this.imageUrl = imageUrl;
