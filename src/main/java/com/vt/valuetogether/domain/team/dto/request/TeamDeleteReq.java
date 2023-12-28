@@ -10,11 +10,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TeamDeleteReq {
-    private String teamName;
+    private Long teamId;
     private String username;
 
     @Builder
-    private TeamDeleteReq(String teamName) {
-        this.teamName = teamName;
+    private TeamDeleteReq(Long teamId) {
+        this.teamId = teamId;
     }
 }
