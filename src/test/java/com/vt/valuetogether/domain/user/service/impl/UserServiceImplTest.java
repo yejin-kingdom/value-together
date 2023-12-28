@@ -21,7 +21,6 @@ import com.vt.valuetogether.global.s3.S3Util;
 import com.vt.valuetogether.global.s3.S3Util.FilePath;
 import com.vt.valuetogether.infra.mail.MailUtil;
 import com.vt.valuetogether.test.UserTest;
-import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +31,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
@@ -241,12 +242,12 @@ class UserServiceImplTest implements UserTest {
                         .introduce(TEST_ANOTHER_USER_INTRODUCE)
                         .build();
 
+        String imageUrl = "images/image1.jpg";
+        Resource fileResource = new ClassPathResource(imageUrl);
+
         MultipartFile multipartFile =
                 new MockMultipartFile(
-                        "image",
-                        "image1.jpg",
-                        "image/jpeg",
-                        new FileInputStream("C:\\Users\\leeye\\image1.jpg"));
+                        "image", fileResource.getFilename(), "image/jpeg", fileResource.getInputStream());
 
         User UPDATED_USER =
                 User.builder()
