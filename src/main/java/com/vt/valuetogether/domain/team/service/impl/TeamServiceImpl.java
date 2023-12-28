@@ -2,8 +2,10 @@ package com.vt.valuetogether.domain.team.service.impl;
 
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.entity.Role;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
@@ -81,6 +83,38 @@ public class TeamServiceImpl implements TeamService {
                         });
 
         return new TeamDeleteRes();
+    }
+
+    @Override
+    public TeamEditRes editTeam(TeamEditReq req) {
+        TeamValidator.validate(req);
+
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        Team team = teamRepository.findByTeamId(req.getTeamId());
+        TeamValidator.validate(team);
+
+        Team findTeam = teamRepository.findByTeamName(req.getTeamName());
+        TeamValidator.checkIsDuplicateTeamName(findTeam);
+
+        team.getTeamRoleList().stream()
+                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
+                .findAny()
+                .ifPresentOrElse(
+                        t ->
+                                teamRepository.save(
+                                        Team.builder()
+                                                .teamId(team.getTeamId())
+                                                .teamName(req.getTeamName())
+                                                .teamDescription(req.getTeamDescription())
+                                                .backgroundColor(req.getBackgroundColor())
+                                                .build()),
+                        () -> {
+                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                        });
+
+        return new TeamEditRes();
     }
 
     @Mapper

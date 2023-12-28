@@ -5,6 +5,7 @@ import static com.vt.valuetogether.global.meta.ResultCode.INVALID_BACKGROUNDCOLO
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_TEAM;
 
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.global.exception.GlobalException;
 import java.util.regex.Pattern;
@@ -19,6 +20,12 @@ public class TeamValidator {
     }
 
     public static void validate(TeamCreateReq req) {
+        if (!checkIsValidateTeamBackgroundColor(req.getBackgroundColor())) {
+            throw new GlobalException(INVALID_BACKGROUNDCOLOR_PATTERN);
+        }
+    }
+
+    public static void validate(TeamEditReq req) {
         if (!checkIsValidateTeamBackgroundColor(req.getBackgroundColor())) {
             throw new GlobalException(INVALID_BACKGROUNDCOLOR_PATTERN);
         }
