@@ -43,15 +43,18 @@ class ChecklistServiceImplTest implements ChecklistTest {
     void checklist_수정() {
         // given
         Long checklistId = 1L;
-        String title = "title";
+        String title = "updatedTitle";
         ChecklistUpdateReq checklistUpdateReq =
                 ChecklistUpdateReq.builder().checklistId(checklistId).title(title).build();
         when(checklistRepository.findByChecklistId(any())).thenReturn(TEST_CHECKLIST);
+        when(checklistRepository.save(any())).thenReturn(TEST_UPDATED_CHECKLIST);
+
         // when
         checklistService.updateChecklist(checklistUpdateReq);
 
         // then
         verify(checklistRepository).findByChecklistId(any());
+        verify(checklistRepository).save(any());
     }
 
     @Test
