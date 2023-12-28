@@ -1,6 +1,5 @@
 package com.vt.valuetogether.domain.team.entity;
 
-import com.vt.valuetogether.domain.model.BaseEntity;
 import com.vt.valuetogether.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,19 +21,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
         name = "tb_team_role",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "team_id"})})
-public class TeamRole extends BaseEntity {
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "teamId"})})
+public class TeamRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamRoleId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
+    @JoinColumn(name = "teamId")
     private Team team;
 
     @Enumerated(value = EnumType.STRING)
@@ -43,7 +42,8 @@ public class TeamRole extends BaseEntity {
     private boolean isDeleted;
 
     @Builder
-    private TeamRole(User user, Team team, Role role, boolean isDeleted) {
+    private TeamRole(Long teamRoleId, User user, Team team, Role role, boolean isDeleted) {
+        this.teamRoleId = teamRoleId;
         this.user = user;
         this.team = team;
         this.role = role;
