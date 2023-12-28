@@ -1,5 +1,6 @@
 package com.vt.valuetogether.global.validator;
 
+import static com.vt.valuetogether.global.meta.ResultCode.DUPLICATED_TEAMNAME;
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_BACKGROUNDCOLOR_PATTERN;
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_TEAM;
 
@@ -29,5 +30,11 @@ public class TeamValidator {
 
     private static boolean checkIsValidateTeamBackgroundColor(String backgroundColor) {
         return Pattern.matches(TEAM_BACKGROUNDCOLOR_REGEX, backgroundColor);
+    }
+
+    public static void checkIsDuplicateTeamName(Team team) {
+        if (checkIsNull(team)) {
+            throw new GlobalException(DUPLICATED_TEAMNAME);
+        }
     }
 }

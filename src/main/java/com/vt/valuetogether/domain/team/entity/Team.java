@@ -31,14 +31,22 @@ public class Team extends BaseEntity {
 
     private String teamDescription;
     private String backgroundColor;
+    private boolean isDeleted;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<TeamRole> teamRoleList = new ArrayList<>();
 
     @Builder
-    private Team(String teamName, String teamDescription, String backgroundColor) {
+    private Team(
+            Long teamId,
+            String teamName,
+            String teamDescription,
+            String backgroundColor,
+            boolean isDeleted) {
+        this.teamId = teamId;
         this.teamName = teamName;
         this.teamDescription = teamDescription;
         this.backgroundColor = backgroundColor;
+        this.isDeleted = isDeleted;
     }
 }

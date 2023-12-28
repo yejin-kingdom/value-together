@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "tb_team_role")
+@Table(
+        name = "tb_team_role",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "team_id"})})
 public class TeamRole extends BaseEntity {
 
     @Id
@@ -27,20 +30,23 @@ public class TeamRole extends BaseEntity {
     private Long teamRoleId;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "teamId")
+    @JoinColumn(name = "team_id")
     private Team team;
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    private boolean isDeleted;
+
     @Builder
-    private TeamRole(User user, Team team, Role role) {
+    private TeamRole(User user, Team team, Role role, boolean isDeleted) {
         this.user = user;
         this.team = team;
         this.role = role;
+        this.isDeleted = isDeleted;
     }
 }

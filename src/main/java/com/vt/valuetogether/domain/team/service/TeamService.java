@@ -11,6 +11,8 @@ import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.global.exception.GlobalException;
+import com.vt.valuetogether.global.meta.ResultCode;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,9 @@ public class TeamService {
 
     public TeamCreateRes createTeam(TeamCreateReq req) {
         TeamValidator.validate(req);
+
+        Team findTeam = teamRepository.findByTeamName(req.getTeamName());
+        TeamValidator.checkIsDuplicateTeamName(findTeam);
 
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.validate(user);
@@ -53,14 +58,25 @@ public class TeamService {
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.validate(user);
 
-        Team team = teamRepository.findByTeamName(req.getTeamName());
+        Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.validate(team);
 
-        for (TeamRole t : team.getTeamRoleList()) {
-            if (t.getRole().equals(Role.LEADER) && t.getUser().equals(user)) {
-                teamRepository.deleteTeamByTeamId(team.getTeamId());
-            }
-        }
+        team.getTeamRoleList().stream()
+                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
+                .findAny()
+                .ifPresentOrElse(
+                        t ->
+                                teamRepository.save(
+                                        Team.builder()
+                                                .teamId(team.getTeamId())
+                                                .teamName(team.getTeamName())
+                                                .teamDescription(team.getTeamDescription())
+                                                .isDeleted(true)
+                                                .build()),
+                        () -> {
+                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                        });
+
         return new TeamDeleteRes();
     }
 
