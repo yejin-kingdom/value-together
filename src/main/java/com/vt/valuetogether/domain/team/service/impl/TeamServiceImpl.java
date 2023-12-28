@@ -16,6 +16,7 @@ import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.meta.ResultCode;
+import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import jakarta.transaction.Transactional;
@@ -70,6 +71,7 @@ public class TeamServiceImpl implements TeamService {
         TeamValidator.validate(team);
 
         List<TeamRole> teamRoleList = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
+        TeamRoleValidator.validate(teamRoleList);
 
         team.getTeamRoleList().stream()
                 .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
