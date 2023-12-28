@@ -6,6 +6,7 @@ import static com.vt.valuetogether.global.meta.ResultCode.INVALID_PASSWORD_PATTE
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_USERNAME_PATTERN;
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_USER;
 import static com.vt.valuetogether.global.meta.ResultCode.UNAUTHORIZED_EMAIL;
+
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
 import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
@@ -18,7 +19,7 @@ public class UserValidator {
 
     private static final String USERNAME_REGEX = "^[가-힣0-9a-zA-z]{2,8}$";
     private static final String PASSWORD_REGEX =
-        "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%#?&])[A-Za-z\\d@$!%*#?&]{8,15}$";
+            "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%#?&])[A-Za-z\\d@$!%*#?&]{8,15}$";
     private static final String EMAIL_REGEX = "\\w+@\\w+\\.\\w+(\\.\\w+)?";
 
     public static void validate(UserVerifyEmailReq req) {
@@ -39,7 +40,7 @@ public class UserValidator {
         }
     }
 
-    public static void validate(UserUpdateProfileReq req){
+    public static void validate(UserUpdateProfileReq req) {
         if (!checkIsValidateUsername(req.getUsername())) {
             throw new GlobalException(INVALID_USERNAME_PATTERN);
         }
@@ -48,8 +49,8 @@ public class UserValidator {
         }
     }
 
-    public static void validate(User user){
-        if(checkIsNull(user)){
+    public static void validate(User user) {
+        if (checkIsNull(user)) {
             throw new GlobalException(NOT_FOUND_USER);
         }
     }
