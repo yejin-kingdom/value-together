@@ -1,14 +1,16 @@
 package com.vt.valuetogether.domain.oauth.service;
 
+import static com.vt.valuetogether.domain.oauth.constant.OAuth2Constant.DEFAULT_NAME;
+
 import com.vt.valuetogether.domain.oauth.OAuth2Attributes;
-import com.vt.valuetogether.domain.oauth.dto.OAuth2UserProfile;
-import com.vt.valuetogether.domain.user.entity.Provider;
+import com.vt.valuetogether.domain.oauth.dto.request.OAuth2LoginReq;
 import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -39,12 +41,12 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        OAuth2UserProfile oauthUserProfile = OAuth2Attributes.extract(providerType, attributes);
+        OAuth2LoginReq oauthUserProfile = OAuth2Attributes.extract(providerType, attributes);
 
         User saveUser = userRepository.findByOauthId(oauthUserProfile.getOauthId());
 
-        if (saveUser == null || saveUser.getProvider() == Provider.LOCAL) {
-            save(oauthUserProfile);
+        if (saveUser == null) {
+            save(makeRandomName(), oauthUserProfile);
         }
 
         Map<String, Object> customAttribute =
@@ -56,14 +58,26 @@ public class OAuth2Service extends DefaultOAuth2UserService {
                 userNameAttributeName);
     }
 
-    private void save(OAuth2UserProfile oauthUserProfile) {
+    private String makeRandomName() {
+        String randomName;
+        do {
+            randomName = generateRandomName();
+        } while (userRepository.existsByUsername(randomName));
+        return randomName;
+    }
+
+    private String generateRandomName() {
+        return DEFAULT_NAME + UUID.randomUUID().toString().substring(0, 6);
+    }
+
+    private void save(String name, OAuth2LoginReq oAuth2LoginReq) {
         User user =
                 User.builder()
-                        .username(oauthUserProfile.getName())
-                        .email(oauthUserProfile.getEmail())
-                        .profileImageUrl(oauthUserProfile.getImageUrl())
-                        .oauthId(oauthUserProfile.getOauthId())
-                        .provider(oauthUserProfile.getProvider())
+                        .username(name)
+                        .email(oAuth2LoginReq.getEmail())
+                        .profileImageUrl(oAuth2LoginReq.getImageUrl())
+                        .oauthId(oAuth2LoginReq.getOauthId())
+                        .provider(oAuth2LoginReq.getProvider())
                         .role(Role.USER)
                         .build();
 
@@ -73,11 +87,10 @@ public class OAuth2Service extends DefaultOAuth2UserService {
     private Map<String, Object> customAttribute(
             Map<String, Object> attributes,
             String userNameAttributeName,
-            OAuth2UserProfile oauthUserProfile) {
+            OAuth2LoginReq oauthUserProfile) {
         Map<String, Object> customAttribute = new LinkedHashMap<>();
         customAttribute.put(userNameAttributeName, attributes.get(userNameAttributeName));
         customAttribute.put("provider", oauthUserProfile.getProvider());
-        customAttribute.put("name", oauthUserProfile.getName());
         customAttribute.put("email", oauthUserProfile.getEmail());
         customAttribute.put("oAuthId", oauthUserProfile.getOauthId());
         return customAttribute;
