@@ -45,6 +45,7 @@ public class User extends BaseEntity {
             String password,
             String email,
             String profileImageUrl,
+            String oAuthId,
             Role role,
             Provider provider) {
         this.userId = userId;
@@ -52,6 +53,7 @@ public class User extends BaseEntity {
         this.password = password;
         this.email = email;
         this.profileImageUrl = profileImageUrl;
+        this.oAuthId = oAuthId;
         this.role = role;
         this.provider = provider;
     }
