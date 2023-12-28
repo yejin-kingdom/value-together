@@ -15,7 +15,7 @@ public enum OAuth2Attributes {
         public OAuth2UserProfile of(Map<String, Object> attributes) {
             return OAuth2UserProfile.builder()
                     .email((String) attributes.get("email"))
-                    .name((String) attributes.get("name"))
+                    .name((String) attributes.get("login"))
                     .imageUrl((String) attributes.get("avatar_url"))
                     .provider(Provider.GITHUB)
                     .build();
@@ -23,11 +23,12 @@ public enum OAuth2Attributes {
     },
     NAVER("NAVER") {
         @Override
+        @SuppressWarnings("unchecked")
         public OAuth2UserProfile of(Map<String, Object> attributes) {
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
             return OAuth2UserProfile.builder()
                     .email((String) response.get("email"))
-                    .name((String) response.get("name"))
+                    .name((String) response.get("nickname"))
                     .imageUrl((String) response.get("profile_image"))
                     .provider(Provider.NAVER)
                     .build();
