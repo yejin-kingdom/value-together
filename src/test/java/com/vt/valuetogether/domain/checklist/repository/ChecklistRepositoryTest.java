@@ -28,4 +28,31 @@ class ChecklistRepositoryTest implements ChecklistTest {
         // then
         assertThat(checklist.getTitle()).isEqualTo(TEST_TITLE);
     }
+
+    @Test
+    @DisplayName("id로 checklist 조회 테스트")
+    void id_checklist_조회() {
+        // given
+        Checklist saveChecklist = checklistRepository.save(TEST_CHECKLIST);
+
+        // when
+        Checklist checklist = checklistRepository.findByChecklistId(saveChecklist.getChecklistId());
+
+        // then
+        assertThat(checklist.getTitle()).isEqualTo(saveChecklist.getTitle());
+    }
+
+    @Test
+    @DisplayName("checklist 삭제 테스트")
+    void checklist_삭제() {
+        // given
+        Checklist saveChecklist = checklistRepository.save(TEST_CHECKLIST);
+
+        // when
+        checklistRepository.delete(TEST_CHECKLIST);
+        Checklist checklist = checklistRepository.findByChecklistId(saveChecklist.getChecklistId());
+
+        // then
+        assertThat(checklist).isEqualTo(null);
+    }
 }

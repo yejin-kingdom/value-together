@@ -1,16 +1,14 @@
 package com.vt.valuetogether.domain.user.service;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdateIntroduceReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdatePasswordReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdateUsernameReq;
+import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdateIntroduceRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdatePasswordRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdateUsernameRes;
+import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 
 public interface UserService {
     UserVerifyEmailRes sendEmail(UserVerifyEmailReq req);
@@ -19,9 +17,7 @@ public interface UserService {
 
     UserSignupRes signup(UserSignupReq req);
 
-    UserUpdateUsernameRes updateUsername(UserUpdateUsernameReq req);
+    UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req);
 
-    UserUpdateIntroduceRes updateIntroduce(UserUpdateIntroduceReq req);
-
-    UserUpdatePasswordRes updatePassword(UserUpdatePasswordReq req);
+    UserUpdateProfileRes updateProfile(UserUpdateProfileReq req);
 }

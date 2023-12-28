@@ -1,22 +1,21 @@
 package com.vt.valuetogether.domain.user.dto.request;
 
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserUpdateUsernameReq {
+public class UserLocalLoginReq {
+
     private String username;
-    private Long userId;
+
+    private String password;
 
     @Builder
-    private UserUpdateUsernameReq(String username, Long userId) {
+    private UserLocalLoginReq(String username, String password) {
         this.username = username;
-        this.userId = userId;
+        this.password = password;
     }
 }

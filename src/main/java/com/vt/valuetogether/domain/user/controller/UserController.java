@@ -1,18 +1,17 @@
 package com.vt.valuetogether.domain.user.controller;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdateIntroduceReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdatePasswordReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdateUsernameReq;
+import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdateIntroduceRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdatePasswordRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdateUsernameRes;
+import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.service.UserService;
 import com.vt.valuetogether.global.response.RestResponse;
+import com.vt.valuetogether.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,28 +45,20 @@ public class UserController {
         return RestResponse.success(userService.signup(req));
     }
 
-    // 프로필 수정
-    @PatchMapping("/name")
-    public RestResponse<UserUpdateUsernameRes> updateUsername(
-        @RequestBody UserUpdateUsernameReq req,
+    @PostMapping("/password/verify")
+    public RestResponse<UserVerifyPasswordRes> verifyPassword(
+        @RequestBody UserVerifyPasswordReq req,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         req.setUserId(userDetails.getUser().getUserId());
-        return RestResponse.success(userService.updateUsername(req));
+        return RestResponse.success(userService.verifyPassword(req));
     }
 
-    @PatchMapping("/introduce")
-    public RestResponse<UserUpdateIntroduceRes> updateIntroduce(
-        @RequestBody UserUpdateIntroduceReq req,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PatchMapping()
+    public RestResponse<UserUpdateProfileRes> updateProfile(
+        @RequestBody UserUpdateProfileReq req,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         req.setUserId(userDetails.getUser().getUserId());
-        return RestResponse.success(userService.updateIntroduce(req));
-    }
-
-    @PatchMapping("/password")
-    public RestResponse<UserUpdatePasswordRes> updateIntroduce(
-        @RequestBody UserUpdatePasswordReq req,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        req.setUserId(userDetails.getUser().getUserId());
-        return RestResponse.success(userService.updatePassword(req));
+        return RestResponse.success(userService.updateProfile(req));
     }
 }

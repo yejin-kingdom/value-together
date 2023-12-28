@@ -1,17 +1,16 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdateIntroduceReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdatePasswordReq;
-import com.vt.valuetogether.domain.user.dto.request.UserUpdateUsernameReq;
+import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdateIntroduceRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdatePasswordRes;
-import com.vt.valuetogether.domain.user.dto.response.UserUpdateUsernameRes;
+import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
+import com.vt.valuetogether.domain.user.entity.Provider;
 import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
@@ -32,13 +31,13 @@ public class UserServiceImpl implements UserService {
 
     private final MailUtil mailUtil;
 
-    private static final String EMAIL_AUTHORIZATION = "이메일 인증";
+    private static final String EMAIL_AUTHENTICATION = "이메일 인증";
 
     @Override
     public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
         UserValidator.validate(req);
 
-        mailUtil.sendMessage(req.getEmail(), EMAIL_AUTHORIZATION);
+        mailUtil.sendMessage(req.getEmail(), EMAIL_AUTHENTICATION);
 
         return new UserVerifyEmailRes();
     }
@@ -64,6 +63,7 @@ public class UserServiceImpl implements UserService {
                         .username(req.getUsername())
                         .password(passwordEncoder.encode(req.getPassword()))
                         .email(req.getEmail())
+                        .provider(Provider.LOCAL)
                         .role(Role.USER)
                         .build());
 
@@ -71,62 +71,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdateUsernameRes updateUsername(UserUpdateUsernameReq req) {
+    public UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req){
+        User savedUser = getUser(req.getUserId());
+        boolean isMatched = passwordEncoder.matches(req.getPassword(), savedUser.getPassword());
+
+        return UserVerifyPasswordRes.builder().isMatched(isMatched).build();
+    }
+
+    @Override
+    public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req){
         User savedUser = getUser(req.getUserId());
         UserValidator.validate(req);
 
-        User findUser = userRepository.findByUsername(req.getUsername());
-        UserValidator.checkDuplicatedUsername(findUser);
+        if(!req.getUsername().equals(savedUser.getUsername())) {
+            UserValidator.checkDuplicatedUsername(userRepository.findByUsername(req.getUsername()));
+        }
 
         userRepository.save(
             User.builder()
                 .userId(savedUser.getUserId())
                 .username(req.getUsername())
-                .password(savedUser.getPassword())
-                .email(savedUser.getEmail())
-                .introduce(savedUser.getIntroduce())
-                .profileImageUrl(savedUser.getProfileImageUrl())
-                .role(Role.USER)
-                .build());
-
-        return new UserUpdateUsernameRes();
-    }
-
-    @Override
-    public UserUpdateIntroduceRes updateIntroduce(UserUpdateIntroduceReq req) {
-        User savedUser = getUser(req.getUserId());
-
-        userRepository.save(
-            User.builder()
-                .userId(savedUser.getUserId())
-                .username(savedUser.getUsername())
-                .password(savedUser.getPassword())
+                .password(passwordEncoder.encode(req.getPassword()))
                 .email(savedUser.getEmail())
                 .introduce(req.getIntroduce())
-                .profileImageUrl(savedUser.getProfileImageUrl())
+                .profileImageUrl(req.getProfileImageUrl())
                 .build());
 
-        return new UserUpdateIntroduceRes();
-    }
-
-    @Override
-    public UserUpdatePasswordRes updatePassword(UserUpdatePasswordReq req) {
-        User savedUser = getUser(req.getUserId());
-
-        UserValidator.validate(req);
-        UserValidator.verifyPassword(passwordEncoder.encode(req.getPassword()), savedUser.getPassword());
-
-        userRepository.save(
-            User.builder()
-                .userId(savedUser.getUserId())
-                .username(savedUser.getUsername())
-                .password(passwordEncoder.encode(req.getNewPassword()))
-                .email(savedUser.getEmail())
-                .introduce(savedUser.getIntroduce())
-                .profileImageUrl(savedUser.getProfileImageUrl())
-                .build());
-
-        return new UserUpdatePasswordRes();
+        return new UserUpdateProfileRes();
     }
 
     private void checkAuthorizedEmail(String email) {

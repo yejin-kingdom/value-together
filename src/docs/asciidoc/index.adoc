@@ -67,3 +67,5 @@ include::{snippets}/sample-controller-test/샘플_단건_조회/auto-section.ado
 == checklist API
 
 include::{snippets}/checklist-controller-test/checklist_저장/auto-section.adoc[]
+include::{snippets}/checklist-controller-test/checklist_수정/auto-section.adoc[]
+include::{snippets}/checklist-controller-test/checklist_삭제/auto-section.adoc[]

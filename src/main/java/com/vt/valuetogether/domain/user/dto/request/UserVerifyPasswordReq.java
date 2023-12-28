@@ -9,15 +9,13 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserUpdatePasswordReq {
-    private String password;
-    private String newPassword;
+public class UserVerifyPasswordReq {
     private Long userId;
+    private String password;
 
     @Builder
-    private UserUpdatePasswordReq(String password, String newPassword, Long userId) {
-        this.password = password;
-        this.newPassword = newPassword;
+    private UserVerifyPasswordReq(Long userId, String password) {
         this.userId = userId;
+        this.password = password;
     }
 }

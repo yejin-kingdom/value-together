@@ -1,6 +1,5 @@
 package com.vt.valuetogether.domain.user.service;
 
-import com.vt.valuetogether.domain.user.dto.response.UserUpdateUsernameRes;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
