@@ -14,6 +14,7 @@ import com.vt.valuetogether.global.validator.CardValidator;
 import com.vt.valuetogether.infra.s3.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -24,6 +25,7 @@ public class CardServiceImpl implements CardService {
     private final Double NEXT_SEQUENCE = 1.0;
 
     @Override
+    @Transactional
     public CardSaveRes saveCard(CardSaveReq cardSaveReq, MultipartFile multipartFile) {
         Double sequence = getMaxSequence(cardSaveReq.getCategoryId());
         String fileUrl = s3Util.uploadFile(multipartFile, CARD);
@@ -44,6 +46,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @Transactional
     public CardUpdateRes updateCard(CardUpdateReq cardUpdateReq, MultipartFile multipartFile) {
         Card prevCard = cardRepository.findByCardId(cardUpdateReq.getCardId());
         CardValidator.validate(prevCard);
