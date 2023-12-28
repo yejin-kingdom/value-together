@@ -9,10 +9,9 @@ import com.vt.valuetogether.domain.checklist.dto.response.ChecklistUpdateRes;
 import com.vt.valuetogether.domain.checklist.entity.Checklist;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
 import com.vt.valuetogether.domain.checklist.service.ChecklistService;
+import com.vt.valuetogether.domain.checklist.service.ChecklistServiceMapper;
 import com.vt.valuetogether.global.validator.ChecklistValidator;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -49,12 +48,5 @@ public class ChecklistServiceImpl implements ChecklistService {
         ChecklistValidator.validate(checklist);
         checklistRepository.delete(checklist);
         return new ChecklistDeleteRes();
-    }
-
-    @Mapper
-    public interface ChecklistServiceMapper {
-        ChecklistServiceMapper INSTANCE = Mappers.getMapper(ChecklistServiceMapper.class);
-
-        ChecklistSaveRes toChecklistSaveRes(Checklist checklist);
     }
 }
