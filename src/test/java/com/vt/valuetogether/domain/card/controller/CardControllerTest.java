@@ -12,6 +12,7 @@ import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
+import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.service.CardService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -96,8 +97,8 @@ class CardControllerTest extends BaseMvcTest {
                 new MockMultipartFile(
                         "cardUpdateReq", "json", "application/json", json.getBytes(StandardCharsets.UTF_8));
 
-        CardSaveRes cardSaveRes = CardSaveRes.builder().cardId(cardId).build();
-        when(cardService.saveCard(any(), any())).thenReturn(cardSaveRes);
+        CardUpdateRes cardUpdateRes = new CardUpdateRes();
+        when(cardService.updateCard(any(), any())).thenReturn(cardUpdateRes);
         this.mockMvc
                 .perform(multipart(PATCH, "/api/v1/cards").file(multipartFile).file(req))
                 .andDo(print())
