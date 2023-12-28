@@ -70,6 +70,7 @@ class ChecklistServiceImplTest implements ChecklistTest {
         checklistService.deleteChecklist(checklistDeleteReq);
 
         // then
+        verify(checklistRepository).findByChecklistId(any());
         verify(checklistRepository).delete(any());
     }
 }
