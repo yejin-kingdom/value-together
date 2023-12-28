@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 public class RedisUtil {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisTemplate<String, Object> tokenBlackList;
 
     public void set(String key, Object o, int minutes) {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(o.getClass()));
@@ -28,14 +27,5 @@ public class RedisUtil {
 
     public boolean hasKey(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
-    }
-
-    public void addBlackList(String key, Object o, int minutes) {
-        tokenBlackList.setValueSerializer(new Jackson2JsonRedisSerializer<>(o.getClass()));
-        tokenBlackList.opsForValue().set(key, o, minutes, TimeUnit.MINUTES);
-    }
-
-    public boolean containBlackList(String key) {
-        return Boolean.TRUE.equals(tokenBlackList.hasKey(key));
     }
 }

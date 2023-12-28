@@ -1,18 +1,29 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.vt.valuetogether.domain.user.dto.request.UserCheckDuplicateUsernameReq;
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
+import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
+import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
+import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
+import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
+import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.infra.mail.MailUtil;
+import com.vt.valuetogether.infra.s3.S3Util;
+import com.vt.valuetogether.infra.s3.S3Util.FilePath;
 import com.vt.valuetogether.test.UserTest;
+import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,15 +33,22 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest implements UserTest {
+
     @Mock UserRepository userRepository;
 
     @Mock PasswordEncoder passwordEncoder;
 
     @Mock MailUtil mailUtil;
+
+    @Mock S3Util s3Util;
 
     @InjectMocks UserServiceImpl userService;
 
@@ -77,7 +95,7 @@ class UserServiceImplTest implements UserTest {
             // given
             UserSignupReq req =
                     UserSignupReq.builder()
-                            .username("aaa")
+                            .username("a")
                             .password(TEST_USER_PASSWORD)
                             .email(TEST_USER_EMAIL)
                             .build();
@@ -194,5 +212,86 @@ class UserServiceImplTest implements UserTest {
 
         verify(userRepository).save(argumentCaptor.capture());
         assertEquals(TEST_USER_NAME, argumentCaptor.getValue().getUsername());
+    }
+
+    @Test
+    @DisplayName("사용자 이름 중복 확인")
+    void checkDuplicateUsernameTest() {
+        // given
+        UserCheckDuplicateUsernameReq req =
+                UserCheckDuplicateUsernameReq.builder().username(TEST_ANOTHER_USER_NAME).build();
+
+        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_ANOTHER_USER);
+
+        // when
+        UserCheckDuplicateUsernameRes res = userService.checkDuplicateUsername(req);
+
+        // then
+        assertTrue(res.isDuplicated());
+    }
+
+    @Test
+    @DisplayName("비밀번호 확인 - 일치")
+    void verifyPasswordTest() {
+        // given
+        UserVerifyPasswordReq req =
+                UserVerifyPasswordReq.builder().userId(TEST_USER_ID).password(TEST_USER_PASSWORD).build();
+
+        given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
+        given(passwordEncoder.matches(req.getPassword(), TEST_USER_PASSWORD))
+                .willReturn(req.getPassword().equals(TEST_USER_PASSWORD));
+
+        // when
+        UserVerifyPasswordRes res = userService.verifyPassword(req);
+
+        // then
+        assertTrue(res.isMatched());
+    }
+
+    @Test
+    @DisplayName("프로필 수정")
+    void updateProfileTest() throws IOException {
+        // given
+        UserUpdateProfileReq req =
+                UserUpdateProfileReq.builder()
+                        .userId(TEST_USER_ID)
+                        .username(TEST_ANOTHER_USER_NAME)
+                        .password(TEST_ANOTHER_USER_PASSWORD)
+                        .introduce(TEST_ANOTHER_USER_INTRODUCE)
+                        .build();
+
+        String imageUrl = "images/image1.jpg";
+        Resource fileResource = new ClassPathResource(imageUrl);
+
+        MultipartFile multipartFile =
+                new MockMultipartFile(
+                        "image", fileResource.getFilename(), "image/jpeg", fileResource.getInputStream());
+
+        User UPDATED_USER =
+                User.builder()
+                        .userId(TEST_USER_ID)
+                        .username(TEST_ANOTHER_USER_NAME)
+                        .password(TEST_ANOTHER_USER_PASSWORD)
+                        .email(TEST_USER_EMAIL)
+                        .introduce(TEST_ANOTHER_USER_INTRODUCE)
+                        .profileImageUrl(TEST_ANOTHER_USER_PROFILE_URL)
+                        .role(Role.USER)
+                        .build();
+
+        given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
+        given(passwordEncoder.encode(req.getPassword())).willReturn(req.getPassword());
+        given(s3Util.uploadFile(multipartFile, FilePath.PROFILE))
+                .willReturn(TEST_ANOTHER_USER_PROFILE_URL);
+        given(userRepository.save(any(User.class))).willReturn(UPDATED_USER);
+
+        // when
+        userService.updateProfile(req, multipartFile);
+
+        // then
+        verify(userRepository).save(argumentCaptor.capture());
+        assertEquals(TEST_ANOTHER_USER_NAME, argumentCaptor.getValue().getUsername());
+        assertEquals(TEST_ANOTHER_USER_PASSWORD, argumentCaptor.getValue().getPassword());
+        assertEquals(TEST_ANOTHER_USER_INTRODUCE, argumentCaptor.getValue().getIntroduce());
+        assertEquals(TEST_ANOTHER_USER_PROFILE_URL, argumentCaptor.getValue().getProfileImageUrl());
     }
 }
