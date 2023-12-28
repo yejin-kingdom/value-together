@@ -6,7 +6,6 @@ import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
 import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.service.CardService;
 import com.vt.valuetogether.global.response.RestResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,8 +30,7 @@ public class CardController {
     @PatchMapping
     public RestResponse<CardUpdateRes> updateCard(
             @RequestPart CardUpdateReq cardUpdateReq,
-            @RequestPart(required = false) MultipartFile multipartFile)
-            throws IOException {
+            @RequestPart(required = false) MultipartFile multipartFile) {
         return RestResponse.success(cardService.updateCard(cardUpdateReq, multipartFile));
     }
 }
