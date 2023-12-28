@@ -19,6 +19,7 @@ import com.vt.valuetogether.global.meta.ResultCode;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -68,33 +69,38 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.validate(team);
 
-        TeamRole teamRole = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
+        List<TeamRole> teamRoleList = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
 
         team.getTeamRoleList().stream()
                 .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
                 .findAny()
                 .ifPresentOrElse(
-                        t -> {
-                            teamRepository.save(
-                                    Team.builder()
-                                            .teamId(team.getTeamId())
-                                            .teamName(team.getTeamName())
-                                            .teamDescription(team.getTeamDescription())
-                                            .isDeleted(true)
-                                            .build());
-
-                            teamRoleRepository.save(
-                                    TeamRole.builder()
-                                            .teamRoleId(teamRole.getTeamRoleId())
-                                            .role(teamRole.getRole())
-                                            .team(team)
-                                            .user(user)
-                                            .isDeleted(true)
-                                            .build());
-                        },
+                        t ->
+                                teamRepository.save(
+                                        Team.builder()
+                                                .teamId(team.getTeamId())
+                                                .teamName(team.getTeamName())
+                                                .teamDescription(team.getTeamDescription())
+                                                .isDeleted(true)
+                                                .build()),
                         () -> {
-                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                            throw new GlobalException(ResultCode.FORBIDDEN_TEAM_LEADER);
                         });
+
+        List<TeamRole> allNewTeamRoleList =
+                teamRoleList.stream()
+                        .map(
+                                t ->
+                                        TeamRole.builder()
+                                                .teamRoleId(t.getTeamRoleId())
+                                                .role(t.getRole())
+                                                .team(team)
+                                                .user(user)
+                                                .isDeleted(true)
+                                                .build())
+                        .toList();
+
+        teamRoleRepository.saveAll(allNewTeamRoleList);
 
         return new TeamDeleteRes();
     }
@@ -126,7 +132,7 @@ public class TeamServiceImpl implements TeamService {
                                                 .backgroundColor(req.getBackgroundColor())
                                                 .build()),
                         () -> {
-                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                            throw new GlobalException(ResultCode.FORBIDDEN_TEAM_LEADER);
                         });
 
         return new TeamEditRes();
