@@ -17,8 +17,12 @@ import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.global.exception.GlobalException;
+import com.vt.valuetogether.global.s3.S3Util;
+import com.vt.valuetogether.global.s3.S3Util.FilePath;
 import com.vt.valuetogether.infra.mail.MailUtil;
 import com.vt.valuetogether.test.UserTest;
+import java.io.FileInputStream;
+import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,25 +32,24 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest implements UserTest {
 
-    @Mock
-    UserRepository userRepository;
+    @Mock UserRepository userRepository;
 
-    @Mock
-    PasswordEncoder passwordEncoder;
+    @Mock PasswordEncoder passwordEncoder;
 
-    @Mock
-    MailUtil mailUtil;
+    @Mock MailUtil mailUtil;
 
-    @InjectMocks
-    UserServiceImpl userService;
+    @Mock S3Util s3Util;
 
-    @Captor
-    ArgumentCaptor<User> argumentCaptor;
+    @InjectMocks UserServiceImpl userService;
+
+    @Captor ArgumentCaptor<User> argumentCaptor;
 
     @Nested
     @DisplayName("이메일 인증 관련 테스트")
@@ -88,19 +91,19 @@ class UserServiceImplTest implements UserTest {
         void usernameTest() {
             // given
             UserSignupReq req =
-                UserSignupReq.builder()
-                    .username("aaa")
-                    .password(TEST_USER_PASSWORD)
-                    .email(TEST_USER_EMAIL)
-                    .build();
+                    UserSignupReq.builder()
+                            .username("a")
+                            .password(TEST_USER_PASSWORD)
+                            .email(TEST_USER_EMAIL)
+                            .build();
 
             // when
             GlobalException exception =
-                assertThrows(
-                    GlobalException.class,
-                    () -> {
-                        userService.signup(req);
-                    });
+                    assertThrows(
+                            GlobalException.class,
+                            () -> {
+                                userService.signup(req);
+                            });
 
             // then
             assertEquals("username 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
@@ -111,19 +114,19 @@ class UserServiceImplTest implements UserTest {
         void passwordTest() {
             // given
             UserSignupReq req =
-                UserSignupReq.builder()
-                    .username(TEST_USER_NAME)
-                    .password("aaa")
-                    .email(TEST_USER_EMAIL)
-                    .build();
+                    UserSignupReq.builder()
+                            .username(TEST_USER_NAME)
+                            .password("aaa")
+                            .email(TEST_USER_EMAIL)
+                            .build();
 
             // when
             GlobalException exception =
-                assertThrows(
-                    GlobalException.class,
-                    () -> {
-                        userService.signup(req);
-                    });
+                    assertThrows(
+                            GlobalException.class,
+                            () -> {
+                                userService.signup(req);
+                            });
 
             // then
             assertEquals("password 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
@@ -134,19 +137,19 @@ class UserServiceImplTest implements UserTest {
         void emailTest() {
             // given
             UserSignupReq req =
-                UserSignupReq.builder()
-                    .username(TEST_USER_NAME)
-                    .password(TEST_USER_PASSWORD)
-                    .email("aaa@aa")
-                    .build();
+                    UserSignupReq.builder()
+                            .username(TEST_USER_NAME)
+                            .password(TEST_USER_PASSWORD)
+                            .email("aaa@aa")
+                            .build();
 
             // when
             GlobalException exception =
-                assertThrows(
-                    GlobalException.class,
-                    () -> {
-                        userService.signup(req);
-                    });
+                    assertThrows(
+                            GlobalException.class,
+                            () -> {
+                                userService.signup(req);
+                            });
 
             // then
             assertEquals("email 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
@@ -158,21 +161,21 @@ class UserServiceImplTest implements UserTest {
     void duplicatedUsernameTest() {
         // given
         UserSignupReq req =
-            UserSignupReq.builder()
-                .username(TEST_USER_NAME)
-                .password(TEST_USER_PASSWORD)
-                .email(TEST_USER_EMAIL)
-                .build();
+                UserSignupReq.builder()
+                        .username(TEST_USER_NAME)
+                        .password(TEST_USER_PASSWORD)
+                        .email(TEST_USER_EMAIL)
+                        .build();
 
         given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(TEST_USER);
 
         // when
         GlobalException exception =
-            assertThrows(
-                GlobalException.class,
-                () -> {
-                    userService.signup(req);
-                });
+                assertThrows(
+                        GlobalException.class,
+                        () -> {
+                            userService.signup(req);
+                        });
 
         // then
         assertEquals("중복된 username 입니다.", exception.getResultCode().getMessage());
@@ -183,14 +186,14 @@ class UserServiceImplTest implements UserTest {
     void signupTest() {
         // given
         UserSignupReq req =
-            UserSignupReq.builder()
-                .username(TEST_USER_NAME)
-                .password(TEST_USER_PASSWORD)
-                .email(TEST_USER_EMAIL)
-                .build();
+                UserSignupReq.builder()
+                        .username(TEST_USER_NAME)
+                        .password(TEST_USER_PASSWORD)
+                        .email(TEST_USER_EMAIL)
+                        .build();
 
         EmailAuth emailAuth =
-            EmailAuth.builder().email(TEST_USER_EMAIL).code("aaa").isChecked(true).build();
+                EmailAuth.builder().email(TEST_USER_EMAIL).code("aaa").isChecked(true).build();
 
         given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(null);
         given(userRepository.save(any(User.class))).willReturn(TEST_USER);
@@ -210,15 +213,14 @@ class UserServiceImplTest implements UserTest {
 
     @Test
     @DisplayName("비밀번호 확인 - 일치")
-    void verifyPasswordTest(){
+    void verifyPasswordTest() {
         // given
-        UserVerifyPasswordReq req = UserVerifyPasswordReq.builder()
-            .userId(TEST_USER_ID)
-            .password(TEST_USER_PASSWORD)
-            .build();
+        UserVerifyPasswordReq req =
+                UserVerifyPasswordReq.builder().userId(TEST_USER_ID).password(TEST_USER_PASSWORD).build();
 
         given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
-        given(passwordEncoder.matches(req.getPassword(), TEST_USER_PASSWORD)).willReturn(req.getPassword().equals(TEST_USER_PASSWORD));
+        given(passwordEncoder.matches(req.getPassword(), TEST_USER_PASSWORD))
+                .willReturn(req.getPassword().equals(TEST_USER_PASSWORD));
 
         // when
         UserVerifyPasswordRes res = userService.verifyPassword(req);
@@ -229,35 +231,43 @@ class UserServiceImplTest implements UserTest {
 
     @Test
     @DisplayName("프로필 수정")
-    void updateProfileTest() {
+    void updateProfileTest() throws IOException {
         // given
-        UserUpdateProfileReq req = UserUpdateProfileReq.builder()
-            .userId(TEST_USER_ID)
-            .username(TEST_ANOTHER_USER_NAME)
-            .password(TEST_ANOTHER_USER_PASSWORD)
-            .introduce(TEST_ANOTHER_USER_INTRODUCE)
-            .profileImageUrl(TEST_ANOTHER_USER_PROFILE_URL)
-            .build();
+        UserUpdateProfileReq req =
+                UserUpdateProfileReq.builder()
+                        .userId(TEST_USER_ID)
+                        .username(TEST_ANOTHER_USER_NAME)
+                        .password(TEST_ANOTHER_USER_PASSWORD)
+                        .introduce(TEST_ANOTHER_USER_INTRODUCE)
+                        .build();
 
+        MultipartFile multipartFile =
+                new MockMultipartFile(
+                        "image",
+                        "image1.jpg",
+                        "image/jpeg",
+                        new FileInputStream("C:\\Users\\leeye\\image1.jpg"));
 
         User UPDATED_USER =
-            User.builder()
-                .userId(TEST_USER_ID)
-                .username(TEST_ANOTHER_USER_NAME)
-                .password(TEST_ANOTHER_USER_PASSWORD)
-                .email(TEST_USER_EMAIL)
-                .introduce(TEST_ANOTHER_USER_INTRODUCE)
-                .profileImageUrl(TEST_ANOTHER_USER_PROFILE_URL)
-                .role(Role.USER)
-                .build();
+                User.builder()
+                        .userId(TEST_USER_ID)
+                        .username(TEST_ANOTHER_USER_NAME)
+                        .password(TEST_ANOTHER_USER_PASSWORD)
+                        .email(TEST_USER_EMAIL)
+                        .introduce(TEST_ANOTHER_USER_INTRODUCE)
+                        .profileImageUrl(TEST_ANOTHER_USER_PROFILE_URL)
+                        .role(Role.USER)
+                        .build();
 
         given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
         given(userRepository.findByUsername(req.getUsername())).willReturn(null);
         given(passwordEncoder.encode(req.getPassword())).willReturn(req.getPassword());
+        given(s3Util.uploadFile(multipartFile, FilePath.PROFILE))
+                .willReturn(TEST_ANOTHER_USER_PROFILE_URL);
         given(userRepository.save(any(User.class))).willReturn(UPDATED_USER);
 
         // when
-        userService.updateProfile(req);
+        userService.updateProfile(req, multipartFile);
 
         // then
         verify(userRepository).save(argumentCaptor.capture());

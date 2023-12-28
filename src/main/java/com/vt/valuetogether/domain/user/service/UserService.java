@@ -9,6 +9,7 @@ import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     UserVerifyEmailRes sendEmail(UserVerifyEmailReq req);
@@ -19,5 +20,5 @@ public interface UserService {
 
     UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req);
 
-    UserUpdateProfileRes updateProfile(UserUpdateProfileReq req);
+    UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile);
 }

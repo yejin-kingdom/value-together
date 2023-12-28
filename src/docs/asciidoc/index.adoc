@@ -102,3 +102,9 @@ endif::[]
 include::{snippets}/checklist-controller-test/checklist_저장/auto-section.adoc[]
 include::{snippets}/checklist-controller-test/checklist_수정/auto-section.adoc[]
 include::{snippets}/checklist-controller-test/checklist_삭제/auto-section.adoc[]
+
+== task API
+
+include::{snippets}/task-controller-test/task_저장/auto-section.adoc[]
+include::{snippets}/task-controller-test/task_수정/auto-section.adoc[]
+include::{snippets}/task-controller-test/task_삭제/auto-section.adoc[]

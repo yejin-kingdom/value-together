@@ -87,5 +87,4 @@ public class UserValidator {
     private static boolean checkIsValidateEmail(String email) {
         return Pattern.matches(EMAIL_REGEX, email);
     }
-
 }

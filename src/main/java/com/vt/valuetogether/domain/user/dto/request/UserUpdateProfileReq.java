@@ -14,15 +14,12 @@ public class UserUpdateProfileReq {
     private String username;
     private String password;
     private String introduce;
-    private String profileImageUrl;
 
     @Builder
-    private UserUpdateProfileReq(Long userId, String username, String password, String introduce,
-        String profileImageUrl) {
+    private UserUpdateProfileReq(Long userId, String username, String password, String introduce) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.introduce = introduce;
-        this.profileImageUrl = profileImageUrl;
     }
 }

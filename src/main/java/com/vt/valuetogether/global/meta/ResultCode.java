@@ -14,6 +14,8 @@ public enum ResultCode {
     // 글로벌 1000번대
     SYSTEM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 1000, "알 수 없는 에러가 발생했습니다."),
     ACCESS_DENY(HttpStatus.FORBIDDEN, 1001, "접근 권한이 없습니다."),
+    NOT_FOUND_FILE(HttpStatus.NOT_FOUND, 1002, "해당 파일을 찾을 수 없습니다."),
+    NULL_FILE_TYPE(HttpStatus.BAD_REQUEST, 1003, "해당 파일의 확장자를 찾을 수 없습니다."),
 
     // 유저 2000번대
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 2000, "존재하지 않는 유저입니다."),
@@ -28,9 +30,13 @@ public enum ResultCode {
     UNAUTHORIZED_EMAIL(HttpStatus.UNAUTHORIZED, 2009, "인증 완료되지 않은 email 입니다."),
     INVALID_CODE(HttpStatus.BAD_REQUEST, 2010, "인증코드가 일치하지 않습니다."),
     INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, 2011, "올바르지 않은 로그인 접근입니다."),
+    INVALID_PROFILE_IMAGE_FILE(HttpStatus.BAD_REQUEST, 2012, "이미지 파일만 업로드 가능합니다."),
 
     // 팀 3000번대
     NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 팀입니다."),
+    INVALID_BACKGROUNDCOLOR_PATTERN(HttpStatus.BAD_REQUEST, 3001, "배경 색상 형식에 맞지 않습니다."),
+    DUPLICATED_TEAMNAME(HttpStatus.BAD_REQUEST, 3002, "중복된 팀 이름 입니다."),
+    FORBBIDEN_TEAM_LEADER(HttpStatus.FORBIDDEN, 3003, "팀의 리더만 해당 작업을 수행할 수 있습니다."),
 
     // 카테고리 4000번대
 
@@ -39,8 +45,10 @@ public enum ResultCode {
     // 작업자 6000번대
 
     // 체크리스트 7000번대
-    NOT_FOUND_CHECKLIST(HttpStatus.NOT_FOUND, 7000, "체크리스트를 찾을 수 없습니다.");
+    NOT_FOUND_CHECKLIST(HttpStatus.NOT_FOUND, 7000, "체크리스트를 찾을 수 없습니다."),
     // 할일 8000대
+    NOT_FOUND_TASK(HttpStatus.NOT_FOUND, 8000, "할일 정보를 찾을 수 없습니다."),
+    NULL_CONTENT(HttpStatus.BAD_REQUEST, 8001, "할일 내용을 작성해주셔야 합니다.");
 
     // 댓글 9000대
 

@@ -6,5 +6,4 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface UserServiceMapper {
     UserServiceMapper INSTANCE = Mappers.getMapper(UserServiceMapper.class);
-
 }

@@ -28,7 +28,7 @@ public class User extends BaseEntity {
 
     private String email;
 
-    private String introduce = "";
+    private String introduce;
 
     private String profileImageUrl;
 

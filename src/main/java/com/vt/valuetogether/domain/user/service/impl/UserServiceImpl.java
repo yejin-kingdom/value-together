@@ -15,11 +15,15 @@ import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
+import com.vt.valuetogether.global.s3.S3Util;
+import com.vt.valuetogether.global.s3.S3Util.FilePath;
+import com.vt.valuetogether.global.validator.S3Validator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import com.vt.valuetogether.infra.mail.MailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +35,12 @@ public class UserServiceImpl implements UserService {
 
     private final MailUtil mailUtil;
 
+    private final S3Util s3Util;
+
     private static final String EMAIL_AUTHENTICATION = "이메일 인증";
+
+    private static final String DEFAULT_PROFILE_INTRODUCE = "자기소개를 입력해주세요.";
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "";
 
     @Override
     public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
@@ -63,6 +72,8 @@ public class UserServiceImpl implements UserService {
                         .username(req.getUsername())
                         .password(passwordEncoder.encode(req.getPassword()))
                         .email(req.getEmail())
+                        .introduce(DEFAULT_PROFILE_INTRODUCE)
+                        .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
                         .provider(Provider.LOCAL)
                         .role(Role.USER)
                         .build());
@@ -71,7 +82,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req){
+    public UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req) {
         User savedUser = getUser(req.getUserId());
         boolean isMatched = passwordEncoder.matches(req.getPassword(), savedUser.getPassword());
 
@@ -79,23 +90,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req){
+    public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile) {
         User savedUser = getUser(req.getUserId());
-        UserValidator.validate(req);
 
-        if(!req.getUsername().equals(savedUser.getUsername())) {
+        UserValidator.validate(req);
+        S3Validator.isProfileImageFile(multipartFile);
+
+        if (!req.getUsername().equals(savedUser.getUsername())) {
             UserValidator.checkDuplicatedUsername(userRepository.findByUsername(req.getUsername()));
         }
 
+        String imageUrl = savedUser.getProfileImageUrl();
+        if (!imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
+            s3Util.deleteFile(imageUrl, FilePath.PROFILE);
+        }
+        if (multipartFile.isEmpty()) {
+            imageUrl = DEFAULT_PROFILE_IMAGE_URL;
+        } else {
+            imageUrl = s3Util.uploadFile(multipartFile, FilePath.PROFILE);
+        }
+
         userRepository.save(
-            User.builder()
-                .userId(savedUser.getUserId())
-                .username(req.getUsername())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .email(savedUser.getEmail())
-                .introduce(req.getIntroduce())
-                .profileImageUrl(req.getProfileImageUrl())
-                .build());
+                User.builder()
+                        .userId(savedUser.getUserId())
+                        .username(req.getUsername())
+                        .password(passwordEncoder.encode(req.getPassword()))
+                        .email(savedUser.getEmail())
+                        .introduce(req.getIntroduce())
+                        .profileImageUrl(imageUrl)
+                        .provider(Provider.LOCAL)
+                        .role(Role.USER)
+                        .build());
 
         return new UserUpdateProfileRes();
     }
@@ -105,10 +130,9 @@ public class UserServiceImpl implements UserService {
         UserValidator.checkAuthorizedEmail(authEmail.isChecked());
     }
 
-    private User getUser(Long userId){
+    private User getUser(Long userId) {
         User user = userRepository.findByUserId(userId);
         UserValidator.validate(user);
         return user;
     }
-
 }
