@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
+import com.vt.valuetogether.domain.task.dto.request.TaskDeleteReq;
 import com.vt.valuetogether.domain.task.dto.request.TaskSaveReq;
 import com.vt.valuetogether.domain.task.dto.request.TaskUpdateReq;
 import com.vt.valuetogether.domain.task.repository.TaskRepository;
@@ -60,5 +61,21 @@ class TaskServiceImplTest implements TaskTest {
         // then
         verify(taskRepository).findByTaskId(any());
         verify(taskRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("task 삭제 테스트")
+    void task_삭제() {
+        // given
+        Long taskId = 1L;
+        TaskDeleteReq taskDeleteReq = TaskDeleteReq.builder().taskId(taskId).build();
+        when(taskRepository.findByTaskId(any())).thenReturn(TEST_TASK);
+
+        // when
+        taskService.deleteTask(taskDeleteReq);
+
+        // then
+        verify(taskRepository).findByTaskId(any());
+        verify(taskRepository).delete(any());
     }
 }

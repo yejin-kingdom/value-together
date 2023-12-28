@@ -2,8 +2,10 @@ package com.vt.valuetogether.domain.task.service.impl;
 
 import com.vt.valuetogether.domain.checklist.entity.Checklist;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
+import com.vt.valuetogether.domain.task.dto.request.TaskDeleteReq;
 import com.vt.valuetogether.domain.task.dto.request.TaskSaveReq;
 import com.vt.valuetogether.domain.task.dto.request.TaskUpdateReq;
+import com.vt.valuetogether.domain.task.dto.response.TaskDeleteRes;
 import com.vt.valuetogether.domain.task.dto.response.TaskSaveRes;
 import com.vt.valuetogether.domain.task.dto.response.TaskUpdateRes;
 import com.vt.valuetogether.domain.task.entity.Task;
@@ -48,5 +50,13 @@ public class TaskServiceImpl implements TaskService {
                         .checklist(prevTask.getChecklist())
                         .build());
         return new TaskUpdateRes();
+    }
+
+    @Override
+    public TaskDeleteRes deleteTask(TaskDeleteReq taskDeleteReq) {
+        Task task = taskRepository.findByTaskId(taskDeleteReq.getTaskId());
+        TaskValidator.validate(task);
+        taskRepository.delete(task);
+        return new TaskDeleteRes();
     }
 }
