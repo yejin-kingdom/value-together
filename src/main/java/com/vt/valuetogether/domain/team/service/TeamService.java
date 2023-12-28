@@ -7,6 +7,6 @@ import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 
 public interface TeamService {
     TeamCreateRes createTeam(TeamCreateReq req);
-    TeamDeleteRes deleteTeam(TeamDeleteReq req);
 
+    TeamDeleteRes deleteTeam(TeamDeleteReq req);
 }
