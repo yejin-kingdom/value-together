@@ -4,6 +4,7 @@ import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
+import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.domain.team.service.impl.TeamServiceImpl;
 import com.vt.valuetogether.global.response.RestResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/teams")
 public class TeamController {
 
-    private final TeamServiceImpl teamService;
+    private final TeamService teamService;
 
     @PostMapping
     public RestResponse<TeamCreateRes> createTeam(
