@@ -1,4 +1,4 @@
-package com.vt.valuetogether.global.s3;
+package com.vt.valuetogether.infra.s3;
 
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_FILE;
 import static com.vt.valuetogether.global.meta.ResultCode.SYSTEM_ERROR;
@@ -19,7 +19,7 @@ public class S3Util {
 
     private final AmazonS3Client amazonS3Client;
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${cloud.aws.s3.bucket.name}")
     private String bucketName;
 
     @Getter
