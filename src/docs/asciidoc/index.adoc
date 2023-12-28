@@ -50,22 +50,61 @@ endif::[]
 |1000
 |알 수 없는 애러가 발생했습니다.
 
-|2000
-|샘플 데이터가 없습니다.
+|1001
+|접근 권한이 없습니다.
+
+|2001
+|잘못된 토큰
+
+|2002
+|만료된 토큰
+
+|2003
+|이메일 전송에 실패하였습니다.
+
+|2004
+|해당 이메일을 찾을 수 없습니다.
+
+|2005
+|username 형식에 맞지 않습니다.
+
+|2006
+|email 형식에 맞지 않습니다.
+
+|2007
+|password 형식에 맞지 않습니다.
+
+|2008
+|중복된 username 입니다.
+
+|2009
+|인증 완료되지 않은 email 입니다.
+
+|2010
+|인증코드가 일치하지 않습니다.
+
+|2011
+|올바르지 않은 로그인 접근입니다.
+
+|3000
+|존재하지 않는 팀입니다.
+
+|7000
+|체크리스트를 찾을 수 없습니다.
 |===
 
 == 현재 오류 사항
 
 - x
 
-== sample API
-
-include::{snippets}/sample-controller-test/샘플_저장/auto-section.adoc[]
-include::{snippets}/sample-controller-test/샘플_전체_조회/auto-section.adoc[]
-include::{snippets}/sample-controller-test/샘플_단건_조회/auto-section.adoc[]
-
 == checklist API
 
 include::{snippets}/checklist-controller-test/checklist_저장/auto-section.adoc[]
 include::{snippets}/checklist-controller-test/checklist_수정/auto-section.adoc[]
 include::{snippets}/checklist-controller-test/checklist_삭제/auto-section.adoc[]
+
+== task API
+
+include::{snippets}/task-controller-test/task_저장/auto-section.adoc[]
+include::{snippets}/task-controller-test/task_수정/auto-section.adoc[]
+include::{snippets}/task-controller-test/task_삭제/auto-section.adoc[]
