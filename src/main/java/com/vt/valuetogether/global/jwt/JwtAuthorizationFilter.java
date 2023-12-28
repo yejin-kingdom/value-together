@@ -45,27 +45,29 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
         log.info("accessToken : {}", accessToken);
+        String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
+        log.info("refreshToken : {}", refreshToken);
 
-        // access token 없거나, 블랙리스트면 인증 미처리
-        if (!StringUtils.hasText(accessToken) || redisUtil.containBlackList(accessToken)) {
+        // 요청 헤더에 access token 없거나 레디스에 access token 없으면 인증 미처리
+        if (isAuthPass(accessToken, refreshToken)) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        accessToken = jwtUtil.substringToken(accessToken);
+        refreshToken = jwtUtil.substringToken(refreshToken);
+
         // 로그아웃 처리된 경우
-        TokenValidator.checkInvalidToken(redisUtil.containBlackList(accessToken));
+        TokenValidator.checkValidToken(redisUtil.hasKey(refreshToken));
         // access token 유효하지 않은 경우
-        TokenValidator.checkInvalidToken(jwtUtil.isTokenValid(accessToken));
+        TokenValidator.checkValidToken(jwtUtil.isTokenValid(accessToken));
 
         // access token 만료되어 재발급 받는 경우
         if (jwtUtil.isTokenExpired(accessToken)) {
-            String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
-            log.info("refreshToken : {}", refreshToken);
-
-            TokenValidator.checkInvalidToken(isRefreshTokenValid(refreshToken));
+            TokenValidator.checkValidToken(isRefreshTokenValid(refreshToken));
             TokenValidator.checkExpiredToken(jwtUtil.isTokenExpired(refreshToken));
 
-            accessToken = renewAccessToken(accessToken);
+            accessToken = jwtUtil.substringToken(renewAccessToken(accessToken));
             response.addHeader(ACCESS_TOKEN_HEADER, accessToken);
         }
 
@@ -74,6 +76,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         setAuthentication(username);
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isAuthPass(String accessToken, String refreshToken) {
+        return !StringUtils.hasText(accessToken)
+                || !StringUtils.hasText(refreshToken)
+                || !redisUtil.hasKey(jwtUtil.substringToken(refreshToken));
     }
 
     private String renewAccessToken(String accessToken) {
