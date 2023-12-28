@@ -42,11 +42,11 @@ public class TeamServiceImpl implements TeamService {
         UserValidator.validate(user);
 
         Team team =
-                Team.builder()
-                        .teamName(req.getTeamName())
-                        .teamDescription(req.getTeamDescription())
-                        .backgroundColor(req.getBackgroundColor())
-                        .build();
+            Team.builder()
+                .teamName(req.getTeamName())
+                .teamDescription(req.getTeamDescription())
+                .backgroundColor(req.getBackgroundColor())
+                .build();
 
         TeamRole teamRole = TeamRole.builder().user(user).team(team).role(Role.LEADER).build();
 
@@ -67,20 +67,29 @@ public class TeamServiceImpl implements TeamService {
         TeamValidator.validate(team);
 
         team.getTeamRoleList().stream()
-                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
-                .findAny()
-                .ifPresentOrElse(
-                        t ->
-                                teamRepository.save(
-                                        Team.builder()
-                                                .teamId(team.getTeamId())
-                                                .teamName(team.getTeamName())
-                                                .teamDescription(team.getTeamDescription())
-                                                .isDeleted(true)
-                                                .build()),
-                        () -> {
-                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
-                        });
+            .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
+            .findAny()
+            .ifPresentOrElse(
+                t -> {
+                    teamRepository.save(
+                        Team.builder()
+                            .teamId(team.getTeamId())
+                            .teamName(team.getTeamName())
+                            .teamDescription(team.getTeamDescription())
+                            .isDeleted(true)
+                            .build());
+
+                    teamRoleRepository.save(
+                        TeamRole.builder()
+                            .team(team)
+                            .user(user)
+                            .isDeleted(true)
+                            .build());
+                },
+
+                () -> {
+                    throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                });
 
         return new TeamDeleteRes();
     }
@@ -99,20 +108,20 @@ public class TeamServiceImpl implements TeamService {
         TeamValidator.checkIsDuplicateTeamName(findTeam);
 
         team.getTeamRoleList().stream()
-                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
-                .findAny()
-                .ifPresentOrElse(
-                        t ->
-                                teamRepository.save(
-                                        Team.builder()
-                                                .teamId(team.getTeamId())
-                                                .teamName(req.getTeamName())
-                                                .teamDescription(req.getTeamDescription())
-                                                .backgroundColor(req.getBackgroundColor())
-                                                .build()),
-                        () -> {
-                            throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
-                        });
+            .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
+            .findAny()
+            .ifPresentOrElse(
+                t ->
+                    teamRepository.save(
+                        Team.builder()
+                            .teamId(team.getTeamId())
+                            .teamName(req.getTeamName())
+                            .teamDescription(req.getTeamDescription())
+                            .backgroundColor(req.getBackgroundColor())
+                            .build()),
+                () -> {
+                    throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);
+                });
 
         return new TeamEditRes();
     }
