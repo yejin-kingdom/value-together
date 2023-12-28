@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
                         .email(savedUser.getEmail())
                         .introduce(req.getIntroduce())
                         .profileImageUrl(imageUrl)
-                        .provider(Provider.LOCAL)
+                        .provider(savedUser.getProvider())
                         .role(Role.USER)
                         .build());
 
