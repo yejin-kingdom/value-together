@@ -106,8 +106,6 @@ public class UserServiceImpl implements UserService {
         UserValidator.validate(req);
         User savedUser = getUser(req.getUserId());
 
-        S3Validator.isProfileImageFile(multipartFile);
-
         String imageUrl = savedUser.getProfileImageUrl();
         if (!imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
             s3Util.deleteFile(imageUrl, FilePath.PROFILE);
@@ -115,6 +113,7 @@ public class UserServiceImpl implements UserService {
         if (multipartFile.isEmpty()) {
             imageUrl = DEFAULT_PROFILE_IMAGE_URL;
         } else {
+            S3Validator.isProfileImageFile(multipartFile);
             imageUrl = s3Util.uploadFile(multipartFile, FilePath.PROFILE);
         }
 
@@ -127,7 +126,7 @@ public class UserServiceImpl implements UserService {
                         .introduce(req.getIntroduce())
                         .profileImageUrl(imageUrl)
                         .provider(savedUser.getProvider())
-                        .role(Role.USER)
+                        .role(savedUser.getRole())
                         .build());
 
         return new UserUpdateProfileRes();
