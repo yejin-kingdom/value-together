@@ -8,6 +8,7 @@ import com.vt.valuetogether.domain.checklist.dto.request.ChecklistDeleteReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistSaveReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistUpdateReq;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
+import com.vt.valuetogether.domain.checklist.service.impl.ChecklistServiceImpl;
 import com.vt.valuetogether.test.ChecklistTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ChecklistServiceTest implements ChecklistTest {
-    @InjectMocks private ChecklistService checklistService;
+class ChecklistServiceImplTest implements ChecklistTest {
+    @InjectMocks private ChecklistServiceImpl checklistService;
 
     @Mock private ChecklistRepository checklistRepository;
 
@@ -42,15 +43,18 @@ class ChecklistServiceTest implements ChecklistTest {
     void checklist_수정() {
         // given
         Long checklistId = 1L;
-        String title = "title";
+        String title = "updatedTitle";
         ChecklistUpdateReq checklistUpdateReq =
                 ChecklistUpdateReq.builder().checklistId(checklistId).title(title).build();
         when(checklistRepository.findByChecklistId(any())).thenReturn(TEST_CHECKLIST);
+        when(checklistRepository.save(any())).thenReturn(TEST_UPDATED_CHECKLIST);
+
         // when
         checklistService.updateChecklist(checklistUpdateReq);
 
         // then
         verify(checklistRepository).findByChecklistId(any());
+        verify(checklistRepository).save(any());
     }
 
     @Test
@@ -66,6 +70,7 @@ class ChecklistServiceTest implements ChecklistTest {
         checklistService.deleteChecklist(checklistDeleteReq);
 
         // then
+        verify(checklistRepository).findByChecklistId(any());
         verify(checklistRepository).delete(any());
     }
 }
