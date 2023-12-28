@@ -7,4 +7,6 @@ import org.springframework.data.repository.RepositoryDefinition;
 public interface TeamRoleRepository {
 
     TeamRole save(TeamRole teamRole);
+
+    TeamRole findByTeam_TeamId(Long teamId);
 }

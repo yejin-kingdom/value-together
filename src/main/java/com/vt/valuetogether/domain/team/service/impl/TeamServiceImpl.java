@@ -68,6 +68,8 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.validate(team);
 
+        TeamRole teamRole = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
+
         team.getTeamRoleList().stream()
                 .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
                 .findAny()
@@ -82,7 +84,13 @@ public class TeamServiceImpl implements TeamService {
                                             .build());
 
                             teamRoleRepository.save(
-                                    TeamRole.builder().team(team).user(user).isDeleted(true).build());
+                                    TeamRole.builder()
+                                            .teamRoleId(teamRole.getTeamRoleId())
+                                            .role(teamRole.getRole())
+                                            .team(team)
+                                            .user(user)
+                                            .isDeleted(true)
+                                            .build());
                         },
                         () -> {
                             throw new GlobalException(ResultCode.FORBBIDEN_TEAM_LEADER);

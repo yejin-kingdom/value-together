@@ -42,7 +42,8 @@ public class TeamRole {
     private boolean isDeleted;
 
     @Builder
-    private TeamRole(User user, Team team, Role role, boolean isDeleted) {
+    private TeamRole(Long teamRoleId, User user, Team team, Role role, boolean isDeleted) {
+        this.teamRoleId = teamRoleId;
         this.user = user;
         this.team = team;
         this.role = role;
