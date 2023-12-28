@@ -32,4 +32,18 @@ class CardRepositoryTest implements CardTest {
         assertThat(card.getSequence()).isEqualTo(TEST_SEQUENCE);
         assertThat(card.getDeadline()).isEqualTo(TEST_DEADLINE);
     }
+
+    @Test
+    @DisplayName("categoryId로 max sequence 조회 테스트")
+    void categoryId_max_sequence_조회() {
+        // given
+        Long categoryId = 1L;
+        Card saveCard = cardRepository.save(TEST_CARD);
+
+        // when
+        Double maxSequence = cardRepository.getMaxSequence(categoryId);
+
+        // then
+        assertThat(maxSequence).isEqualTo(saveCard.getSequence());
+    }
 }
