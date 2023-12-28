@@ -48,7 +48,7 @@ class CardRepositoryTest implements CardTest {
     }
 
     @Test
-    @DisplayName("id로 card 조회")
+    @DisplayName("id로 card 조회 테스트")
     void id_card_조회() {
         // given
         Card saveCard = cardRepository.save(TEST_CARD);
