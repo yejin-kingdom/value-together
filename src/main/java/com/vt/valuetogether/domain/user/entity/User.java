@@ -28,6 +28,8 @@ public class User extends BaseEntity {
 
     private String email;
 
+    private String introduce;
+
     private String profileImageUrl;
 
     private String oauthId;
@@ -44,6 +46,7 @@ public class User extends BaseEntity {
             String username,
             String password,
             String email,
+            String introduce,
             String profileImageUrl,
             String oauthId,
             Role role,
@@ -52,6 +55,7 @@ public class User extends BaseEntity {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.introduce = introduce;
         this.profileImageUrl = profileImageUrl;
         this.oauthId = oauthId;
         this.role = role;

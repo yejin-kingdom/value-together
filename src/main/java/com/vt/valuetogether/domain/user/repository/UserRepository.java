@@ -12,4 +12,6 @@ public interface UserRepository {
     User findByOauthId(String oauthId);
 
     Boolean existsByUsername(String username);
+
+    User findByUserId(Long userId);
 }

@@ -7,7 +7,7 @@ import com.vt.valuetogether.global.exception.GlobalException;
 
 public class TokenValidator {
 
-    public static void checkInvalidToken(boolean isTokenValid) {
+    public static void checkValidToken(boolean isTokenValid) {
         if (!isTokenValid) {
             throw new GlobalException(INVALID_TOKEN);
         }
