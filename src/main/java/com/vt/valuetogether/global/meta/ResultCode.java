@@ -31,6 +31,9 @@ public enum ResultCode {
 
     // 팀 3000번대
     NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 팀입니다."),
+    INVALID_BACKGROUNDCOLOR_PATTERN(HttpStatus.BAD_REQUEST, 3001, "배경 색상 형식에 맞지 않습니다."),
+    DUPLICATED_TEAMNAME(HttpStatus.BAD_REQUEST, 3002, "중복된 팀 이름 입니다."),
+    FORBBIDEN_TEAM_LEADER(HttpStatus.FORBIDDEN, 3003, "팀의 리더만 해당 작업을 수행할 수 있습니다."),
 
     // 카테고리 4000번대
 

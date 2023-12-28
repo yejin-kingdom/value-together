@@ -4,6 +4,7 @@ import static com.vt.valuetogether.global.meta.ResultCode.DUPLICATED_USERNAME;
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_EMAIL_PATTERN;
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_PASSWORD_PATTERN;
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_USERNAME_PATTERN;
+import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_USER;
 import static com.vt.valuetogether.global.meta.ResultCode.UNAUTHORIZED_EMAIL;
 
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
@@ -34,6 +35,12 @@ public class UserValidator {
         }
         if (!checkIsValidateEmail(req.getEmail())) {
             throw new GlobalException(INVALID_EMAIL_PATTERN);
+        }
+    }
+
+    public static void validate(User user) {
+        if (!checkIsNull(user)) {
+            throw new GlobalException(NOT_FOUND_USER);
         }
     }
 
