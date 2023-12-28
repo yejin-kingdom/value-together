@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
 import com.vt.valuetogether.domain.task.dto.request.TaskSaveReq;
+import com.vt.valuetogether.domain.task.dto.request.TaskUpdateReq;
 import com.vt.valuetogether.domain.task.repository.TaskRepository;
 import com.vt.valuetogether.test.TaskTest;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +39,26 @@ class TaskServiceImplTest implements TaskTest {
 
         // then
         verify(checklistRepository).findByChecklistId(any());
+        verify(taskRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("task 수정 테스트")
+    void task_수정() {
+        // given
+        Long taskId = 1L;
+        String content = "updatedContent";
+        Boolean isCompleted = true;
+        TaskUpdateReq taskUpdateReq =
+                TaskUpdateReq.builder().taskId(taskId).content(content).isCompleted(isCompleted).build();
+        when(taskRepository.findByTaskId(any())).thenReturn(TEST_TASK);
+        when(taskRepository.save(any())).thenReturn(TEST_UPDATED_TASK);
+
+        // when
+        taskService.updateTask(taskUpdateReq);
+
+        // then
+        verify(taskRepository).findByTaskId(any());
         verify(taskRepository).save(any());
     }
 }
