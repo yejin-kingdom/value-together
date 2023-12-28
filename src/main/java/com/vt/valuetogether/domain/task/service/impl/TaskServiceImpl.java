@@ -3,7 +3,9 @@ package com.vt.valuetogether.domain.task.service.impl;
 import com.vt.valuetogether.domain.checklist.entity.Checklist;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
 import com.vt.valuetogether.domain.task.dto.request.TaskSaveReq;
+import com.vt.valuetogether.domain.task.dto.request.TaskUpdateReq;
 import com.vt.valuetogether.domain.task.dto.response.TaskSaveRes;
+import com.vt.valuetogether.domain.task.dto.response.TaskUpdateRes;
 import com.vt.valuetogether.domain.task.entity.Task;
 import com.vt.valuetogether.domain.task.repository.TaskRepository;
 import com.vt.valuetogether.domain.task.service.TaskService;
@@ -31,5 +33,20 @@ public class TaskServiceImpl implements TaskService {
                                 .isCompleted(Boolean.FALSE)
                                 .checklist(checklist)
                                 .build()));
+    }
+
+    @Override
+    public TaskUpdateRes updateTask(TaskUpdateReq taskUpdateReq) {
+        TaskValidator.validate(taskUpdateReq);
+        Task prevTask = taskRepository.findByTaskId(taskUpdateReq.getTaskId());
+        TaskValidator.validate(prevTask);
+        taskRepository.save(
+                Task.builder()
+                        .taskId(prevTask.getTaskId())
+                        .content(taskUpdateReq.getContent())
+                        .isCompleted(taskUpdateReq.getIsCompleted())
+                        .checklist(prevTask.getChecklist())
+                        .build());
+        return new TaskUpdateRes();
     }
 }

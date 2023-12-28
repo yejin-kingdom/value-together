@@ -2,13 +2,16 @@ package com.vt.valuetogether.domain.task.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.task.dto.request.TaskSaveReq;
+import com.vt.valuetogether.domain.task.dto.request.TaskUpdateReq;
 import com.vt.valuetogether.domain.task.dto.response.TaskSaveRes;
+import com.vt.valuetogether.domain.task.dto.response.TaskUpdateRes;
 import com.vt.valuetogether.domain.task.service.TaskService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +38,25 @@ class TaskControllerTest extends BaseMvcTest {
                         post("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(taskSaveReq)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("task 수정 테스트")
+    void task_수정() throws Exception {
+        Long taskId = 1L;
+        String content = "updatedContent";
+        Boolean isCompleted = true;
+        TaskUpdateReq taskUpdateReq =
+                TaskUpdateReq.builder().taskId(taskId).content(content).isCompleted(isCompleted).build();
+        TaskUpdateRes taskUpdateRes = new TaskUpdateRes();
+        when(taskService.updateTask(any())).thenReturn(taskUpdateRes);
+        this.mockMvc
+                .perform(
+                        patch("/api/v1/tasks")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(taskUpdateReq)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

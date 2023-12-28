@@ -6,4 +6,6 @@ import org.springframework.data.repository.RepositoryDefinition;
 @RepositoryDefinition(domainClass = Task.class, idClass = Long.class)
 public interface TaskRepository {
     Task save(Task task);
+
+    Task findByTaskId(Long taskId);
 }

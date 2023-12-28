@@ -32,4 +32,19 @@ class TaskRepositoryTest implements TaskTest {
         assertThat(task.getContent()).isEqualTo(TEST_CONTENT);
         assertThat(task.getIsCompleted()).isEqualTo(TEST_IS_COMPLETED);
     }
+
+    @Test
+    @DisplayName("id로 task 조회 테스트")
+    void id_task_조회() {
+        // given
+        checklistRepository.save(TEST_CHECKLIST);
+        Task saveTask = taskRepository.save(TEST_TASK);
+
+        // when
+        Task task = taskRepository.findByTaskId(saveTask.getTaskId());
+
+        // then
+        assertThat(task.getContent()).isEqualTo(saveTask.getContent());
+        assertThat(task.getIsCompleted()).isEqualTo(saveTask.getIsCompleted());
+    }
 }
