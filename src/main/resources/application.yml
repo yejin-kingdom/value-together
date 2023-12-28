@@ -15,7 +15,6 @@ spring:
           naver:
             client-id: NAVER_CLIENT_ID
             client-secret: NAVER_CLIENT_SECRET
-            client-authentication-method: test
             authorization-grant-type: test
             redirect-uri: "test-uri"
             scope:
