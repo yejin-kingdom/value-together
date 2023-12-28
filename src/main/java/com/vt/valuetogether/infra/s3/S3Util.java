@@ -39,6 +39,10 @@ public class S3Util {
     }
 
     public String uploadFile(MultipartFile multipartFile, FilePath filePath) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            return null;
+        }
+
         String fileName = createFileName(multipartFile.getOriginalFilename());
 
         ObjectMetadata metadata = setObjectMetadata(multipartFile);
