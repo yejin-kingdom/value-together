@@ -30,6 +30,8 @@ public class User extends BaseEntity {
 
     private String profileImageUrl;
 
+    private String oAuthId;
+
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
