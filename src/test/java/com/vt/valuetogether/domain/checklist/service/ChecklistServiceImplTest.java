@@ -8,6 +8,7 @@ import com.vt.valuetogether.domain.checklist.dto.request.ChecklistDeleteReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistSaveReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistUpdateReq;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
+import com.vt.valuetogether.domain.checklist.service.impl.ChecklistServiceImpl;
 import com.vt.valuetogether.test.ChecklistTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ChecklistServiceTest implements ChecklistTest {
-    @InjectMocks private ChecklistService checklistService;
+class ChecklistServiceImplTest implements ChecklistTest {
+    @InjectMocks private ChecklistServiceImpl checklistService;
 
     @Mock private ChecklistRepository checklistRepository;
 
