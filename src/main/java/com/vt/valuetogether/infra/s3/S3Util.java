@@ -25,17 +25,27 @@ public class S3Util {
     @Getter
     @RequiredArgsConstructor
     public enum FilePath {
-        PROFILE("profile/");
+        PROFILE("profile/"),
+        CARD("card/");
 
         private final String path;
     }
 
-    public String uploadFile(MultipartFile multipartFile, FilePath filePath) {
-        String fileName = createFileName(multipartFile.getOriginalFilename());
-
+    private static ObjectMetadata setObjectMetadata(MultipartFile multipartFile) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
+        return metadata;
+    }
+
+    public String uploadFile(MultipartFile multipartFile, FilePath filePath) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            return null;
+        }
+
+        String fileName = createFileName(multipartFile.getOriginalFilename());
+
+        ObjectMetadata metadata = setObjectMetadata(multipartFile);
 
         try {
             amazonS3Client.putObject(

@@ -97,6 +97,11 @@ endif::[]
 
 - x
 
+== card API
+
+include::{snippets}/card-controller-test/card_저장/auto-section.adoc[]
+include::{snippets}/card-controller-test/card_수정/auto-section.adoc[]
+
 == checklist API
 
 include::{snippets}/checklist-controller-test/checklist_저장/auto-section.adoc[]
