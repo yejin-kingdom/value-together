@@ -198,7 +198,7 @@ public class TeamServiceImpl implements TeamService {
 
         teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
         inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
-        
+
         return new TeamMemberInviteRes();
     }
 

@@ -6,6 +6,8 @@ import org.springframework.data.repository.RepositoryDefinition;
 @RepositoryDefinition(domainClass = InviteCode.class, idClass = String.class)
 public interface InviteRepository {
     InviteCode findById(String code);
+
     void deleteById(String code);
+
     InviteCode save(InviteCode inviteCode);
 }
