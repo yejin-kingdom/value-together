@@ -13,6 +13,7 @@ import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
+import com.vt.valuetogether.domain.user.dto.response.UserGetProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.Role;
@@ -293,5 +294,20 @@ class UserServiceImplTest implements UserTest {
         assertEquals(TEST_ANOTHER_USER_PASSWORD, argumentCaptor.getValue().getPassword());
         assertEquals(TEST_ANOTHER_USER_INTRODUCE, argumentCaptor.getValue().getIntroduce());
         assertEquals(TEST_ANOTHER_USER_PROFILE_URL, argumentCaptor.getValue().getProfileImageUrl());
+    }
+
+    @Test
+    @DisplayName("프로필 조회")
+    void getProfileTest() {
+        // given
+        given(userRepository.findByUserId(TEST_USER_ID)).willReturn(TEST_USER);
+
+        // when
+        UserGetProfileRes res = userService.getProfile(TEST_USER_ID);
+
+        // then
+        assertEquals(TEST_USER_NAME, res.getUsername());
+        assertEquals(TEST_USER_EMAIL, res.getEmail());
+        assertEquals(TEST_USER_INTRODUCE, res.getIntroduce());
     }
 }
