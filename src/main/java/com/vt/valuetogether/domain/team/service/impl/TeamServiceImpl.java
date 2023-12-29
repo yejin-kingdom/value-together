@@ -24,6 +24,8 @@ import com.vt.valuetogether.global.validator.UserValidator;
 import com.vt.valuetogether.infra.mail.MailUtil;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
@@ -154,30 +156,34 @@ public class TeamServiceImpl implements TeamService {
 
         List<TeamRole> teamRoleList = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
         TeamRoleValidator.validate(teamRoleList);
+        Map<Long, TeamRole> teamRoleByUserId =
+                teamRoleList.stream()
+                        .collect(
+                                Collectors.toMap(teamRole -> teamRole.getUser().getUserId(), Function.identity()));
 
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.validate(user);
 
-        List<User> memberList = userRepository.findAllByUsername(req.getMemberNameList());
+        List<User> memberList = userRepository.findAllByUsernameIn(req.getMemberNameList());
 
         // 전달받은 username으로 조회한 memberList의 user가 이미 teamRoleList에 존재한다면 제외
-        List<User> matchingMemberList = memberList.stream()
-            .filter(m -> teamRoleList.stream().anyMatch(r -> r.getUser().equals(m))).toList();
+        List<User> matchingMemberList =
+                memberList.stream()
+                        .filter(member -> !teamRoleByUserId.containsKey(member.getUserId()))
+                        .collect(Collectors.toList());
 
         sendInviteMail(matchingMemberList);
 
         return new TeamMemberInviteRes();
     }
 
-    private void sendInviteMail(List<User> matchingMemberList){
-        matchingMemberList.stream().forEach(m ->
-                mailUtil.sendMessage(m.getEmail(), EMAIL_AUTHENTICATION)
-            );
+    private void sendInviteMail(List<User> matchingMemberList) {
+        matchingMemberList.stream()
+                .forEach(m -> mailUtil.sendMessage(m.getEmail(), EMAIL_AUTHENTICATION));
     }
 
-    private void confirmInviteMail(String email, String code){
+    private void confirmInviteMail(String email, String code) {
         mailUtil.checkCode(email, code);
-
     }
 
     @Mapper

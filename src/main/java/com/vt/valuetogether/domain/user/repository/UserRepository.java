@@ -16,5 +16,5 @@ public interface UserRepository {
 
     User findByUserId(Long userId);
 
-    List<User> findAllByUsername(Iterable<String> usernameList);
+    List<User> findAllByUsernameIn(List<String> username);
 }
