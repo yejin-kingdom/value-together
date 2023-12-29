@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
-import com.vt.valuetogether.test.CardTest;
 import com.vt.valuetogether.test.CommentTest;
-import com.vt.valuetogether.test.UserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class CommentRepositoryTest implements CommentTest, CardTest, UserTest {
+class CommentRepositoryTest implements CommentTest {
 
     @Autowired private CommentRepository commentRepository;
 

@@ -9,9 +9,7 @@ import com.vt.valuetogether.domain.comment.dto.request.CommentSaveReq;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.comment.repository.CommentRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
-import com.vt.valuetogether.test.CardTest;
 import com.vt.valuetogether.test.CommentTest;
-import com.vt.valuetogether.test.UserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class CommentServiceImplTest implements CommentTest, UserTest, CardTest {
+class CommentServiceImplTest implements CommentTest {
     @Mock CommentRepository commentRepository;
 
     @Mock UserRepository userRepository;

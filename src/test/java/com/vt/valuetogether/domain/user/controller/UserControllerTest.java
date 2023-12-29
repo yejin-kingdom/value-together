@@ -57,8 +57,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -79,8 +79,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         // when - then
         mockMvc
                 .perform(get("/api/v1/users/signup/email/check").params(info))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -103,8 +103,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -124,8 +124,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -145,8 +145,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -185,8 +185,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .principal(mockPrincipal))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -206,7 +206,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         // when - then
         mockMvc
                 .perform(get("/api/v1/users/{userId}", TEST_USER_ID))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

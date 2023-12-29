@@ -10,9 +10,7 @@ import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.comment.dto.request.CommentSaveReq;
 import com.vt.valuetogether.domain.comment.dto.response.CommentSaveRes;
 import com.vt.valuetogether.domain.comment.service.CommentService;
-import com.vt.valuetogether.test.CardTest;
 import com.vt.valuetogether.test.CommentTest;
-import com.vt.valuetogether.test.UserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 @WebMvcTest(controllers = {CommentController.class})
-class CommentControllerTest extends BaseMvcTest implements CommentTest, UserTest, CardTest {
+class CommentControllerTest extends BaseMvcTest implements CommentTest {
 
     @MockBean private CommentService commentService;
 
@@ -41,7 +39,7 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest, UserTest
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

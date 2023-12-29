@@ -31,7 +31,6 @@ public class CommentServiceImpl implements CommentService {
     public CommentSaveRes saveComment(CommentSaveReq req) {
         User user = findUser(req.getUsername());
         Card card = findCard(req.getCardId());
-        CardValidator.validate(card);
 
         // 작성자가 해당 팀에 속해있는지 확인 로직 추가
 
