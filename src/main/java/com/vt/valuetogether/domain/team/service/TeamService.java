@@ -3,6 +3,7 @@ package com.vt.valuetogether.domain.team.service;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
@@ -19,4 +20,6 @@ public interface TeamService {
     TeamMemberInviteRes inviteMember(TeamMemberInviteReq req);
 
     TeamMemberInviteRes confirmEmail(String email, String code);
+
+    TeamGetRes getTeamInfo(Long teamId, String username);
 }
