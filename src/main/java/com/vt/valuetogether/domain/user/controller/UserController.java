@@ -14,9 +14,9 @@ import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.service.UserService;
 import com.vt.valuetogether.global.response.RestResponse;
-import com.vt.valuetogether.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,12 +35,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/email")
+    @PostMapping("/signup/email")
     public RestResponse<UserVerifyEmailRes> sendEmail(@RequestBody UserVerifyEmailReq req) {
         return RestResponse.success(userService.sendEmail(req));
     }
 
-    @GetMapping("/confirm-email")
+    @GetMapping("/signup/email/check")
     public RestResponse<UserConfirmEmailRes> confirmEmail(
             @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
         return RestResponse.success(userService.confirmEmail(email, code));
@@ -59,9 +59,8 @@ public class UserController {
 
     @PostMapping("/password/verify")
     public RestResponse<UserVerifyPasswordRes> verifyPassword(
-            @RequestBody UserVerifyPasswordReq req,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        req.setUserId(userDetails.getUser().getUserId());
+            @RequestBody UserVerifyPasswordReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
         return RestResponse.success(userService.verifyPassword(req));
     }
 
@@ -69,8 +68,8 @@ public class UserController {
     public RestResponse<UserUpdateProfileRes> updateProfile(
             @RequestPart(name = "data") UserUpdateProfileReq req,
             @RequestPart(name = "image", required = false) MultipartFile multipartfile,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        req.setUserId(userDetails.getUser().getUserId());
+            @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
         return RestResponse.success(userService.updateProfile(req, multipartfile));
     }
 

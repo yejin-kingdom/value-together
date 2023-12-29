@@ -25,7 +25,7 @@ public class MailUtil {
 
     private final JavaMailSender mailSender;
     private final EmailAuthService emailService;
-    private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/confirm-email?";
+    private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/signup/email/check?";
     private static final String PATH_AND = "&";
     private static final String PATH_KEY_EMAIL = "email=";
     private static final String PATH_KEY_CODE = "authCode=";

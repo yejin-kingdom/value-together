@@ -43,6 +43,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -74,7 +75,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
     }
 
     private void mockUserSetup() {
-        UserDetailsImpl testUserDetails = new UserDetailsImpl(TEST_USER);
+        UserDetails testUserDetails = new UserDetailsImpl(TEST_USER);
         mockPrincipal =
                 new UsernamePasswordAuthenticationToken(
                         testUserDetails, "", testUserDetails.getAuthorities());
@@ -90,7 +91,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
 
         // when - then
         mvc.perform(
-                        post("/api/v1/users/email")
+                        post("/api/v1/users/signup/email")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -113,7 +114,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         info.add("authCode", code);
 
         // when - then
-        mvc.perform(get("/api/v1/users/confirm-email").params(info))
+        mvc.perform(get("/api/v1/users/signup/email/check").params(info))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -195,7 +196,6 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
 
         UserUpdateProfileReq request =
                 UserUpdateProfileReq.builder()
-                        .userId(TEST_USER_ID)
                         .username(TEST_ANOTHER_USER_NAME)
                         .password(TEST_USER_PASSWORD)
                         .introduce(TEST_USER_INTRODUCE)

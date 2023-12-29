@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req) {
-        User savedUser = getUser(req.getUserId());
+        User savedUser = getUser(req.getUsername());
         boolean isMatched = passwordEncoder.matches(req.getPassword(), savedUser.getPassword());
 
         return UserVerifyPasswordRes.builder().isMatched(isMatched).build();
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile) {
 
         UserValidator.validate(req);
-        User savedUser = getUser(req.getUserId());
+        User savedUser = getUser(req.getPreUsername());
 
         String imageUrl = savedUser.getProfileImageUrl();
         if (!imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
@@ -134,7 +134,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserGetProfileRes getProfile(Long userId) {
-        User user = getUser(userId);
+        User user = userRepository.findByUserId(userId);
+        UserValidator.validate(user);
 
         return UserServiceMapper.INSTANCE.toUserGetProfileRes(user);
     }
@@ -144,8 +145,8 @@ public class UserServiceImpl implements UserService {
         UserValidator.checkAuthorizedEmail(authEmail.isChecked());
     }
 
-    private User getUser(Long userId) {
-        User user = userRepository.findByUserId(userId);
+    private User getUser(String username) {
+        User user = userRepository.findByUsername(username);
         UserValidator.validate(user);
         return user;
     }

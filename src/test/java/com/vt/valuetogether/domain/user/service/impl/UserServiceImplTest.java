@@ -237,9 +237,12 @@ class UserServiceImplTest implements UserTest {
     void verifyPasswordTest() {
         // given
         UserVerifyPasswordReq req =
-                UserVerifyPasswordReq.builder().userId(TEST_USER_ID).password(TEST_USER_PASSWORD).build();
+                UserVerifyPasswordReq.builder()
+                        .username(TEST_USER_NAME)
+                        .password(TEST_USER_PASSWORD)
+                        .build();
 
-        given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
+        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_USER);
         given(passwordEncoder.matches(req.getPassword(), TEST_USER_PASSWORD))
                 .willReturn(req.getPassword().equals(TEST_USER_PASSWORD));
 
@@ -256,7 +259,7 @@ class UserServiceImplTest implements UserTest {
         // given
         UserUpdateProfileReq req =
                 UserUpdateProfileReq.builder()
-                        .userId(TEST_USER_ID)
+                        .preUsername(TEST_USER_NAME)
                         .username(TEST_ANOTHER_USER_NAME)
                         .password(TEST_ANOTHER_USER_PASSWORD)
                         .introduce(TEST_ANOTHER_USER_INTRODUCE)
@@ -280,7 +283,7 @@ class UserServiceImplTest implements UserTest {
                         .role(Role.USER)
                         .build();
 
-        given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
+        given(userRepository.findByUsername(req.getPreUsername())).willReturn(TEST_USER);
         given(passwordEncoder.encode(req.getPassword())).willReturn(req.getPassword());
         given(s3Util.uploadFile(multipartFile, FilePath.PROFILE))
                 .willReturn(TEST_ANOTHER_USER_PROFILE_URL);
