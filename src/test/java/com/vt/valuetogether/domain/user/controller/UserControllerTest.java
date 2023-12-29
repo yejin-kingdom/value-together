@@ -3,7 +3,6 @@ package com.vt.valuetogether.domain.user.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -23,63 +22,25 @@ import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.service.UserService;
-import com.vt.valuetogether.global.MockSpringSecurityFilter;
-import com.vt.valuetogether.global.config.WebSecurityConfig;
-import com.vt.valuetogether.global.security.UserDetailsImpl;
 import com.vt.valuetogether.test.UserTest;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
 
-@WebMvcTest(
-        controllers = {UserController.class},
-        excludeFilters = {
-            @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfig.class)
-        })
+@WebMvcTest(controllers = {UserController.class})
 class UserControllerTest extends BaseMvcTest implements UserTest {
 
     @MockBean private UserService userService;
-
-    private MockMvc mvc;
-
-    private Principal mockPrincipal;
-
-    @Autowired private WebApplicationContext context;
-
-    @BeforeEach
-    public void setup() {
-        mvc =
-                MockMvcBuilders.webAppContextSetup(context)
-                        .apply(springSecurity(new MockSpringSecurityFilter()))
-                        .build();
-    }
-
-    private void mockUserSetup() {
-        UserDetails testUserDetails = new UserDetailsImpl(TEST_USER);
-        mockPrincipal =
-                new UsernamePasswordAuthenticationToken(
-                        testUserDetails, "", testUserDetails.getAuthorities());
-    }
 
     @Test
     @DisplayName("이메일 전송 api 테스트")
@@ -90,12 +51,14 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         when(userService.sendEmail(req)).thenReturn(res);
 
         // when - then
-        mvc.perform(
+        mockMvc
+                .perform(
                         post("/api/v1/users/signup/email")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
@@ -114,7 +77,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         info.add("authCode", code);
 
         // when - then
-        mvc.perform(get("/api/v1/users/signup/email/check").params(info))
+        mockMvc
+                .perform(get("/api/v1/users/signup/email/check").params(info))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -133,12 +97,14 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         when(userService.signup(req)).thenReturn(res);
 
         // when - then
-        mvc.perform(
+        mockMvc
+                .perform(
                         post("/api/v1/users/signup")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
@@ -152,7 +118,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         when(userService.checkDuplicateUsername(req)).thenReturn(res);
 
         // when - then
-        mvc.perform(
+        mockMvc
+                .perform(
                         post("/api/v1/users/username")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -165,14 +132,14 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
     @DisplayName("password 확인 api 테스트")
     void verifyPasswordTest() throws Exception {
         // given
-        mockUserSetup();
         UserVerifyPasswordReq req =
                 UserVerifyPasswordReq.builder().password(TEST_USER_PASSWORD).build();
         UserVerifyPasswordRes res = UserVerifyPasswordRes.builder().isMatched(true).build();
         when(userService.verifyPassword(req)).thenReturn(res);
 
         // when - then
-        mvc.perform(
+        mockMvc
+                .perform(
                         post("/api/v1/users/password/verify")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -186,8 +153,6 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
     @DisplayName("프로필 수정 api 테스트")
     void updateProfileTest() throws Exception {
         // given
-        mockUserSetup();
-
         String imageUrl = "images/image1.jpg";
         Resource fileResource = new ClassPathResource(imageUrl);
         MockMultipartFile file =
@@ -212,7 +177,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         when(userService.updateProfile(request, file)).thenReturn(res);
 
         // when - then
-        mvc.perform(
+        mockMvc
+                .perform(
                         MockMvcRequestBuilders.multipart(HttpMethod.PATCH, "/api/v1/users")
                                 .file(file)
                                 .file(req)
@@ -238,7 +204,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         when(userService.getProfile(TEST_USER_ID)).thenReturn(res);
 
         // when - then
-        mvc.perform(get("/api/v1/users/{userId}", TEST_USER_ID))
+        mockMvc
+                .perform(get("/api/v1/users/{userId}", TEST_USER_ID))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

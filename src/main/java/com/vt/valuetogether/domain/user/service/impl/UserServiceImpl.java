@@ -87,9 +87,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserCheckDuplicateUsernameRes checkDuplicateUsername(UserCheckDuplicateUsernameReq req) {
         UserValidator.validate(req);
-        boolean isDuplicated = userRepository.existsByUsername(req.getUsername());
 
-        return UserCheckDuplicateUsernameRes.builder().isDuplicated(isDuplicated).build();
+        return UserCheckDuplicateUsernameRes.builder()
+                .isDuplicated(userRepository.existsByUsername(req.getUsername()))
+                .build();
     }
 
     @Override
