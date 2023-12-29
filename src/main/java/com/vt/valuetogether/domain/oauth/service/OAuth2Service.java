@@ -1,14 +1,16 @@
 package com.vt.valuetogether.domain.oauth.service;
 
+import static com.vt.valuetogether.domain.oauth.constant.OAuth2Constant.DEFAULT_NAME;
+
 import com.vt.valuetogether.domain.oauth.OAuth2Attributes;
-import com.vt.valuetogether.domain.oauth.dto.OAuth2UserProfile;
-import com.vt.valuetogether.domain.user.entity.Provider;
+import com.vt.valuetogether.domain.oauth.dto.request.OAuth2LoginReq;
 import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -26,13 +28,9 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest); // Oauth 서비스에서 가져온 유저 정보를 담고 있음
+        OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        String providerType =
-                userRequest
-                        .getClientRegistration() // ex) naver, google, github
-                        .getRegistrationId()
-                        .toUpperCase();
+        String providerType = userRequest.getClientRegistration().getRegistrationId().toUpperCase();
 
         String userNameAttributeName =
                 userRequest
@@ -40,20 +38,20 @@ public class OAuth2Service extends DefaultOAuth2UserService {
                         .getProviderDetails()
                         .getUserInfoEndpoint()
                         .getUserNameAttributeName();
-        // google = sub 가 고유값, naver = id 가 고유값
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        OAuth2UserProfile oauthUserProfile = OAuth2Attributes.extract(providerType, attributes);
+        OAuth2LoginReq oAuth2LoginReq =
+                OAuth2Attributes.extract(providerType, attributes, makeRandomName());
 
-        User saveUser = userRepository.findByEmail(oauthUserProfile.getEmail());
+        User saveUser = userRepository.findByOauthId(oAuth2LoginReq.getOauthId());
 
-        if (saveUser == null || saveUser.getProvider() == Provider.LOCAL) {
-            save(oauthUserProfile);
+        if (saveUser == null) {
+            save(oAuth2LoginReq);
         }
 
         Map<String, Object> customAttribute =
-                customAttribute(attributes, userNameAttributeName, oauthUserProfile);
+                customAttribute(attributes, userNameAttributeName, oAuth2LoginReq);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(Role.USER.getValue())),
@@ -61,15 +59,26 @@ public class OAuth2Service extends DefaultOAuth2UserService {
                 userNameAttributeName);
     }
 
-    private void save(OAuth2UserProfile oauthUserProfile) {
-        //        String password = passwordEncoder.encode("oauth2Password"); // TODO: constant
+    private String makeRandomName() {
+        String randomName;
+        do {
+            randomName = generateRandomName();
+        } while (userRepository.existsByUsername(randomName));
+        return randomName;
+    }
+
+    private String generateRandomName() {
+        return DEFAULT_NAME + UUID.randomUUID().toString().substring(0, 6);
+    }
+
+    private void save(OAuth2LoginReq oAuth2LoginReq) {
         User user =
                 User.builder()
-                        .username(oauthUserProfile.getName())
-                        .email(oauthUserProfile.getEmail())
-                        .password("abcD1234@")
-                        .profileImageUrl(oauthUserProfile.getImageUrl())
-                        .provider(oauthUserProfile.getProvider())
+                        .username(oAuth2LoginReq.getUsername())
+                        .email(oAuth2LoginReq.getEmail())
+                        .profileImageUrl(oAuth2LoginReq.getImageUrl())
+                        .oauthId(oAuth2LoginReq.getOauthId())
+                        .provider(oAuth2LoginReq.getProvider())
                         .role(Role.USER)
                         .build();
 
@@ -79,12 +88,13 @@ public class OAuth2Service extends DefaultOAuth2UserService {
     private Map<String, Object> customAttribute(
             Map<String, Object> attributes,
             String userNameAttributeName,
-            OAuth2UserProfile oauthUserProfile) {
+            OAuth2LoginReq oauthUserProfile) {
         Map<String, Object> customAttribute = new LinkedHashMap<>();
         customAttribute.put(userNameAttributeName, attributes.get(userNameAttributeName));
+        customAttribute.put("username", oauthUserProfile.getUsername());
         customAttribute.put("provider", oauthUserProfile.getProvider());
-        customAttribute.put("name", oauthUserProfile.getName());
         customAttribute.put("email", oauthUserProfile.getEmail());
+        customAttribute.put("oAuthId", oauthUserProfile.getOauthId());
         return customAttribute;
     }
 }

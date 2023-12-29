@@ -1,4 +1,4 @@
-package com.vt.valuetogether.domain.oauth.dto;
+package com.vt.valuetogether.domain.oauth.dto.request;
 
 import com.vt.valuetogether.domain.user.entity.Provider;
 import lombok.AccessLevel;
@@ -8,17 +8,20 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OAuth2UserProfile {
+public class OAuth2LoginReq {
 
+    private String username;
+    private String oauthId;
     private String email;
-    private String name;
     private String imageUrl;
     private Provider provider;
 
     @Builder
-    private OAuth2UserProfile(String email, String name, String imageUrl, Provider provider) {
+    private OAuth2LoginReq(
+            String username, String oauthId, String email, String imageUrl, Provider provider) {
+        this.username = username;
+        this.oauthId = oauthId;
         this.email = email;
-        this.name = name;
         this.imageUrl = imageUrl;
         this.provider = provider;
     }
