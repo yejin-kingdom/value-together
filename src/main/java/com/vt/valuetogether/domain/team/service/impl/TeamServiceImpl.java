@@ -194,7 +194,10 @@ public class TeamServiceImpl implements TeamService {
 
         mailUtil.checkInviteCode(inviteCode.getCode(), code);
         Team team = teamRepository.findByTeamId(inviteCode.getTeamId());
+        TeamValidator.validate(team);
+
         User user = userRepository.findByUserId(inviteCode.getUserId());
+        UserValidator.validate(user);
 
         teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
         inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
