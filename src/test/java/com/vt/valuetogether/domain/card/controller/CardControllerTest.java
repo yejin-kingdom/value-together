@@ -8,13 +8,16 @@ import static org.springframework.http.MediaType.IMAGE_JPEG;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
+import com.vt.valuetogether.domain.card.dto.request.CardChangeSequenceReq;
 import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardChangeSequenceRes;
 import com.vt.valuetogether.domain.card.dto.response.CardDeleteRes;
 import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
@@ -160,5 +163,33 @@ class CardControllerTest extends BaseMvcTest {
                         .build();
         when(cardService.getCard(any())).thenReturn(cardGetRes);
         this.mockMvc.perform(get("/api/v1/cards/" + cardId)).andDo(print()).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("card 순서 이동 테스트")
+    void card_순서_이동() throws Exception {
+        Long categoryId = 1L;
+        Long cardId = 1L;
+        Double preSeq = 2.0;
+        Double postSeq = 3.0;
+        CardChangeSequenceReq cardChangeSequenceReq =
+                CardChangeSequenceReq.builder()
+                        .categoryId(categoryId)
+                        .cardId(cardId)
+                        .preSequence(preSeq)
+                        .postSequence(postSeq)
+                        .build();
+
+        String json = objectMapper.writeValueAsString(cardChangeSequenceReq);
+
+        CardChangeSequenceRes cardChangeSequenceRes = new CardChangeSequenceRes();
+        when(cardService.changeSequence(any())).thenReturn(cardChangeSequenceRes);
+        this.mockMvc
+                .perform(
+                        patch("/api/v1/cards/order")
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(cardChangeSequenceRes)))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }
