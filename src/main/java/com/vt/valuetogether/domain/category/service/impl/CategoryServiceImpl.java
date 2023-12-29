@@ -1,6 +1,5 @@
 package com.vt.valuetogether.domain.category.service.impl;
 
-import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_ROLE;
 import static java.lang.Boolean.FALSE;
 
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
@@ -15,7 +14,6 @@ import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
-import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.validator.CategoryValidator;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
@@ -63,24 +61,18 @@ public class CategoryServiceImpl implements CategoryService {
         Team team = category.getTeam();
         TeamValidator.validate(team);
 
-        team.getTeamRoleList().stream()
-                .filter(
-                        teamRole ->
-                                teamRole.getUser().getUsername().equals(req.getUsername()) && !teamRole.isDeleted())
-                .findAny()
-                .ifPresentOrElse(
-                        teamRole ->
-                                categoryRepository.save(
-                                        Category.builder()
-                                                .categoryId(category.getCategoryId())
-                                                .name(req.getName())
-                                                .sequence(category.getSequence())
-                                                .team(team)
-                                                .isDeleted(false)
-                                                .build()),
-                        () -> {
-                            throw new GlobalException(FORBIDDEN_TEAM_ROLE);
-                        });
+        TeamRoleValidator.validate(team.getTeamRoleList());
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+
+        categoryRepository.save(
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(req.getName())
+                        .sequence(category.getSequence())
+                        .team(team)
+                        .isDeleted(false)
+                        .build());
+
         return new CategoryEditRes();
     }
 
