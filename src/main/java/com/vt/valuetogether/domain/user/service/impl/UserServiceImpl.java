@@ -137,6 +137,12 @@ public class UserServiceImpl implements UserService {
         UserValidator.checkAuthorizedEmail(authEmail.isChecked());
     }
 
+    public User getUser(String username) {
+        User user = userRepository.findByUsername(username);
+        UserValidator.validate(user);
+        return user;
+    }
+
     private User getUser(Long userId) {
         User user = userRepository.findByUserId(userId);
         UserValidator.validate(user);
