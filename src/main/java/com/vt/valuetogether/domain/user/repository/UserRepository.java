@@ -1,6 +1,7 @@
 package com.vt.valuetogether.domain.user.repository;
 
 import com.vt.valuetogether.domain.user.entity.User;
+import java.util.List;
 import org.springframework.data.repository.RepositoryDefinition;
 
 @RepositoryDefinition(domainClass = User.class, idClass = Long.class)
@@ -14,4 +15,6 @@ public interface UserRepository {
     Boolean existsByUsername(String username);
 
     User findByUserId(Long userId);
+
+    List<User> findAllByUsernameIn(List<String> username);
 }

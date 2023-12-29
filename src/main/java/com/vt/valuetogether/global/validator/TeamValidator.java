@@ -14,7 +14,7 @@ public class TeamValidator {
     private static final String TEAM_BACKGROUND_COLOR_REGEX = "^#[0-9]{5}$";
 
     public static void validate(Team team) {
-        if (checkIsNull(team)) {
+        if (checkIsNull(team) || team.isDeleted()) {
             throw new GlobalException(NOT_FOUND_TEAM);
         }
     }
