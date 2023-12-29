@@ -101,6 +101,7 @@ endif::[]
 
 include::{snippets}/card-controller-test/card_저장/auto-section.adoc[]
 include::{snippets}/card-controller-test/card_수정/auto-section.adoc[]
+include::{snippets}/card-controller-test/card_삭제/auto-section.adoc[]
 
 == checklist API
 
