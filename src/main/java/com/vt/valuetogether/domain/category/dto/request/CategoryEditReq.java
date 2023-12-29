@@ -9,14 +9,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategorySaveReq {
-    private Long teamId;
+public class CategoryEditReq {
+    private Long categoryId;
     private String name;
     private String username;
 
     @Builder
-    private CategorySaveReq(Long teamId, String name, String username) {
-        this.teamId = teamId;
+    private CategoryEditReq(Long categoryId, String name, String username) {
+        this.categoryId = categoryId;
         this.name = name;
         this.username = username;
     }

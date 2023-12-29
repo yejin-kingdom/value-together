@@ -1,8 +1,11 @@
 package com.vt.valuetogether.domain.category.service.impl;
 
+import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_ROLE;
 import static java.lang.Boolean.FALSE;
 
+import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
+import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
@@ -12,6 +15,8 @@ import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.global.exception.GlobalException;
+import com.vt.valuetogether.global.validator.CategoryValidator;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
@@ -22,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+
     private final CategoryRepository categoryRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
@@ -43,6 +49,39 @@ public class CategoryServiceImpl implements CategoryService {
                                 .isDeleted(FALSE)
                                 .team(team)
                                 .build()));
+    }
+
+    @Override
+    @Transactional
+    public CategoryEditRes editCategory(CategoryEditReq req) {
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
+        CategoryValidator.validate(category);
+
+        Team team = category.getTeam();
+        TeamValidator.validate(team);
+
+        team.getTeamRoleList().stream()
+                .filter(
+                        teamRole ->
+                                teamRole.getUser().getUsername().equals(req.getUsername()) && !teamRole.isDeleted())
+                .findAny()
+                .ifPresentOrElse(
+                        teamRole ->
+                                categoryRepository.save(
+                                        Category.builder()
+                                                .categoryId(category.getCategoryId())
+                                                .name(req.getName())
+                                                .sequence(category.getSequence())
+                                                .team(team)
+                                                .isDeleted(false)
+                                                .build()),
+                        () -> {
+                            throw new GlobalException(FORBIDDEN_TEAM_ROLE);
+                        });
+        return new CategoryEditRes();
     }
 
     private Double getMaxSequence(Long teamId) {

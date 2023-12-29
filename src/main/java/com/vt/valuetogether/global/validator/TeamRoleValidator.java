@@ -7,6 +7,7 @@ import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.global.exception.GlobalException;
 import java.util.List;
+import org.springframework.util.CollectionUtils;
 
 public class TeamRoleValidator {
 
@@ -23,7 +24,7 @@ public class TeamRoleValidator {
     }
 
     private static boolean checkIsNull(List<TeamRole> teamRoleList) {
-        return teamRoleList.isEmpty();
+        return CollectionUtils.isEmpty(teamRoleList);
     }
 
     private static boolean teamRoleListContainsUser(List<TeamRole> teamRoleList, User user) {
