@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 import com.vt.valuetogether.domain.user.dto.request.UserCheckDuplicateUsernameReq;
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
@@ -13,6 +14,7 @@ import com.vt.valuetogether.domain.user.dto.request.UserUpdateProfileReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
+import com.vt.valuetogether.domain.user.dto.response.UserGetProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.entity.Role;
@@ -170,7 +172,7 @@ class UserServiceImplTest implements UserTest {
                         .email(TEST_USER_EMAIL)
                         .build();
 
-        given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(TEST_USER);
+        given(userRepository.existsByUsername(req.getUsername())).willReturn(true);
 
         // when
         GlobalException exception =
@@ -198,7 +200,7 @@ class UserServiceImplTest implements UserTest {
         EmailAuth emailAuth =
                 EmailAuth.builder().email(TEST_USER_EMAIL).code("aaa").isChecked(true).build();
 
-        given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(null);
+        given(userRepository.existsByUsername(TEST_USER_NAME)).willReturn(false);
         given(userRepository.save(any(User.class))).willReturn(TEST_USER);
         given(mailUtil.getEmailAuth(TEST_USER_EMAIL)).willReturn(emailAuth);
 
@@ -207,7 +209,7 @@ class UserServiceImplTest implements UserTest {
 
         // then
         verify(passwordEncoder).encode(TEST_USER_PASSWORD);
-        verify(userRepository).findByUsername(TEST_USER_NAME);
+        verify(userRepository).existsByUsername(TEST_USER_NAME);
         verify(userRepository).save(any(User.class));
 
         verify(userRepository).save(argumentCaptor.capture());
@@ -221,7 +223,7 @@ class UserServiceImplTest implements UserTest {
         UserCheckDuplicateUsernameReq req =
                 UserCheckDuplicateUsernameReq.builder().username(TEST_ANOTHER_USER_NAME).build();
 
-        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_ANOTHER_USER);
+        given(userRepository.existsByUsername(req.getUsername())).willReturn(true);
 
         // when
         UserCheckDuplicateUsernameRes res = userService.checkDuplicateUsername(req);
@@ -235,9 +237,12 @@ class UserServiceImplTest implements UserTest {
     void verifyPasswordTest() {
         // given
         UserVerifyPasswordReq req =
-                UserVerifyPasswordReq.builder().userId(TEST_USER_ID).password(TEST_USER_PASSWORD).build();
+                UserVerifyPasswordReq.builder()
+                        .username(TEST_USER_NAME)
+                        .password(TEST_USER_PASSWORD)
+                        .build();
 
-        given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
+        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_USER);
         given(passwordEncoder.matches(req.getPassword(), TEST_USER_PASSWORD))
                 .willReturn(req.getPassword().equals(TEST_USER_PASSWORD));
 
@@ -254,7 +259,7 @@ class UserServiceImplTest implements UserTest {
         // given
         UserUpdateProfileReq req =
                 UserUpdateProfileReq.builder()
-                        .userId(TEST_USER_ID)
+                        .preUsername(TEST_USER_NAME)
                         .username(TEST_ANOTHER_USER_NAME)
                         .password(TEST_ANOTHER_USER_PASSWORD)
                         .introduce(TEST_ANOTHER_USER_INTRODUCE)
@@ -265,7 +270,7 @@ class UserServiceImplTest implements UserTest {
 
         MultipartFile multipartFile =
                 new MockMultipartFile(
-                        "image", fileResource.getFilename(), "image/jpeg", fileResource.getInputStream());
+                        "image", fileResource.getFilename(), IMAGE_JPEG_VALUE, fileResource.getInputStream());
 
         User UPDATED_USER =
                 User.builder()
@@ -278,7 +283,7 @@ class UserServiceImplTest implements UserTest {
                         .role(Role.USER)
                         .build();
 
-        given(userRepository.findByUserId(req.getUserId())).willReturn(TEST_USER);
+        given(userRepository.findByUsername(req.getPreUsername())).willReturn(TEST_USER);
         given(passwordEncoder.encode(req.getPassword())).willReturn(req.getPassword());
         given(s3Util.uploadFile(multipartFile, FilePath.PROFILE))
                 .willReturn(TEST_ANOTHER_USER_PROFILE_URL);
@@ -293,5 +298,20 @@ class UserServiceImplTest implements UserTest {
         assertEquals(TEST_ANOTHER_USER_PASSWORD, argumentCaptor.getValue().getPassword());
         assertEquals(TEST_ANOTHER_USER_INTRODUCE, argumentCaptor.getValue().getIntroduce());
         assertEquals(TEST_ANOTHER_USER_PROFILE_URL, argumentCaptor.getValue().getProfileImageUrl());
+    }
+
+    @Test
+    @DisplayName("프로필 조회")
+    void getProfileTest() {
+        // given
+        given(userRepository.findByUserId(TEST_USER_ID)).willReturn(TEST_USER);
+
+        // when
+        UserGetProfileRes res = userService.getProfile(TEST_USER_ID);
+
+        // then
+        assertEquals(TEST_USER_NAME, res.getUsername());
+        assertEquals(TEST_USER_EMAIL, res.getEmail());
+        assertEquals(TEST_USER_INTRODUCE, res.getIntroduce());
     }
 }

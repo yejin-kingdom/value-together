@@ -7,11 +7,11 @@ import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserGetProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyPasswordRes;
-import com.vt.valuetogether.domain.user.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
@@ -27,5 +27,5 @@ public interface UserService {
 
     UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile);
 
-    User getUser(String username);
+    UserGetProfileRes getProfile(Long userId);
 }

@@ -7,6 +7,7 @@ import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserGetProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
@@ -17,6 +18,7 @@ import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
+import com.vt.valuetogether.domain.user.service.UserServiceMapper;
 import com.vt.valuetogether.global.validator.S3Validator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import com.vt.valuetogether.infra.mail.MailUtil;
@@ -64,8 +66,7 @@ public class UserServiceImpl implements UserService {
     public UserSignupRes signup(UserSignupReq req) {
         UserValidator.validate(req);
 
-        User user = userRepository.findByUsername(req.getUsername());
-        UserValidator.checkDuplicatedUsername(user);
+        UserValidator.checkDuplicatedUsername(userRepository.existsByUsername(req.getUsername()));
 
         checkAuthorizedEmail(req.getEmail());
 
@@ -86,15 +87,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserCheckDuplicateUsernameRes checkDuplicateUsername(UserCheckDuplicateUsernameReq req) {
         UserValidator.validate(req);
-        User user = userRepository.findByUsername(req.getUsername());
-        boolean isDuplicated = (user != null);
 
-        return UserCheckDuplicateUsernameRes.builder().isDuplicated(isDuplicated).build();
+        return UserCheckDuplicateUsernameRes.builder()
+                .isDuplicated(userRepository.existsByUsername(req.getUsername()))
+                .build();
     }
 
     @Override
     public UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req) {
-        User savedUser = getUser(req.getUserId());
+        User savedUser = getUser(req.getUsername());
         boolean isMatched = passwordEncoder.matches(req.getPassword(), savedUser.getPassword());
 
         return UserVerifyPasswordRes.builder().isMatched(isMatched).build();
@@ -104,13 +105,13 @@ public class UserServiceImpl implements UserService {
     public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile) {
 
         UserValidator.validate(req);
-        User savedUser = getUser(req.getUserId());
+        User savedUser = getUser(req.getPreUsername());
 
         String imageUrl = savedUser.getProfileImageUrl();
         if (!imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
             s3Util.deleteFile(imageUrl, FilePath.PROFILE);
         }
-        if (multipartFile.isEmpty()) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
             imageUrl = DEFAULT_PROFILE_IMAGE_URL;
         } else {
             S3Validator.isProfileImageFile(multipartFile);
@@ -132,19 +133,21 @@ public class UserServiceImpl implements UserService {
         return new UserUpdateProfileRes();
     }
 
+    @Override
+    public UserGetProfileRes getProfile(Long userId) {
+        User user = userRepository.findByUserId(userId);
+        UserValidator.validate(user);
+
+        return UserServiceMapper.INSTANCE.toUserGetProfileRes(user);
+    }
+
     private void checkAuthorizedEmail(String email) {
         EmailAuth authEmail = mailUtil.getEmailAuth(email);
         UserValidator.checkAuthorizedEmail(authEmail.isChecked());
     }
 
-    public User getUser(String username) {
+    private User getUser(String username) {
         User user = userRepository.findByUsername(username);
-        UserValidator.validate(user);
-        return user;
-    }
-
-    private User getUser(Long userId) {
-        User user = userRepository.findByUserId(userId);
         UserValidator.validate(user);
         return user;
     }

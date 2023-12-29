@@ -8,7 +8,7 @@ import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.comment.dto.request.CommentSaveReq;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.comment.repository.CommentRepository;
-import com.vt.valuetogether.domain.user.service.UserService;
+import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.test.CardTest;
 import com.vt.valuetogether.test.CommentTest;
 import com.vt.valuetogether.test.UserTest;
@@ -25,7 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CommentServiceImplTest implements CommentTest, UserTest, CardTest {
     @Mock CommentRepository commentRepository;
 
-    @Mock UserService userService;
+    @Mock UserRepository userRepository;
 
     @Mock CardRepository cardRepository;
 
@@ -44,7 +44,7 @@ class CommentServiceImplTest implements CommentTest, UserTest, CardTest {
                         .username(TEST_USER_NAME)
                         .build();
 
-        given(userService.getUser(req.getUsername())).willReturn(TEST_USER);
+        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_USER);
         given(cardRepository.findByCardId(req.getCardId())).willReturn(TEST_CARD);
 
         // when
