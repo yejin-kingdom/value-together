@@ -48,7 +48,7 @@ endif::[]
 |정상 처리 되었습니다
 
 |1000
-|알 수 없는 애러가 발생했습니다.
+|알 수 없는 에러가 발생했습니다.
 
 |1001
 |접근 권한이 없습니다.
@@ -135,6 +135,7 @@ endif::[]
 include::{snippets}/card-controller-test/card_저장/auto-section.adoc[]
 include::{snippets}/card-controller-test/card_수정/auto-section.adoc[]
 include::{snippets}/card-controller-test/card_삭제/auto-section.adoc[]
+include::{snippets}/card-controller-test/card_단건_조회/auto-section.adoc[]
 
 == checklist API
 
