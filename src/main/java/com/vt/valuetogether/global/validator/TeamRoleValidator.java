@@ -9,6 +9,7 @@ import com.vt.valuetogether.global.exception.GlobalException;
 import java.util.List;
 
 public class TeamRoleValidator {
+
     public static void validate(List<TeamRole> teamRoleList) {
         if (checkIsNull(teamRoleList)) {
             throw new GlobalException(NOT_FOUND_TEAM_ROLE);
@@ -27,6 +28,7 @@ public class TeamRoleValidator {
 
     private static boolean teamRoleListContainsUser(List<TeamRole> teamRoleList, User user) {
         return teamRoleList.stream()
+                .filter(teamRole -> !teamRole.isDeleted())
                 .anyMatch(teamRole -> teamRole.getUser().getUserId().equals(user.getUserId()));
     }
 }

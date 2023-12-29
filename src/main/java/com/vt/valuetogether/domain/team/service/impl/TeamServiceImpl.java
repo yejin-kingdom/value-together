@@ -1,13 +1,17 @@
 package com.vt.valuetogether.domain.team.service.impl;
 
+import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_TEAM_MEMBER;
+
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.entity.Role;
 import com.vt.valuetogether.domain.team.entity.Team;
@@ -218,5 +222,40 @@ public class TeamServiceImpl implements TeamService {
         TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
 
         return TeamServiceMapper.INSTANCE.toTeamGetRes(team);
+    }
+
+    @Transactional
+    @Override
+    public TeamMemberDeleteRes deleteMember(TeamMemberDeleteReq req) {
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        User member = userRepository.findByUsername(req.getMemberName());
+        UserValidator.validate(member);
+
+        Team team = teamRepository.findByTeamId(req.getTeamId());
+
+        team.getTeamRoleList().stream()
+                .filter(
+                        t ->
+                                (t.getRole() == Role.LEADER && t.getUser().equals(user))
+                                        || t.getUser().equals(member))
+                .filter(teamRole -> teamRole.getUser().getUsername().equals(member.getUsername()))
+                .findAny()
+                .ifPresentOrElse(
+                        teamRole ->
+                                teamRoleRepository.save(
+                                        TeamRole.builder()
+                                                .teamRoleId(teamRole.getTeamRoleId())
+                                                .team(team)
+                                                .user(member)
+                                                .isDeleted(true)
+                                                .role(teamRole.getRole())
+                                                .build()),
+                        () -> {
+                            throw new GlobalException(NOT_FOUND_TEAM_MEMBER);
+                        });
+
+        return new TeamMemberDeleteRes();
     }
 }
