@@ -7,6 +7,7 @@ import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserGetProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,5 +72,10 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         req.setUserId(userDetails.getUser().getUserId());
         return RestResponse.success(userService.updateProfile(req, multipartfile));
+    }
+
+    @GetMapping("/{userId}")
+    public RestResponse<UserGetProfileRes> getProfile(@PathVariable Long userId) {
+        return RestResponse.success(userService.getProfile(userId));
     }
 }

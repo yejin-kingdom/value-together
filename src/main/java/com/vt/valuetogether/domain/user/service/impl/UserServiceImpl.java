@@ -7,6 +7,7 @@ import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserGetProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
@@ -17,6 +18,7 @@ import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.UserService;
+import com.vt.valuetogether.domain.user.service.UserServiceMapper;
 import com.vt.valuetogether.global.validator.S3Validator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import com.vt.valuetogether.infra.mail.MailUtil;
@@ -130,6 +132,13 @@ public class UserServiceImpl implements UserService {
                         .build());
 
         return new UserUpdateProfileRes();
+    }
+
+    @Override
+    public UserGetProfileRes getProfile(Long userId) {
+        User user = getUser(userId);
+
+        return UserServiceMapper.INSTANCE.toUserGetProfileRes(user);
     }
 
     private void checkAuthorizedEmail(String email) {
