@@ -36,5 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-application-prod.yml
-application-oauth.yml
+application**.yml

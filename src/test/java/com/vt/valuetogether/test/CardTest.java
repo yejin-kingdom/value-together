@@ -14,6 +14,11 @@ public interface CardTest {
     LocalDateTime TEST_DEADLINE = LocalDateTime.now();
     Long categoryId = 1L;
 
+    String TEST_UPDATED_NAME = "updatedName";
+    String TEST_UPDATED_DESCRIPTION = "updatedDescription";
+    String TEST_UPDATED_FILE_URL = "updatedUrl";
+    LocalDateTime TEST_UPDATED_DEADLINE = LocalDateTime.now().plusDays(1L);
+
     Card TEST_CARD =
             Card.builder()
                     .cardId(TEST_CARD_ID)
@@ -22,6 +27,17 @@ public interface CardTest {
                     .fileUrl(TEST_FILE_URL)
                     .sequence(TEST_SEQUENCE)
                     .deadline(TEST_DEADLINE)
+                    .categoryId(categoryId)
+                    .build();
+
+    Card TEST_UPDATED_CARD =
+            Card.builder()
+                    .cardId(TEST_CARD_ID)
+                    .name(TEST_UPDATED_NAME)
+                    .description(TEST_UPDATED_DESCRIPTION)
+                    .fileUrl(TEST_UPDATED_FILE_URL)
+                    .sequence(TEST_SEQUENCE)
+                    .deadline(TEST_UPDATED_DEADLINE)
                     .categoryId(categoryId)
                     .build();
 }

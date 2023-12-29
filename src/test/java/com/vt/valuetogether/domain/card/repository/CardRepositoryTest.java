@@ -46,4 +46,21 @@ class CardRepositoryTest implements CardTest {
         // then
         assertThat(maxSequence).isEqualTo(saveCard.getSequence());
     }
+
+    @Test
+    @DisplayName("id로 card 조회 테스트")
+    void id_card_조회() {
+        // given
+        Card saveCard = cardRepository.save(TEST_CARD);
+
+        // when
+        Card card = cardRepository.findByCardId(saveCard.getCardId());
+
+        // then
+        assertThat(card.getName()).isEqualTo(saveCard.getName());
+        assertThat(card.getDescription()).isEqualTo(saveCard.getDescription());
+        assertThat(card.getFileUrl()).isEqualTo(saveCard.getFileUrl());
+        assertThat(card.getSequence()).isEqualTo(saveCard.getSequence());
+        assertThat(card.getDeadline()).isEqualTo(saveCard.getDeadline());
+    }
 }

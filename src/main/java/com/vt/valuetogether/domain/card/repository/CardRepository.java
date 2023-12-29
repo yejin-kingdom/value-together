@@ -10,4 +10,6 @@ public interface CardRepository {
 
     @Query(value = "select ifnull(max(c.sequence), 0) from Card c where c.categoryId=:categoryId")
     Double getMaxSequence(Long categoryId);
+
+    Card findByCardId(Long cardId);
 }

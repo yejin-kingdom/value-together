@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
+import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.infra.s3.S3Util;
 import com.vt.valuetogether.test.CardTest;
@@ -60,6 +61,43 @@ class CardServiceImplTest implements CardTest {
 
         // then
         verify(cardRepository).getMaxSequence(any());
+        verify(cardRepository).save(any());
+        verify(s3Util).uploadFile(any(), any());
+    }
+
+    @Test
+    @DisplayName("card 수정 테스트")
+    void card_수정() throws Exception {
+        // given
+        Long cardId = 1L;
+        String name = "updatedName";
+        String description = "updatedDesc";
+        LocalDateTime deadline = LocalDateTime.now();
+        CardUpdateReq cardUpdateReq =
+                CardUpdateReq.builder()
+                        .cardId(cardId)
+                        .name(name)
+                        .description(description)
+                        .deadline(deadline)
+                        .build();
+
+        String fileUrl = "images/image1.jpg";
+        Resource fileResource = new ClassPathResource(fileUrl);
+        MockMultipartFile multipartFile =
+                new MockMultipartFile(
+                        "image1",
+                        fileResource.getFilename(),
+                        IMAGE_JPEG.getType(),
+                        fileResource.getInputStream());
+        when(cardRepository.findByCardId(any())).thenReturn(TEST_CARD);
+        when(cardRepository.save(any())).thenReturn(TEST_UPDATED_CARD);
+        when(s3Util.uploadFile(any(), any())).thenReturn(TEST_FILE_URL);
+
+        // when
+        cardService.updateCard(cardUpdateReq, multipartFile);
+
+        // then
+        verify(cardRepository).findByCardId(any());
         verify(cardRepository).save(any());
         verify(s3Util).uploadFile(any(), any());
     }

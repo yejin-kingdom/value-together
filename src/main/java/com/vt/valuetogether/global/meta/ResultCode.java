@@ -42,6 +42,7 @@ public enum ResultCode {
     // 카테고리 4000번대
 
     // 카드 5000번대
+    NOT_FOUND_CARD(HttpStatus.NOT_FOUND, 5000, "카드 정보를 찾을 수 없습니다."),
 
     // 작업자 6000번대
 

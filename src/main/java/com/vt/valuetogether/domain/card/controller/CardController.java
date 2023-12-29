@@ -1,10 +1,13 @@
 package com.vt.valuetogether.domain.card.controller;
 
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
+import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
+import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.service.CardService;
 import com.vt.valuetogether.global.response.RestResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -19,7 +22,15 @@ public class CardController {
 
     @PostMapping
     public RestResponse<CardSaveRes> saveCard(
-            @RequestPart CardSaveReq cardSaveReq, @RequestPart MultipartFile multipartFile) {
+            @RequestPart CardSaveReq cardSaveReq,
+            @RequestPart(required = false) MultipartFile multipartFile) {
         return RestResponse.success(cardService.saveCard(cardSaveReq, multipartFile));
+    }
+
+    @PatchMapping
+    public RestResponse<CardUpdateRes> updateCard(
+            @RequestPart CardUpdateReq cardUpdateReq,
+            @RequestPart(required = false) MultipartFile multipartFile) {
+        return RestResponse.success(cardService.updateCard(cardUpdateReq, multipartFile));
     }
 }
