@@ -62,8 +62,8 @@ public class UserValidator {
         }
     }
 
-    public static void checkDuplicatedUsername(User user) {
-        if (!checkIsNull(user)) {
+    public static void checkDuplicatedUsername(boolean isDuplicated) {
+        if (isDuplicated) {
             throw new GlobalException(DUPLICATED_USERNAME);
         }
     }

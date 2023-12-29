@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 public interface CardTest {
 
     Long TEST_CARD_ID = 1L;
-
     String TEST_NAME = "name";
     String TEST_DESCRIPTION = "description";
     String TEST_FILE_URL = "url";
@@ -18,6 +17,13 @@ public interface CardTest {
     String TEST_UPDATED_DESCRIPTION = "updatedDescription";
     String TEST_UPDATED_FILE_URL = "updatedUrl";
     LocalDateTime TEST_UPDATED_DEADLINE = LocalDateTime.now().plusDays(1L);
+
+    Long TEST_ANOTHER_CARD_ID = 2L;
+    String TEST_ANOTHER_NAME = "anotherName";
+    String TEST_ANOTHER_DESCRIPTION = "anotherDescription";
+    String TEST_ANOTHER_FILE_URL = "anotherUrl";
+    Double TEST_ANOTHER_SEQUENCE = 2.0;
+    LocalDateTime TEST_ANOTHER_DEADLINE = LocalDateTime.now().plusDays(1L);
 
     Card TEST_CARD =
             Card.builder()
@@ -38,6 +44,17 @@ public interface CardTest {
                     .fileUrl(TEST_UPDATED_FILE_URL)
                     .sequence(TEST_SEQUENCE)
                     .deadline(TEST_UPDATED_DEADLINE)
+                    .categoryId(TEST_CATEGORY_ID)
+                    .build();
+
+    Card TEST_ANOTHER_CARD =
+            Card.builder()
+                    .cardId(TEST_ANOTHER_CARD_ID)
+                    .name(TEST_ANOTHER_NAME)
+                    .description(TEST_ANOTHER_DESCRIPTION)
+                    .fileUrl(TEST_ANOTHER_FILE_URL)
+                    .sequence(TEST_ANOTHER_SEQUENCE)
+                    .deadline(TEST_ANOTHER_DEADLINE)
                     .categoryId(TEST_CATEGORY_ID)
                     .build();
 }

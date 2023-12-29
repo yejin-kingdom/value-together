@@ -10,12 +10,12 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserVerifyPasswordReq {
-    private Long userId;
+    private String username;
     private String password;
 
     @Builder
-    private UserVerifyPasswordReq(Long userId, String password) {
-        this.userId = userId;
+    private UserVerifyPasswordReq(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 }
