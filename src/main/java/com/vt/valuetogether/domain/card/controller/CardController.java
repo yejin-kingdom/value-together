@@ -1,8 +1,10 @@
 package com.vt.valuetogether.domain.card.controller;
 
+import com.vt.valuetogether.domain.card.dto.request.CardChangeSequenceReq;
 import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardChangeSequenceRes;
 import com.vt.valuetogether.domain.card.dto.response.CardDeleteRes;
 import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
@@ -49,5 +51,11 @@ public class CardController {
     @GetMapping("/{cardId}")
     public RestResponse<CardGetRes> getCard(@PathVariable Long cardId) {
         return RestResponse.success(cardService.getCard(cardId));
+    }
+
+    @PatchMapping("/order")
+    public RestResponse<CardChangeSequenceRes> changeSequence(
+            @RequestBody CardChangeSequenceReq cardChangeSequenceReq) {
+        return RestResponse.success(cardService.changeSequence(cardChangeSequenceReq));
     }
 }
