@@ -20,6 +20,7 @@ import com.vt.valuetogether.domain.user.repository.InviteRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.InviteCodeService;
 import com.vt.valuetogether.global.exception.GlobalException;
+import com.vt.valuetogether.global.mapper.TeamServiceMapper;
 import com.vt.valuetogether.global.meta.ResultCode;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
@@ -31,8 +32,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -203,13 +202,5 @@ public class TeamServiceImpl implements TeamService {
         inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
 
         return new TeamMemberInviteRes();
-    }
-
-    @Mapper
-    public interface TeamServiceMapper {
-
-        TeamServiceMapper INSTANCE = Mappers.getMapper(TeamServiceMapper.class);
-
-        TeamCreateRes toCreateTeamRes(Team team);
     }
 }
