@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistDeleteReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistSaveReq;
 import com.vt.valuetogether.domain.checklist.dto.request.ChecklistUpdateReq;
@@ -22,6 +23,7 @@ class ChecklistServiceImplTest implements ChecklistTest {
     @InjectMocks private ChecklistServiceImpl checklistService;
 
     @Mock private ChecklistRepository checklistRepository;
+    @Mock private CardRepository cardRepository;
 
     @Test
     @DisplayName("checklist 저장 테스트")
@@ -29,12 +31,14 @@ class ChecklistServiceImplTest implements ChecklistTest {
         // given
         String title = "title";
         ChecklistSaveReq checklistSaveReq = ChecklistSaveReq.builder().title(title).build();
+        when(cardRepository.findByCardId(any())).thenReturn(TEST_CARD);
         when(checklistRepository.save(any())).thenReturn(TEST_CHECKLIST);
 
         // when
         checklistService.saveChecklist(checklistSaveReq);
 
         // then
+        verify(cardRepository).findByCardId(any());
         verify(checklistRepository).save(any());
     }
 

@@ -2,6 +2,7 @@ package com.vt.valuetogether.domain.task.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
 import com.vt.valuetogether.domain.task.entity.Task;
 import com.vt.valuetogether.test.TaskTest;
@@ -18,11 +19,13 @@ import org.springframework.test.context.ActiveProfiles;
 class TaskRepositoryTest implements TaskTest {
     @Autowired private ChecklistRepository checklistRepository;
     @Autowired private TaskRepository taskRepository;
+    @Autowired private CardRepository cardRepository;
 
     @Test
     @DisplayName("task 저장 테스트")
     void task_저장() {
         // given
+        cardRepository.save(TEST_CARD);
         checklistRepository.save(TEST_CHECKLIST);
 
         // when
@@ -37,6 +40,7 @@ class TaskRepositoryTest implements TaskTest {
     @DisplayName("id로 task 조회 테스트")
     void id_task_조회() {
         // given
+        cardRepository.save(TEST_CARD);
         checklistRepository.save(TEST_CHECKLIST);
         Task saveTask = taskRepository.save(TEST_TASK);
 
@@ -52,6 +56,7 @@ class TaskRepositoryTest implements TaskTest {
     @DisplayName("task 삭제 테스트")
     void task_삭제() {
         // given
+        cardRepository.save(TEST_CARD);
         checklistRepository.save(TEST_CHECKLIST);
         Task saveTask = taskRepository.save(TEST_TASK);
 
