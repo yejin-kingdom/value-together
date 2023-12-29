@@ -2,14 +2,19 @@ package com.vt.valuetogether.domain.card.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 
+import com.vt.valuetogether.domain.card.dto.request.CardChangeSequenceReq;
 import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
 import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
+import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.infra.s3.S3Util;
 import com.vt.valuetogether.test.CardTest;
@@ -142,5 +147,31 @@ class CardServiceImplTest implements CardTest {
         assertThat(cardGetRes.getFileUrl()).isEqualTo(TEST_FILE_URL);
         assertThat(cardGetRes.getDeadline()).isEqualTo(deadline);
         verify(cardRepository).findByCardId(any());
+    }
+
+    @Test
+    @DisplayName("card 순서 이동 테스트")
+    void card_순서_이동() {
+        // given
+        Long categoryId = 1L;
+        Long cardId = 1L;
+        Double preSequence = 2.0;
+        Double postSequence = 3.0;
+
+        CardChangeSequenceReq cardChangeSequenceReq =
+                CardChangeSequenceReq.builder()
+                        .categoryId(categoryId)
+                        .cardId(cardId)
+                        .preSequence(preSequence)
+                        .postSequence(postSequence)
+                        .build();
+
+        given(cardRepository.findByCardId(anyLong())).willReturn(TEST_CARD);
+
+        // when
+        cardService.changeSequence(cardChangeSequenceReq);
+
+        // then
+        verify(cardRepository, times(1)).save(any(Card.class));
     }
 }

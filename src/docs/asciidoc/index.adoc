@@ -136,6 +136,7 @@ include::{snippets}/card-controller-test/card_저장/auto-section.adoc[]
 include::{snippets}/card-controller-test/card_수정/auto-section.adoc[]
 include::{snippets}/card-controller-test/card_삭제/auto-section.adoc[]
 include::{snippets}/card-controller-test/card_단건_조회/auto-section.adoc[]
+include::{snippets}/card-controller-test/card_순서_이동/auto-section.adoc[]
 
 == checklist API
 
