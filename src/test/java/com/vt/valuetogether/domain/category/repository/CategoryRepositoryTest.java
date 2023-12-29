@@ -33,4 +33,19 @@ class CategoryRepositoryTest implements CategoryTest {
         assertThat(category.getSequence()).isEqualTo(TEST_CATEGORY_SEQUENCE);
         assertThat(category.getIsDeleted()).isEqualTo(TEST_CATEGORY_IS_DELETED);
     }
+
+    @Test
+    @DisplayName("teamId로 max sequence 조회 테스트")
+    void teamId_max_sequence_조회() {
+        // given
+        Long teamId = 1L;
+        teamRepository.save(TEST_TEAM);
+        Category saveCategory = categoryRepository.save(TEST_CATEGORY);
+
+        // when
+        Double maxSequence = categoryRepository.getMaxSequence(teamId);
+
+        // then
+        assertThat(maxSequence).isEqualTo(saveCategory.getSequence() + 1.0);
+    }
 }
