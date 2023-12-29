@@ -27,13 +27,6 @@ jobs:
           echo "${{ secrets.YML_PROD }}" > ./application-prod.yml
         shell: bash
 
-      - name: make application-oauth.yml
-        run: |
-          cd ./src/main/resources
-          touch ./application-oauth.yml
-          echo "${{ secrets.YML_OAUTH }}" > ./application-oauth.yml
-        shell: bash
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
