@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.card.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,10 +9,14 @@ import static org.springframework.http.MediaType.IMAGE_JPEG;
 import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.infra.s3.S3Util;
 import com.vt.valuetogether.test.CardTest;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -117,5 +122,25 @@ class CardServiceImplTest implements CardTest {
         // then
         verify(cardRepository).findByCardId(any());
         verify(cardRepository).delete(any());
+    }
+
+    @Test
+    @DisplayName("card 단건 조회 테스트")
+    void card_단건_조회() {
+        // given
+        Long cardId = 1L;
+        ZonedDateTime zonedDateTime = TEST_DEADLINE.atZone(ZoneId.of("Asia/Seoul"));
+        String deadline = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        when(cardRepository.findByCardId(any())).thenReturn(TEST_CARD);
+
+        // when
+        CardGetRes cardGetRes = cardService.getCard(cardId);
+
+        // then
+        assertThat(cardGetRes.getName()).isEqualTo(TEST_NAME);
+        assertThat(cardGetRes.getDescription()).isEqualTo(TEST_DESCRIPTION);
+        assertThat(cardGetRes.getFileUrl()).isEqualTo(TEST_FILE_URL);
+        assertThat(cardGetRes.getDeadline()).isEqualTo(deadline);
+        verify(cardRepository).findByCardId(any());
     }
 }
