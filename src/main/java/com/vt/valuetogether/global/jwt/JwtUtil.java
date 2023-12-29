@@ -1,5 +1,6 @@
 package com.vt.valuetogether.global.jwt;
 
+import com.vt.valuetogether.global.validator.TokenValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
@@ -69,11 +70,13 @@ public class JwtUtil {
     }
 
     /** JWT 토큰 substring */
-    public String substringToken(String tokenValue) {
-        if (!StringUtils.hasText(tokenValue) || !tokenValue.startsWith(BEARER_PREFIX)) {
-            throw new NullPointerException("Not Found Token");
-        }
-        return tokenValue.substring(7);
+    public String substringToken(String token) {
+        TokenValidator.checkValidToken(hasTokenBearerPrefix(token));
+        return token.substring(7);
+    }
+
+    private boolean hasTokenBearerPrefix(String token) {
+        return StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX);
     }
 
     /** 토큰 검증, 만료 토큰은 검증하지 않음 */
