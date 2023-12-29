@@ -148,3 +148,8 @@ include::{snippets}/checklist-controller-test/checklist_삭제/auto-section.adoc
 include::{snippets}/task-controller-test/task_저장/auto-section.adoc[]
 include::{snippets}/task-controller-test/task_수정/auto-section.adoc[]
 include::{snippets}/task-controller-test/task_삭제/auto-section.adoc[]
+
+== worker API
+
+include::{snippets}/worker-controller-test/worker_저장/auto-section.adoc[]
+include::{snippets}/worker-controller-test/worker_삭제/auto-section.adoc[]
