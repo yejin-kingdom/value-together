@@ -2,8 +2,10 @@ package com.vt.valuetogether.domain.card.service.impl;
 
 import static com.vt.valuetogether.infra.s3.S3Util.FilePath.CARD;
 
+import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardDeleteRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
 import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.entity.Card;
@@ -66,6 +68,16 @@ public class CardServiceImpl implements CardService {
                         .categoryId(prevCard.getCategoryId())
                         .build());
         return new CardUpdateRes();
+    }
+
+    @Override
+    @Transactional
+    public CardDeleteRes deleteCard(CardDeleteReq cardDeleteReq) {
+        Card card = cardRepository.findByCardId(cardDeleteReq.getCardId());
+        CardValidator.validate(card);
+        deleteFile(card.getFileUrl());
+        cardRepository.delete(card);
+        return new CardDeleteRes();
     }
 
     private void deleteFile(String fileUrl) {

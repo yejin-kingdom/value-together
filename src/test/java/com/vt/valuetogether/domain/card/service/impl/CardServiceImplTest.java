@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 
+import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
@@ -100,5 +101,21 @@ class CardServiceImplTest implements CardTest {
         verify(cardRepository).findByCardId(any());
         verify(cardRepository).save(any());
         verify(s3Util).uploadFile(any(), any());
+    }
+
+    @Test
+    @DisplayName("card 삭제 테스트")
+    void card_삭제() {
+        // given
+        Long cardId = 1L;
+        CardDeleteReq cardDeleteReq = CardDeleteReq.builder().cardId(cardId).build();
+        when(cardRepository.findByCardId(any())).thenReturn(TEST_CARD);
+
+        // when
+        cardService.deleteCard(cardDeleteReq);
+
+        // then
+        verify(cardRepository).findByCardId(any());
+        verify(cardRepository).delete(any());
     }
 }

@@ -3,14 +3,18 @@ package com.vt.valuetogether.domain.card.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
+import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardDeleteRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
 import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.service.CardService;
@@ -101,6 +105,22 @@ class CardControllerTest extends BaseMvcTest {
         when(cardService.updateCard(any(), any())).thenReturn(cardUpdateRes);
         this.mockMvc
                 .perform(multipart(PATCH, "/api/v1/cards").file(multipartFile).file(req))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("card 삭제 테스트")
+    void card_삭제() throws Exception {
+        Long cardId = 1L;
+        CardDeleteReq cardDeleteReq = CardDeleteReq.builder().cardId(cardId).build();
+        CardDeleteRes cardDeleteRes = new CardDeleteRes();
+        when(cardService.deleteCard(any())).thenReturn(cardDeleteRes);
+        this.mockMvc
+                .perform(
+                        delete("/api/v1/cards")
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(cardDeleteReq)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
