@@ -1,4 +1,4 @@
-package com.vt.valuetogether.global.mapper;
+package com.vt.valuetogether.domain.team.service;
 
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.entity.Team;

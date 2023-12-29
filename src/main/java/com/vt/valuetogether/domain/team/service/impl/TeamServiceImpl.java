@@ -20,7 +20,7 @@ import com.vt.valuetogether.domain.user.repository.InviteRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.user.service.InviteCodeService;
 import com.vt.valuetogether.global.exception.GlobalException;
-import com.vt.valuetogether.global.mapper.TeamServiceMapper;
+import com.vt.valuetogether.domain.team.service.TeamServiceMapper;
 import com.vt.valuetogether.global.meta.ResultCode;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
