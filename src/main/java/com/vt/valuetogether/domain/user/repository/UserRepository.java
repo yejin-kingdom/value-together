@@ -9,7 +9,9 @@ public interface UserRepository {
 
     User save(User user);
 
-    User findByEmail(String email);
+    User findByOauthId(String oauthId);
+
+    Boolean existsByUsername(String username);
 
     User findByUserId(Long userId);
 }

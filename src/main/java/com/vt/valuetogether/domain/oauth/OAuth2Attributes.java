@@ -1,6 +1,6 @@
 package com.vt.valuetogether.domain.oauth;
 
-import com.vt.valuetogether.domain.oauth.dto.OAuth2UserProfile;
+import com.vt.valuetogether.domain.oauth.dto.request.OAuth2LoginReq;
 import com.vt.valuetogether.domain.oauth.exception.OAuth2ProviderInvalidException;
 import com.vt.valuetogether.domain.user.entity.Provider;
 import com.vt.valuetogether.global.meta.ResultCode;
@@ -12,10 +12,11 @@ import lombok.RequiredArgsConstructor;
 public enum OAuth2Attributes {
     GITHUB("GITHUB") {
         @Override
-        public OAuth2UserProfile of(Map<String, Object> attributes) {
-            return OAuth2UserProfile.builder()
+        public OAuth2LoginReq of(Map<String, Object> attributes, String username) {
+            return OAuth2LoginReq.builder()
+                    .username(username)
+                    .oauthId(attributes.get("id").toString())
                     .email((String) attributes.get("email"))
-                    .name((String) attributes.get("name"))
                     .imageUrl((String) attributes.get("avatar_url"))
                     .provider(Provider.GITHUB)
                     .build();
@@ -23,11 +24,13 @@ public enum OAuth2Attributes {
     },
     NAVER("NAVER") {
         @Override
-        public OAuth2UserProfile of(Map<String, Object> attributes) {
+        @SuppressWarnings("unchecked")
+        public OAuth2LoginReq of(Map<String, Object> attributes, String username) {
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-            return OAuth2UserProfile.builder()
+            return OAuth2LoginReq.builder()
+                    .username(username)
+                    .oauthId((String) response.get("id"))
                     .email((String) response.get("email"))
-                    .name((String) response.get("name"))
                     .imageUrl((String) response.get("profile_image"))
                     .provider(Provider.NAVER)
                     .build();
@@ -35,10 +38,11 @@ public enum OAuth2Attributes {
     },
     GOOGLE("GOOGLE") {
         @Override
-        public OAuth2UserProfile of(Map<String, Object> attributes) {
-            return OAuth2UserProfile.builder()
+        public OAuth2LoginReq of(Map<String, Object> attributes, String username) {
+            return OAuth2LoginReq.builder()
+                    .username(username)
+                    .oauthId((String) attributes.get("sub"))
                     .email((String) attributes.get("email"))
-                    .name((String) attributes.get("name"))
                     .imageUrl((String) attributes.get("picture"))
                     .provider(Provider.GOOGLE)
                     .build();
@@ -47,13 +51,14 @@ public enum OAuth2Attributes {
 
     private final String providerName;
 
-    public static OAuth2UserProfile extract(String providerName, Map<String, Object> attributes) {
-        return Arrays.stream(values()) // 해당 enum 의 요소들을 순서대로 순회
+    public static OAuth2LoginReq extract(
+            String providerName, Map<String, Object> attributes, String username) {
+        return Arrays.stream(values())
                 .filter(provider -> providerName.equals(provider.providerName))
-                .findFirst()
+                .findAny()
                 .orElseThrow(() -> new OAuth2ProviderInvalidException(ResultCode.INVALID_OAUTH_PROVIDER))
-                .of(attributes);
+                .of(attributes, username);
     }
 
-    public abstract OAuth2UserProfile of(Map<String, Object> attributes); // 추상 메서드로 구현
+    public abstract OAuth2LoginReq of(Map<String, Object> attributes, String username);
 }
