@@ -23,6 +23,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +40,9 @@ public class WebSecurityConfig {
     private final OAuth2Service oAuth2Service;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+
+    private final LogoutHandler logoutHandler;
+    private final LogoutSuccessHandler logoutSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -79,8 +85,10 @@ public class WebSecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
                                 .permitAll() // resources 접근 허용 설정
+                                .requestMatchers("api/v1/users/logout")
+                                .authenticated() // 로그아웃은 인증
                                 .requestMatchers("/api/v1/users/**")
-                                .permitAll() // '/api/v1/users/'로 시작하는 요청 모두 접근 허가
+                                .permitAll() // 그 외의 '/api/v1/users/'로 시작하는 요청 모두 접근 허가
                                 .anyRequest()
                                 .authenticated() // 그 외 모든 요청 인증처리
                 );
@@ -96,7 +104,14 @@ public class WebSecurityConfig {
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(exceptionHandlerFilter(), JwtAuthorizationFilter.class);
+        http.addFilterBefore(exceptionHandlerFilter(), LogoutFilter.class);
+
+        http.logout(
+                logout -> {
+                    logout.logoutUrl("/api/v1/users/logout");
+                    logout.addLogoutHandler(logoutHandler);
+                    logout.logoutSuccessHandler(logoutSuccessHandler);
+                });
 
         return http.build();
     }
