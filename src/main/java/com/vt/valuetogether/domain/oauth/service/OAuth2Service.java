@@ -41,16 +41,17 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        OAuth2LoginReq oauthUserProfile = OAuth2Attributes.extract(providerType, attributes);
+        OAuth2LoginReq oAuth2LoginReq =
+                OAuth2Attributes.extract(providerType, attributes, makeRandomName());
 
-        User saveUser = userRepository.findByOauthId(oauthUserProfile.getOauthId());
+        User saveUser = userRepository.findByOauthId(oAuth2LoginReq.getOauthId());
 
         if (saveUser == null) {
-            save(makeRandomName(), oauthUserProfile);
+            save(oAuth2LoginReq);
         }
 
         Map<String, Object> customAttribute =
-                customAttribute(attributes, userNameAttributeName, oauthUserProfile);
+                customAttribute(attributes, userNameAttributeName, oAuth2LoginReq);
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(Role.USER.getValue())),
@@ -70,10 +71,10 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         return DEFAULT_NAME + UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private void save(String name, OAuth2LoginReq oAuth2LoginReq) {
+    private void save(OAuth2LoginReq oAuth2LoginReq) {
         User user =
                 User.builder()
-                        .username(name)
+                        .username(oAuth2LoginReq.getUsername())
                         .email(oAuth2LoginReq.getEmail())
                         .profileImageUrl(oAuth2LoginReq.getImageUrl())
                         .oauthId(oAuth2LoginReq.getOauthId())
@@ -90,6 +91,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
             OAuth2LoginReq oauthUserProfile) {
         Map<String, Object> customAttribute = new LinkedHashMap<>();
         customAttribute.put(userNameAttributeName, attributes.get(userNameAttributeName));
+        customAttribute.put("username", oauthUserProfile.getUsername());
         customAttribute.put("provider", oauthUserProfile.getProvider());
         customAttribute.put("email", oauthUserProfile.getEmail());
         customAttribute.put("oAuthId", oauthUserProfile.getOauthId());
