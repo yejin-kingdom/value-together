@@ -19,7 +19,7 @@ public class CardSchedulingServiceImpl implements CardSchedulingService {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void resetSequence() {
-        List<Card> cards = cardRepository.findByOrderByCategoryIdAscSequenceDesc();
+        List<Card> cards = cardRepository.findByOrderByCategoryIdAscSequenceAsc();
         Long prevCategoryId = cards.get(0).getCategoryId();
         double sequence = 0.0;
         List<Card> newCards = new ArrayList<>();
