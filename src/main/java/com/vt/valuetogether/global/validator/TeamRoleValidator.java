@@ -18,6 +18,10 @@ public class TeamRoleValidator {
     }
 
     public static void checkIsTeamMember(List<TeamRole> teamRoleList, User user) {
+        if (checkIsNull(teamRoleList)) {
+            throw new GlobalException(NOT_FOUND_TEAM_ROLE);
+        }
+
         if (!teamRoleListContainsUser(teamRoleList, user)) {
             throw new GlobalException(FORBIDDEN_TEAM_ROLE);
         }
