@@ -48,4 +48,20 @@ class CategoryRepositoryTest implements CategoryTest {
         // then
         assertThat(maxSequence).isEqualTo(saveCategory.getSequence() + 1.0);
     }
+
+    @Test
+    @DisplayName("id로 category 조회 테스트")
+    void id_category_조회() {
+        // given
+        teamRepository.save(TEST_TEAM);
+        Category saveCategory = categoryRepository.save(TEST_CATEGORY);
+
+        // when
+        Category category = categoryRepository.findByCategoryId(saveCategory.getCategoryId());
+
+        // then
+        assertThat(category.getName()).isEqualTo(saveCategory.getName());
+        assertThat(category.getSequence()).isEqualTo(saveCategory.getSequence());
+        assertThat(category.getIsDeleted()).isEqualTo(saveCategory.getIsDeleted());
+    }
 }
