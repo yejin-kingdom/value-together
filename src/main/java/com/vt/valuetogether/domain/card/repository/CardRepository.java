@@ -1,6 +1,7 @@
 package com.vt.valuetogether.domain.card.repository;
 
 import com.vt.valuetogether.domain.card.entity.Card;
+import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.RepositoryDefinition;
 
@@ -14,4 +15,8 @@ public interface CardRepository {
     Card findByCardId(Long cardId);
 
     void delete(Card card);
+
+    List<Card> findByOrderByCategoryIdAscSequenceAsc();
+
+    List<Card> saveAll(Iterable<Card> cards);
 }
