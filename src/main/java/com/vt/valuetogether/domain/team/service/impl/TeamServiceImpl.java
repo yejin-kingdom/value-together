@@ -179,11 +179,14 @@ public class TeamServiceImpl implements TeamService {
 
     private void sendInviteMail(List<User> matchingMemberList) {
         matchingMemberList.stream()
-                .forEach(m -> mailUtil.sendMessage(m.getEmail(), EMAIL_AUTHENTICATION));
+                .forEach(m -> mailUtil.sendInviteMessage(m.getEmail(), EMAIL_AUTHENTICATION));
     }
 
-    private void confirmInviteMail(String email, String code) {
+    @Override
+    public TeamMemberInviteRes confirmEmail(String email, String code) {
         mailUtil.checkCode(email, code);
+
+        return new TeamMemberInviteRes();
     }
 
     @Mapper

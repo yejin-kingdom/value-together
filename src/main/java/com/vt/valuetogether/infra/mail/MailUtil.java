@@ -6,6 +6,7 @@ import com.vt.valuetogether.domain.user.entity.EmailAuth;
 import com.vt.valuetogether.domain.user.service.EmailAuthService;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.validator.MailValidator;
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
@@ -26,6 +27,7 @@ public class MailUtil {
     private final JavaMailSender mailSender;
     private final EmailAuthService emailService;
     private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/signup/email/check?";
+    private static final String INVITE_EMAIL_LINK = "http://localhost:8080/api/v1/teams/email?";
     private static final String PATH_AND = "&";
     private static final String PATH_KEY_EMAIL = "email=";
     private static final String PATH_KEY_CODE = "authCode=";
@@ -41,6 +43,23 @@ public class MailUtil {
         try {
             String code = createAuthCode();
             MimeMessage message = createMessage(to, subject, code);
+
+            if (emailService.hasMail(to)) {
+                emailService.delete(to);
+            }
+            EmailAuth emailAuth = EmailAuth.builder().email(to).code(code).build();
+
+            emailService.save(emailAuth);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new GlobalException(EMAIL_SEND_FAILED);
+        }
+    }
+
+    public void sendInviteMessage(String to, String subject) {
+        try {
+            String code = createAuthCode();
+            MimeMessage message = createInviteMessage(to, subject, code);
 
             if (emailService.hasMail(to)) {
                 emailService.delete(to);
@@ -80,6 +99,20 @@ public class MailUtil {
         message.setSubject(subject, StandardCharsets.UTF_8.name());
         message.setContent(
                 EMAIL_LINK + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
+                ContentType.TEXT_HTML.getMimeType());
+
+        return message;
+    }
+
+    private MimeMessage createInviteMessage(String to, String subject, String code)
+            throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+
+        message.setFrom(email);
+        message.addRecipients(Message.RecipientType.TO, to);
+        message.setSubject(subject, StandardCharsets.UTF_8.name());
+        message.setContent(
+                INVITE_EMAIL_LINK + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
                 ContentType.TEXT_HTML.getMimeType());
 
         return message;

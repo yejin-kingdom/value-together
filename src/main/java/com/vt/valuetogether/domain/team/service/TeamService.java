@@ -17,4 +17,6 @@ public interface TeamService {
     TeamEditRes editTeam(TeamEditReq req);
 
     TeamMemberInviteRes inviteMember(TeamMemberInviteReq req);
+
+    TeamMemberInviteRes confirmEmail(String email, String code);
 }
