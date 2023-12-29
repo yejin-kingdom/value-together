@@ -234,6 +234,7 @@ public class TeamServiceImpl implements TeamService {
         UserValidator.validate(member);
 
         Team team = teamRepository.findByTeamId(req.getTeamId());
+        TeamValidator.validate(team);
 
         team.getTeamRoleList().stream()
                 .filter(
