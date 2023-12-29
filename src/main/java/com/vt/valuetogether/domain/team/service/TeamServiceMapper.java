@@ -14,7 +14,7 @@ public interface TeamServiceMapper {
 
     TeamServiceMapper INSTANCE = Mappers.getMapper(TeamServiceMapper.class);
 
-    TeamCreateRes toCreateTeamRes(Team team);
+    TeamCreateRes toTeamCreateRes(Team team);
 
     @Mapping(source = "user.username", target = "username")
     TeamMemberGetRes toTeamMemberGetRes(TeamRole teamRole);

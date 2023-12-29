@@ -71,7 +71,7 @@ public class TeamServiceImpl implements TeamService {
 
         teamRoleRepository.save(teamRole);
 
-        return TeamServiceMapper.INSTANCE.toCreateTeamRes(team);
+        return TeamServiceMapper.INSTANCE.toTeamCreateRes(team);
     }
 
     // team의 leader와 user가 일치할 경우에만 팀을 삭제할 수 있다.
