@@ -63,4 +63,18 @@ class CardRepositoryTest implements CardTest {
         assertThat(card.getSequence()).isEqualTo(saveCard.getSequence());
         assertThat(card.getDeadline()).isEqualTo(saveCard.getDeadline());
     }
+
+    @Test
+    @DisplayName("card 삭제 테스트")
+    void card_삭제() {
+        // given
+        cardRepository.save(TEST_CARD);
+
+        // when
+        cardRepository.delete(TEST_CARD);
+        Card card = cardRepository.findByCardId(TEST_CARD_ID);
+
+        // then
+        assertThat(card).isNull();
+    }
 }
