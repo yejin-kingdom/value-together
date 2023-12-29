@@ -1,8 +1,10 @@
 package com.vt.valuetogether.domain.card.service;
 
+import com.vt.valuetogether.domain.card.dto.request.CardChangeSequenceReq;
 import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardChangeSequenceRes;
 import com.vt.valuetogether.domain.card.dto.response.CardDeleteRes;
 import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
@@ -17,4 +19,6 @@ public interface CardService {
     CardDeleteRes deleteCard(CardDeleteReq cardDeleteReq);
 
     CardGetRes getCard(Long cardId);
+
+    CardChangeSequenceRes changeSequence(CardChangeSequenceReq cardChangeSequenceReq);
 }

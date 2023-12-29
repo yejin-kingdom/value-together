@@ -3,36 +3,49 @@ package com.vt.valuetogether.domain.team.service.impl;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.entity.Role;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.team.service.TeamService;
+import com.vt.valuetogether.domain.team.service.TeamServiceMapper;
+import com.vt.valuetogether.domain.user.entity.InviteCode;
 import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.user.repository.InviteRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.domain.user.service.InviteCodeService;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.meta.ResultCode;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
+import com.vt.valuetogether.infra.mail.MailUtil;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class TeamServiceImpl implements TeamService {
 
+    private static final String EMAIL_AUTHENTICATION = "이메일 인증";
+
     private final TeamRepository teamRepository;
     private final TeamRoleRepository teamRoleRepository;
     private final UserRepository userRepository;
+    private final MailUtil mailUtil;
+    private final InviteRepository inviteRepository;
+    private final InviteCodeService inviteCodeService;
 
     @Override
     public TeamCreateRes createTeam(TeamCreateReq req) {
@@ -140,11 +153,54 @@ public class TeamServiceImpl implements TeamService {
         return new TeamEditRes();
     }
 
-    @Mapper
-    public interface TeamServiceMapper {
+    @Override
+    public TeamMemberInviteRes inviteMember(TeamMemberInviteReq req) {
+        Team team = teamRepository.findByTeamId(req.getTeamId());
+        TeamValidator.validate(team);
 
-        TeamServiceMapper INSTANCE = Mappers.getMapper(TeamServiceMapper.class);
+        List<TeamRole> teamRoleList = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
+        TeamRoleValidator.validate(teamRoleList);
+        Map<Long, TeamRole> teamRoleByUserId =
+                teamRoleList.stream()
+                        .collect(
+                                Collectors.toMap(teamRole -> teamRole.getUser().getUserId(), Function.identity()));
 
-        TeamCreateRes toCreateTeamRes(Team team);
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        List<User> memberList = userRepository.findAllByUsernameIn(req.getMemberNameList());
+
+        // 전달받은 username으로 조회한 memberList의 user가 이미 teamRoleList에 존재한다면 제외
+        List<User> matchingMemberList =
+                memberList.stream()
+                        .filter(member -> !teamRoleByUserId.containsKey(member.getUserId()))
+                        .collect(Collectors.toList());
+
+        sendInviteMail(matchingMemberList, team.getTeamId());
+
+        return new TeamMemberInviteRes();
+    }
+
+    private void sendInviteMail(List<User> matchingMemberList, Long teamId) {
+        for (User m : matchingMemberList) {
+            mailUtil.sendInviteMessage(m.getEmail(), EMAIL_AUTHENTICATION, teamId, m.getUserId());
+        }
+    }
+
+    @Override
+    public TeamMemberInviteRes confirmEmail(String email, String code) {
+        InviteCode inviteCode = inviteRepository.findById(code);
+
+        mailUtil.checkInviteCode(inviteCode.getCode(), code);
+        Team team = teamRepository.findByTeamId(inviteCode.getTeamId());
+        TeamValidator.validate(team);
+
+        User user = userRepository.findByUserId(inviteCode.getUserId());
+        UserValidator.validate(user);
+
+        teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
+        inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
+
+        return new TeamMemberInviteRes();
     }
 }

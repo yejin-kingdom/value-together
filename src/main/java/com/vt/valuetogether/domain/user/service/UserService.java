@@ -7,6 +7,7 @@ import com.vt.valuetogether.domain.user.dto.request.UserVerifyEmailReq;
 import com.vt.valuetogether.domain.user.dto.request.UserVerifyPasswordReq;
 import com.vt.valuetogether.domain.user.dto.response.UserCheckDuplicateUsernameRes;
 import com.vt.valuetogether.domain.user.dto.response.UserConfirmEmailRes;
+import com.vt.valuetogether.domain.user.dto.response.UserGetProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserSignupRes;
 import com.vt.valuetogether.domain.user.dto.response.UserUpdateProfileRes;
 import com.vt.valuetogether.domain.user.dto.response.UserVerifyEmailRes;
@@ -25,4 +26,6 @@ public interface UserService {
     UserVerifyPasswordRes verifyPassword(UserVerifyPasswordReq req);
 
     UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile);
+
+    UserGetProfileRes getProfile(Long userId);
 }
