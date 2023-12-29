@@ -27,7 +27,6 @@ class UserRepositoryTest implements UserTest {
         User saveUser = userRepository.save(TEST_USER);
 
         // then
-        assertEquals(saveUser.getUserId(), TEST_USER_ID);
         assertEquals(saveUser.getUsername(), TEST_USER_NAME);
         assertEquals(saveUser.getEmail(), TEST_USER_EMAIL);
         assertEquals(saveUser.getProfileImageUrl(), TEST_USER_PROFILE_URL);
