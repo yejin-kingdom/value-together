@@ -1,12 +1,16 @@
 package com.vt.valuetogether.domain.card.entity;
 
+import com.vt.valuetogether.domain.checklist.entity.Checklist;
 import com.vt.valuetogether.domain.model.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +33,10 @@ public class Card extends BaseEntity {
 
     // TODO FIX Category
     private Long categoryId;
+
+    // TODO ADD Comments, Workers
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
+    private List<Checklist> checklists;
 
     @Builder
     private Card(

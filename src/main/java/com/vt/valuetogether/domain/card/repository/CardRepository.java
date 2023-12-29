@@ -12,4 +12,6 @@ public interface CardRepository {
     Double getMaxSequence(Long categoryId);
 
     Card findByCardId(Long cardId);
+
+    void delete(Card card);
 }

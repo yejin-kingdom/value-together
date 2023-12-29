@@ -2,8 +2,11 @@ package com.vt.valuetogether.domain.card.service.impl;
 
 import static com.vt.valuetogether.infra.s3.S3Util.FilePath.CARD;
 
+import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardDeleteRes;
+import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
 import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.entity.Card;
@@ -27,6 +30,7 @@ public class CardServiceImpl implements CardService {
     @Override
     @Transactional
     public CardSaveRes saveCard(CardSaveReq cardSaveReq, MultipartFile multipartFile) {
+        // TODO ADD Team check
         Double sequence = getMaxSequence(cardSaveReq.getCategoryId());
         String fileUrl = s3Util.uploadFile(multipartFile, CARD);
         return CardServiceMapper.INSTANCE.toCardSavaRes(
@@ -48,6 +52,7 @@ public class CardServiceImpl implements CardService {
     @Override
     @Transactional
     public CardUpdateRes updateCard(CardUpdateReq cardUpdateReq, MultipartFile multipartFile) {
+        // TODO ADD Team check
         Card prevCard = cardRepository.findByCardId(cardUpdateReq.getCardId());
         CardValidator.validate(prevCard);
         deleteFile(prevCard.getFileUrl());
@@ -68,10 +73,28 @@ public class CardServiceImpl implements CardService {
         return new CardUpdateRes();
     }
 
+    @Override
+    @Transactional
+    public CardDeleteRes deleteCard(CardDeleteReq cardDeleteReq) {
+        // TODO ADD Team check
+        Card card = cardRepository.findByCardId(cardDeleteReq.getCardId());
+        CardValidator.validate(card);
+        deleteFile(card.getFileUrl());
+        cardRepository.delete(card);
+        return new CardDeleteRes();
+    }
+
     private void deleteFile(String fileUrl) {
         if (fileUrl == null || fileUrl.isBlank()) {
             return;
         }
         s3Util.deleteFile(fileUrl, CARD);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CardGetRes getCard(Long cardId) {
+        // TODO ADD Team check
+        return CardServiceMapper.INSTANCE.toCardGetRes(cardRepository.findByCardId(cardId));
     }
 }
