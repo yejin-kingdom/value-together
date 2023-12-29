@@ -6,4 +6,6 @@ public interface InviteCodeService {
     InviteCode findById(String code);
 
     InviteCode save(InviteCode inviteCode);
+
+    void deleteById(String code);
 }

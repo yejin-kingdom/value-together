@@ -30,7 +30,8 @@ public class MailUtil {
     private final InviteCodeService inviteCodeService;
 
     private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/signup/email/check?";
-    private static final String INVITE_EMAIL_LINK = "http://localhost:8080/api/v1/teams/email?";
+    private static final String INVITE_EMAIL_LINK =
+            "http://localhost:8080/api/v1/teams/members/email?";
     private static final String PATH_AND = "&";
     private static final String PATH_KEY_EMAIL = "email=";
     private static final String PATH_KEY_CODE = "authCode=";

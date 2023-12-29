@@ -21,4 +21,9 @@ public class InviteCodeServiceImpl implements InviteCodeService {
     public InviteCode save(InviteCode inviteCode) {
         return inviteRepository.save(inviteCode);
     }
+
+    @Override
+    public void deleteById(String code) {
+        inviteRepository.deleteById(code);
+    }
 }

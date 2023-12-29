@@ -18,6 +18,7 @@ import com.vt.valuetogether.domain.user.entity.InviteCode;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.InviteRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.domain.user.service.InviteCodeService;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.meta.ResultCode;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
@@ -45,6 +46,7 @@ public class TeamServiceImpl implements TeamService {
     private final UserRepository userRepository;
     private final MailUtil mailUtil;
     private final InviteRepository inviteRepository;
+    private final InviteCodeService inviteCodeService;
 
     @Override
     public TeamCreateRes createTeam(TeamCreateReq req) {
@@ -195,7 +197,8 @@ public class TeamServiceImpl implements TeamService {
         User user = userRepository.findByUserId(inviteCode.getUserId());
 
         teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
-
+        inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
+        
         return new TeamMemberInviteRes();
     }
 
