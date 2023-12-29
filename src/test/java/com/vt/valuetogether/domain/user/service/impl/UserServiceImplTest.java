@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 import com.vt.valuetogether.domain.user.dto.request.UserCheckDuplicateUsernameReq;
 import com.vt.valuetogether.domain.user.dto.request.UserSignupReq;
@@ -171,7 +172,7 @@ class UserServiceImplTest implements UserTest {
                         .email(TEST_USER_EMAIL)
                         .build();
 
-        given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(TEST_USER);
+        given(userRepository.existsByUsername(req.getUsername())).willReturn(true);
 
         // when
         GlobalException exception =
@@ -199,7 +200,7 @@ class UserServiceImplTest implements UserTest {
         EmailAuth emailAuth =
                 EmailAuth.builder().email(TEST_USER_EMAIL).code("aaa").isChecked(true).build();
 
-        given(userRepository.findByUsername(TEST_USER_NAME)).willReturn(null);
+        given(userRepository.existsByUsername(TEST_USER_NAME)).willReturn(false);
         given(userRepository.save(any(User.class))).willReturn(TEST_USER);
         given(mailUtil.getEmailAuth(TEST_USER_EMAIL)).willReturn(emailAuth);
 
@@ -208,7 +209,7 @@ class UserServiceImplTest implements UserTest {
 
         // then
         verify(passwordEncoder).encode(TEST_USER_PASSWORD);
-        verify(userRepository).findByUsername(TEST_USER_NAME);
+        verify(userRepository).existsByUsername(TEST_USER_NAME);
         verify(userRepository).save(any(User.class));
 
         verify(userRepository).save(argumentCaptor.capture());
@@ -222,7 +223,7 @@ class UserServiceImplTest implements UserTest {
         UserCheckDuplicateUsernameReq req =
                 UserCheckDuplicateUsernameReq.builder().username(TEST_ANOTHER_USER_NAME).build();
 
-        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_ANOTHER_USER);
+        given(userRepository.existsByUsername(req.getUsername())).willReturn(true);
 
         // when
         UserCheckDuplicateUsernameRes res = userService.checkDuplicateUsername(req);
@@ -266,7 +267,7 @@ class UserServiceImplTest implements UserTest {
 
         MultipartFile multipartFile =
                 new MockMultipartFile(
-                        "image", fileResource.getFilename(), "image/jpeg", fileResource.getInputStream());
+                        "image", fileResource.getFilename(), IMAGE_JPEG_VALUE, fileResource.getInputStream());
 
         User UPDATED_USER =
                 User.builder()

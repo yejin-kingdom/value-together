@@ -66,8 +66,7 @@ public class UserServiceImpl implements UserService {
     public UserSignupRes signup(UserSignupReq req) {
         UserValidator.validate(req);
 
-        User user = userRepository.findByUsername(req.getUsername());
-        UserValidator.checkDuplicatedUsername(user);
+        UserValidator.checkDuplicatedUsername(userRepository.existsByUsername(req.getUsername()));
 
         checkAuthorizedEmail(req.getEmail());
 
@@ -88,8 +87,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserCheckDuplicateUsernameRes checkDuplicateUsername(UserCheckDuplicateUsernameReq req) {
         UserValidator.validate(req);
-        User user = userRepository.findByUsername(req.getUsername());
-        boolean isDuplicated = (user != null);
+        boolean isDuplicated = userRepository.existsByUsername(req.getUsername());
 
         return UserCheckDuplicateUsernameRes.builder().isDuplicated(isDuplicated).build();
     }
@@ -112,7 +110,7 @@ public class UserServiceImpl implements UserService {
         if (!imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
             s3Util.deleteFile(imageUrl, FilePath.PROFILE);
         }
-        if (multipartFile.isEmpty()) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
             imageUrl = DEFAULT_PROFILE_IMAGE_URL;
         } else {
             S3Validator.isProfileImageFile(multipartFile);
