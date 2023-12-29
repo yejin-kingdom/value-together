@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.test.CardTest;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +77,28 @@ class CardRepositoryTest implements CardTest {
 
         // then
         assertThat(card).isNull();
+    }
+
+    @Test
+    @DisplayName("categoryId별 card list 조회 테스트")
+    void categoryId_card_list_조회() {
+        // given
+        Card saveCard = cardRepository.save(TEST_CARD);
+        Card saveAnotherCard = cardRepository.save(TEST_ANOTHER_CARD);
+
+        // when
+        List<Card> cards = cardRepository.findByOrderByCategoryIdAscSequenceAsc();
+
+        // then
+        assertThat(cards.get(0).getName()).isEqualTo(saveCard.getName());
+        assertThat(cards.get(0).getDescription()).isEqualTo(saveCard.getDescription());
+        assertThat(cards.get(0).getFileUrl()).isEqualTo(saveCard.getFileUrl());
+        assertThat(cards.get(0).getSequence()).isEqualTo(saveCard.getSequence());
+        assertThat(cards.get(0).getDeadline()).isEqualTo(saveCard.getDeadline());
+        assertThat(cards.get(1).getName()).isEqualTo(saveAnotherCard.getName());
+        assertThat(cards.get(1).getDescription()).isEqualTo(saveAnotherCard.getDescription());
+        assertThat(cards.get(1).getFileUrl()).isEqualTo(saveAnotherCard.getFileUrl());
+        assertThat(cards.get(1).getSequence()).isEqualTo(saveAnotherCard.getSequence());
+        assertThat(cards.get(1).getDeadline()).isEqualTo(saveAnotherCard.getDeadline());
     }
 }
