@@ -2,6 +2,7 @@ package com.vt.valuetogether.domain.card.entity;
 
 import com.vt.valuetogether.domain.checklist.entity.Checklist;
 import com.vt.valuetogether.domain.model.BaseEntity;
+import com.vt.valuetogether.domain.worker.entity.Worker;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "tb_card")
 public class Card extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cardId;
@@ -34,9 +36,12 @@ public class Card extends BaseEntity {
     // TODO FIX Category
     private Long categoryId;
 
-    // TODO ADD Comments, Workers
+    // TODO ADD Comments
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
     private List<Checklist> checklists;
+
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
+    private List<Worker> workers;
 
     @Builder
     private Card(
