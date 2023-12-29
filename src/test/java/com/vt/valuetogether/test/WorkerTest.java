@@ -6,9 +6,6 @@ public interface WorkerTest extends UserTest, CardTest {
 
     Long TEST_WORKER_ID = 1L;
 
-    Worker TEST_WORKER = Worker.builder()
-        .workerId(TEST_WORKER_ID)
-        .user(TEST_USER)
-        .card(TEST_CARD)
-        .build();
+    Worker TEST_WORKER =
+            Worker.builder().workerId(TEST_WORKER_ID).user(TEST_USER).card(TEST_CARD).build();
 }

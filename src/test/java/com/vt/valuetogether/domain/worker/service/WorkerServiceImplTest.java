@@ -24,21 +24,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class WorkerServiceImplTest implements WorkerTest {
 
-    @Mock
-    UserRepository userRepository;
-    @Mock
-    CardRepository cardRepository;
-    @Mock
-    WorkerRepository workerRepository;
-    @InjectMocks
-    private WorkerServiceImpl workerService;
+    @Mock UserRepository userRepository;
+    @Mock CardRepository cardRepository;
+    @Mock WorkerRepository workerRepository;
+    @InjectMocks private WorkerServiceImpl workerService;
 
     @Test
     @DisplayName("worker 저장 테스트")
     void worker_저장() {
         // given
-        WorkerAddReq workerAddReq = WorkerAddReq.builder().cardId(TEST_CARD_ID)
-            .userIds(List.of(TEST_USER_ID, TEST_ANOTHER_USER_ID)).build();
+        WorkerAddReq workerAddReq =
+                WorkerAddReq.builder()
+                        .cardId(TEST_CARD_ID)
+                        .userIds(List.of(TEST_USER_ID, TEST_ANOTHER_USER_ID))
+                        .build();
 
         given(cardRepository.findByCardId(anyLong())).willReturn(TEST_CARD);
         given(userRepository.findByUsername(any())).willReturn(TEST_USER);
@@ -57,8 +56,7 @@ class WorkerServiceImplTest implements WorkerTest {
     @DisplayName("worker 삭제  테스트")
     void worker_삭제() {
         // given
-        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().workerId(TEST_WORKER_ID)
-            .build();
+        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().workerId(TEST_WORKER_ID).build();
 
         given(workerRepository.findByWorkerId(anyLong())).willReturn(TEST_WORKER);
 

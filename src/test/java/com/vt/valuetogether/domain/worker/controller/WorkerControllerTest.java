@@ -25,44 +25,46 @@ import org.springframework.http.MediaType;
 @WebMvcTest(controllers = {WorkerController.class})
 class WorkerControllerTest extends BaseMvcTest implements WorkerTest {
 
-    @MockBean
-    private WorkerService workerService;
+    @MockBean private WorkerService workerService;
 
     @Test
     @DisplayName("worker 저장 테스트")
     void worker_저장() throws Exception {
         // given
-        WorkerAddReq workerAddReq = WorkerAddReq.builder().cardId(TEST_CARD_ID)
-            .userIds(List.of(TEST_USER_ID, TEST_ANOTHER_USER_ID))
-            .build();
+        WorkerAddReq workerAddReq =
+                WorkerAddReq.builder()
+                        .cardId(TEST_CARD_ID)
+                        .userIds(List.of(TEST_USER_ID, TEST_ANOTHER_USER_ID))
+                        .build();
         WorkerAddRes workerAddRes = WorkerAddRes.builder().workerId(TEST_WORKER_ID).build();
 
         // when - then
         when(workerService.addWorker(any(WorkerAddReq.class))).thenReturn(workerAddRes);
         this.mockMvc
-            .perform(post("/api/v1/workers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(workerAddReq)))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.workerId").value(workerAddRes.getWorkerId()));
+                .perform(
+                        post("/api/v1/workers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(workerAddReq)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.workerId").value(workerAddRes.getWorkerId()));
     }
 
     @Test
     @DisplayName("worker 삭제 테스트")
     void worker_삭제() throws Exception {
         // given
-        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().workerId(TEST_WORKER_ID)
-            .build();
+        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().workerId(TEST_WORKER_ID).build();
         WorkerDeleteRes workerDeleteRes = new WorkerDeleteRes();
 
         // when - then
         when(workerService.deleteWorker(workerDeleteReq)).thenReturn(workerDeleteRes);
         this.mockMvc
-            .perform(delete("/api/v1/workers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(workerDeleteReq)))
-            .andDo(print())
-            .andExpect(status().isOk());
+                .perform(
+                        delete("/api/v1/workers")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(workerDeleteReq)))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

@@ -21,12 +21,9 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class WorkerRepositoryTest implements WorkerTest {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CardRepository cardRepository;
-    @Autowired
-    private WorkerRepository workerRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private CardRepository cardRepository;
+    @Autowired private WorkerRepository workerRepository;
 
     @Test
     @DisplayName("worker 저장 테스트")
