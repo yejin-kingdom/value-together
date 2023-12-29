@@ -3,10 +3,11 @@ package com.vt.valuetogether.infra.mail;
 import static com.vt.valuetogether.global.meta.ResultCode.EMAIL_SEND_FAILED;
 
 import com.vt.valuetogether.domain.user.entity.EmailAuth;
+import com.vt.valuetogether.domain.user.entity.InviteCode;
 import com.vt.valuetogether.domain.user.service.EmailAuthService;
+import com.vt.valuetogether.domain.user.service.InviteCodeService;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.validator.MailValidator;
-import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMessage.RecipientType;
@@ -26,6 +27,8 @@ public class MailUtil {
 
     private final JavaMailSender mailSender;
     private final EmailAuthService emailService;
+    private final InviteCodeService inviteCodeService;
+
     private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/signup/email/check?";
     private static final String INVITE_EMAIL_LINK = "http://localhost:8080/api/v1/teams/email?";
     private static final String PATH_AND = "&";
@@ -56,17 +59,14 @@ public class MailUtil {
         }
     }
 
-    public void sendInviteMessage(String to, String subject) {
+    public void sendInviteMessage(String to, String subject, Long teamId, Long userId) {
         try {
             String code = createAuthCode();
             MimeMessage message = createInviteMessage(to, subject, code);
 
-            if (emailService.hasMail(to)) {
-                emailService.delete(to);
-            }
-            EmailAuth emailAuth = EmailAuth.builder().email(to).code(code).build();
+            InviteCode inviteCode = InviteCode.builder().teamId(teamId).userId(userId).code(code).build();
 
-            emailService.save(emailAuth);
+            inviteCodeService.save(inviteCode);
             mailSender.send(message);
         } catch (MessagingException e) {
             throw new GlobalException(EMAIL_SEND_FAILED);
@@ -82,6 +82,10 @@ public class MailUtil {
         EmailAuth newEmailAuth = EmailAuth.builder().email(email).code(code).isChecked(true).build();
 
         emailService.save(newEmailAuth);
+    }
+
+    public void checkInviteCode(String inviteCode, String code) {
+        MailValidator.checkCode(inviteCode, code);
     }
 
     public EmailAuth getEmailAuth(String email) {
@@ -109,7 +113,7 @@ public class MailUtil {
         MimeMessage message = mailSender.createMimeMessage();
 
         message.setFrom(email);
-        message.addRecipients(Message.RecipientType.TO, to);
+        message.addRecipients(RecipientType.TO, to);
         message.setSubject(subject, StandardCharsets.UTF_8.name());
         message.setContent(
                 INVITE_EMAIL_LINK + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,

@@ -14,7 +14,9 @@ import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.team.service.TeamService;
+import com.vt.valuetogether.domain.user.entity.InviteCode;
 import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.user.repository.InviteRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.meta.ResultCode;
@@ -42,6 +44,7 @@ public class TeamServiceImpl implements TeamService {
     private final TeamRoleRepository teamRoleRepository;
     private final UserRepository userRepository;
     private final MailUtil mailUtil;
+    private final InviteRepository inviteRepository;
 
     @Override
     public TeamCreateRes createTeam(TeamCreateReq req) {
@@ -172,19 +175,26 @@ public class TeamServiceImpl implements TeamService {
                         .filter(member -> !teamRoleByUserId.containsKey(member.getUserId()))
                         .collect(Collectors.toList());
 
-        sendInviteMail(matchingMemberList);
+        sendInviteMail(matchingMemberList, team.getTeamId());
 
         return new TeamMemberInviteRes();
     }
 
-    private void sendInviteMail(List<User> matchingMemberList) {
-        matchingMemberList.stream()
-                .forEach(m -> mailUtil.sendInviteMessage(m.getEmail(), EMAIL_AUTHENTICATION));
+    private void sendInviteMail(List<User> matchingMemberList, Long teamId) {
+        for (User m : matchingMemberList) {
+            mailUtil.sendInviteMessage(m.getEmail(), EMAIL_AUTHENTICATION, teamId, m.getUserId());
+        }
     }
 
     @Override
     public TeamMemberInviteRes confirmEmail(String email, String code) {
-        mailUtil.checkCode(email, code);
+        InviteCode inviteCode = inviteRepository.findById(code);
+
+        mailUtil.checkInviteCode(inviteCode.getCode(), code);
+        Team team = teamRepository.findByTeamId(inviteCode.getTeamId());
+        User user = userRepository.findByUserId(inviteCode.getUserId());
+
+        teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
 
         return new TeamMemberInviteRes();
     }
