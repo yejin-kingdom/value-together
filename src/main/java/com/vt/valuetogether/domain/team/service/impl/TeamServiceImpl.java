@@ -3,6 +3,8 @@ package com.vt.valuetogether.domain.team.service.impl;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberGetRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
@@ -202,5 +204,36 @@ public class TeamServiceImpl implements TeamService {
         inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
 
         return new TeamMemberInviteRes();
+    }
+
+    @Transactional
+    @Override
+    public TeamGetRes getTeamInfo(Long teamId, String username) {
+        User user = userRepository.findByUsername(username);
+        UserValidator.validate(user);
+
+        Team team = teamRepository.findByTeamId(teamId);
+        TeamValidator.validate(team);
+
+        List<TeamRole> teamRoleList = team.getTeamRoleList();
+        TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
+
+        //        List<TeamRole> -> List<TeamMemberGetRes>
+        List<TeamMemberGetRes> teamMemberGetResList =
+                teamRoleList.stream()
+                        .map(
+                                teamRole ->
+                                        TeamMemberGetRes.builder()
+                                                .username(teamRole.getUser().getUsername())
+                                                .role(teamRole.getRole())
+                                                .build())
+                        .toList();
+
+        return TeamGetRes.builder()
+                .teamName(team.getTeamName())
+                .teamDescription(team.getTeamDescription())
+                .backgroundColor(team.getBackgroundColor())
+                .memberGetResList(teamMemberGetResList)
+                .build();
     }
 }
