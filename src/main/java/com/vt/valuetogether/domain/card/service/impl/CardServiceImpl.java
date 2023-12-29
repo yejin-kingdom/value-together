@@ -2,9 +2,11 @@ package com.vt.valuetogether.domain.card.service.impl;
 
 import static com.vt.valuetogether.infra.s3.S3Util.FilePath.CARD;
 
+import com.vt.valuetogether.domain.card.dto.request.CardChangeSequenceReq;
 import com.vt.valuetogether.domain.card.dto.request.CardDeleteReq;
 import com.vt.valuetogether.domain.card.dto.request.CardSaveReq;
 import com.vt.valuetogether.domain.card.dto.request.CardUpdateReq;
+import com.vt.valuetogether.domain.card.dto.response.CardChangeSequenceRes;
 import com.vt.valuetogether.domain.card.dto.response.CardDeleteRes;
 import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
@@ -96,5 +98,35 @@ public class CardServiceImpl implements CardService {
     public CardGetRes getCard(Long cardId) {
         // TODO ADD Team check
         return CardServiceMapper.INSTANCE.toCardGetRes(cardRepository.findByCardId(cardId));
+    }
+
+    @Override
+    @Transactional
+    public CardChangeSequenceRes changeSequence(CardChangeSequenceReq cardChangeSequenceReq) {
+        // TODO ADD Team check
+        // TODO ADD Category null check
+        Card card = cardRepository.findByCardId(cardChangeSequenceReq.getCardId());
+        CardValidator.validate(card);
+
+        Double averageSequence =
+                getAverageSequence(
+                        cardChangeSequenceReq.getPreSequence(), cardChangeSequenceReq.getPostSequence());
+
+        cardRepository.save(
+                Card.builder()
+                        .cardId(card.getCardId())
+                        .name(card.getName())
+                        .description(card.getDescription())
+                        .fileUrl(card.getFileUrl())
+                        .sequence(averageSequence)
+                        .deadline(card.getDeadline())
+                        .categoryId(cardChangeSequenceReq.getCategoryId())
+                        .build());
+
+        return new CardChangeSequenceRes();
+    }
+
+    private Double getAverageSequence(Double preSequence, Double postSequence) {
+        return (preSequence + postSequence) / 2;
     }
 }
