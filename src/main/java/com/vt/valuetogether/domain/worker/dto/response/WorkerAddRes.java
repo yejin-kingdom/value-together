@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WorkerAddRes {
 
-    private Long workId;
+    private Long workerId;
 
     @Builder
-    private WorkerAddRes(Long workId) {
-        this.workId = workId;
+    private WorkerAddRes(Long workerId) {
+        this.workerId = workerId;
     }
 }
