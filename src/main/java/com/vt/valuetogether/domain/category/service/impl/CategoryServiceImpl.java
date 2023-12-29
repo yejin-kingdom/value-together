@@ -2,8 +2,10 @@ package com.vt.valuetogether.domain.category.service.impl;
 
 import static java.lang.Boolean.FALSE;
 
+import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
+import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.entity.Category;
@@ -74,6 +76,33 @@ public class CategoryServiceImpl implements CategoryService {
                         .build());
 
         return new CategoryEditRes();
+    }
+
+    @Override
+    @Transactional
+    public CategoryDeleteRes deleteCategory(CategoryDeleteReq req) {
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
+        CategoryValidator.validate(category);
+
+        Team team = category.getTeam();
+        TeamValidator.validate(team);
+
+        TeamRoleValidator.validate(team.getTeamRoleList());
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+
+        categoryRepository.save(
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(0.0)
+                        .team(team)
+                        .isDeleted(true)
+                        .build());
+
+        return new CategoryDeleteRes();
     }
 
     private Double getMaxSequence(Long teamId) {
