@@ -101,4 +101,26 @@ class CardRepositoryTest implements CardTest {
         assertThat(cards.get(1).getSequence()).isEqualTo(saveAnotherCard.getSequence());
         assertThat(cards.get(1).getDeadline()).isEqualTo(saveAnotherCard.getDeadline());
     }
+
+    @Test
+    @DisplayName("cards 저장 테스트")
+    void cards_저장() {
+        // given
+        List<Card> cards = List.of(TEST_CARD, TEST_ANOTHER_CARD);
+
+        // when
+        List<Card> saveCards = cardRepository.saveAll(cards);
+
+        // then
+        assertThat(saveCards.get(0).getName()).isEqualTo(TEST_NAME);
+        assertThat(saveCards.get(0).getDescription()).isEqualTo(TEST_DESCRIPTION);
+        assertThat(saveCards.get(0).getFileUrl()).isEqualTo(TEST_FILE_URL);
+        assertThat(saveCards.get(0).getSequence()).isEqualTo(TEST_SEQUENCE);
+        assertThat(saveCards.get(0).getDeadline()).isEqualTo(TEST_DEADLINE);
+        assertThat(saveCards.get(1).getName()).isEqualTo(TEST_ANOTHER_NAME);
+        assertThat(saveCards.get(1).getDescription()).isEqualTo(TEST_ANOTHER_DESCRIPTION);
+        assertThat(saveCards.get(1).getFileUrl()).isEqualTo(TEST_ANOTHER_FILE_URL);
+        assertThat(saveCards.get(1).getSequence()).isEqualTo(TEST_ANOTHER_SEQUENCE);
+        assertThat(saveCards.get(1).getDeadline()).isEqualTo(TEST_ANOTHER_DEADLINE);
+    }
 }
