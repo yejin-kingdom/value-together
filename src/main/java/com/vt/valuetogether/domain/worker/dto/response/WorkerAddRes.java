@@ -1,18 +1,6 @@
 package com.vt.valuetogether.domain.worker.dto.response;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WorkerAddRes {
-
-    private Long workerId;
-
-    @Builder
-    private WorkerAddRes(Long workerId) {
-        this.workerId = workerId;
-    }
-}
+@JsonIgnoreProperties
+public class WorkerAddRes {}
