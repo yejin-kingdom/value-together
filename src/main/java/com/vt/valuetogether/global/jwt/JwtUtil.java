@@ -97,9 +97,9 @@ public class JwtUtil {
     }
 
     /** 토큰 만료 여부 검증. */
-    public boolean isTokenExpired(String accessToken) {
+    public boolean isTokenExpired(String token) {
         try {
-            jwtParser.parseClaimsJws(accessToken);
+            jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             return true;
         }
