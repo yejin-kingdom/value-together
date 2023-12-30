@@ -43,39 +43,33 @@ public class JwtUtil {
         jwtParser = Jwts.parserBuilder().setSigningKey(key).build();
     }
 
-    /**
-     * AccessToken 생성
-     */
+    /** AccessToken 생성 */
     public String createAccessToken(String username, String role) {
         Date now = new Date();
 
         return BEARER_PREFIX
-            + Jwts.builder()
-            .setSubject(username) // 사용자 식별자값(ID)
-            .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-            .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
-            .setIssuedAt(now) // 발급일
-            .signWith(key, SignatureAlgorithm.HS256) // 암호화 알고리즘 (HS256)
-            .compact();
+                + Jwts.builder()
+                        .setSubject(username) // 사용자 식별자값(ID)
+                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+                        .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
+                        .setIssuedAt(now) // 발급일
+                        .signWith(key, SignatureAlgorithm.HS256) // 암호화 알고리즘 (HS256)
+                        .compact();
     }
 
-    /**
-     * RefreshToken 생성
-     */
+    /** RefreshToken 생성 */
     public String createRefreshToken() {
         Date now = new Date();
 
         return BEARER_PREFIX
-            + Jwts.builder()
-            .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME)) // 만료 시간
-            .setIssuedAt(now) // 발급일
-            .signWith(key, SignatureAlgorithm.HS256) // 암호화 알고리즘 (HS256)
-            .compact();
+                + Jwts.builder()
+                        .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME)) // 만료 시간
+                        .setIssuedAt(now) // 발급일
+                        .signWith(key, SignatureAlgorithm.HS256) // 암호화 알고리즘 (HS256)
+                        .compact();
     }
 
-    /**
-     * JWT 토큰 substring
-     */
+    /** JWT 토큰 substring */
     public String substringToken(String token) {
         TokenValidator.checkValidToken(hasTokenBearerPrefix(token));
         return token.substring(7);
@@ -85,9 +79,7 @@ public class JwtUtil {
         return StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX);
     }
 
-    /**
-     * 토큰 검증, 만료 토큰은 검증하지 않음
-     */
+    /** 토큰 검증, 만료 토큰은 검증하지 않음 */
     public boolean isTokenValid(String token) {
         try {
             jwtParser.parseClaimsJws(token);
@@ -104,9 +96,7 @@ public class JwtUtil {
         return false;
     }
 
-    /**
-     * 토큰 만료 여부 검증.
-     */
+    /** 토큰 만료 여부 검증. */
     public boolean isTokenExpired(String token) {
         try {
             jwtParser.parseClaimsJws(token);
@@ -116,9 +106,7 @@ public class JwtUtil {
         return false;
     }
 
-    /**
-     * 토큰에서 사용자 정보 가져오기
-     */
+    /** 토큰에서 사용자 정보 가져오기 */
     public Claims getUserInfoFromToken(String token) {
         return jwtParser.parseClaimsJws(token).getBody();
     }
