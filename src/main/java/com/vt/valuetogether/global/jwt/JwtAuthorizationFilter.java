@@ -1,12 +1,12 @@
 package com.vt.valuetogether.global.jwt;
 
 import static com.vt.valuetogether.global.jwt.JwtUtil.ACCESS_TOKEN_HEADER;
-import static com.vt.valuetogether.global.jwt.JwtUtil.AUTHORIZATION_KEY;
 import static com.vt.valuetogether.global.jwt.JwtUtil.REFRESH_TOKEN_HEADER;
+import static com.vt.valuetogether.global.redis.RedisUtil.ACCESS_TOKEN_EXPIRED_TIME;
 
 import com.vt.valuetogether.global.redis.RedisUtil;
+import com.vt.valuetogether.global.security.UserDetailsImpl;
 import com.vt.valuetogether.global.validator.TokenValidator;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,59 +43,65 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String accessToken = request.getHeader(ACCESS_TOKEN_HEADER);
+        String accessToken =
+                jwtUtil.getTokenWithoutBearer(request.getHeader(ACCESS_TOKEN_HEADER)); // access token 은 필수
         log.info("accessToken : {}", accessToken);
-        String refreshToken = request.getHeader(REFRESH_TOKEN_HEADER);
+
+        String refreshToken =
+                jwtUtil.getTokenWithoutBearer(
+                        request.getHeader(REFRESH_TOKEN_HEADER)); // refresh token 은 선택
         log.info("refreshToken : {}", refreshToken);
 
-        // 요청 헤더에 access token 없거나 레디스에 access token 없으면 인증 미처리
-        if (isAuthPass(accessToken, refreshToken)) {
+        // access token 비어있으면 인증 미처리
+        if (!StringUtils.hasText(accessToken)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        accessToken = jwtUtil.substringToken(accessToken);
-        refreshToken = jwtUtil.substringToken(refreshToken);
-
-        // 로그아웃 처리된 경우
-        TokenValidator.checkValidToken(redisUtil.hasKey(refreshToken));
-        // access token 유효하지 않은 경우
+        // 우선 access token 으로 검증
         TokenValidator.checkValidToken(jwtUtil.isTokenValid(accessToken));
 
-        // access token 만료되어 재발급 받는 경우
-        if (jwtUtil.isTokenExpired(accessToken)) {
-            TokenValidator.checkValidToken(isRefreshTokenValid(refreshToken));
-            TokenValidator.checkExpiredToken(jwtUtil.isTokenExpired(refreshToken));
+        // 로그아웃 처리된 경우 검증
+        TokenValidator.checkLoginRequired(!redisUtil.hasKey(accessToken));
 
-            accessToken = jwtUtil.substringToken(renewAccessToken(accessToken));
-            response.addHeader(ACCESS_TOKEN_HEADER, accessToken);
+        // 유효한 access token 이면 인증 처리
+        if (!jwtUtil.isTokenExpired(accessToken)) {
+            setAuthentication(jwtUtil.getUsernameFromToken(accessToken));
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
-        String username = claims.getSubject();
-        setAuthentication(username);
+        // access token 이 만료되면 refresh token 으로 검증
+        TokenValidator.checkValidToken(isRefreshTokenValid(refreshToken));
 
+        // refresh token 이 만료되면 redis 에서 삭제(밴 처리) 후 로그인 필요 예외 발생
+        TokenValidator.checkLoginRequired(isLoginRequired(refreshToken, accessToken));
+
+        // 응답 헤더에 재발급한 access token 반환
+        response.addHeader(ACCESS_TOKEN_HEADER, renewAccessToken(accessToken));
         filterChain.doFilter(request, response);
     }
 
-    private boolean isAuthPass(String accessToken, String refreshToken) {
-        return !StringUtils.hasText(accessToken)
-                || !StringUtils.hasText(refreshToken)
-                || !redisUtil.hasKey(jwtUtil.substringToken(refreshToken));
+    private boolean isLoginRequired(String refreshToken, String accessToken) {
+        return jwtUtil.isTokenExpired(refreshToken) && redisUtil.delete(accessToken);
     }
 
-    private String renewAccessToken(String accessToken) {
-        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
-        String username = claims.getSubject();
-        String role = (String) claims.get(AUTHORIZATION_KEY);
+    private String renewAccessToken(String prevAccessToken) {
+        log.info("access token 재발급");
+        String username = (String) redisUtil.get(prevAccessToken);
+        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+        String role = userDetails.getUser().getRole().getAuthority();
+        String newAccessToken = jwtUtil.createAccessToken(username, role);
 
-        return jwtUtil.createAccessToken(username, role);
+        redisUtil.delete(prevAccessToken);
+        redisUtil.set(jwtUtil.substringToken(newAccessToken), username, ACCESS_TOKEN_EXPIRED_TIME);
+
+        setAuthentication(username);
+        return newAccessToken;
     }
 
     private boolean isRefreshTokenValid(String refreshToken) {
-        return StringUtils.hasText(refreshToken)
-                && jwtUtil.isTokenValid(refreshToken)
-                && redisUtil.hasKey(refreshToken);
+        return StringUtils.hasText(refreshToken) && jwtUtil.isTokenValid(refreshToken);
     }
 
     /**
@@ -104,6 +110,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
      * @param username JWT 속의 Subject 에 저장된 username
      */
     private void setAuthentication(String username) {
+        log.info("set auth username : {}", username);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = createAuthentication(username);
         context.setAuthentication(authentication);
