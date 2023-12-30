@@ -9,7 +9,9 @@ import org.springframework.data.repository.RepositoryDefinition;
 public interface CardRepository {
     Card save(Card card);
 
-    @Query(value = "select ifnull(max(c.sequence), 0) from Card c where c.categoryId=:categoryId")
+    @Query(
+            value =
+                    "select ifnull(max(c.sequence), 0) + 1.0 from Card c where c.category.categoryId=:categoryId")
     Double getMaxSequence(Long categoryId);
 
     Card findByCardId(Long cardId);

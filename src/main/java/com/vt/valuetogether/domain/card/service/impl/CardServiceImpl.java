@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final S3Util s3Util;
-    private final Double NEXT_SEQUENCE = 1.0;
 
     @Override
     @Transactional
@@ -48,7 +47,7 @@ public class CardServiceImpl implements CardService {
     }
 
     private Double getMaxSequence(Long categoryId) {
-        return cardRepository.getMaxSequence(categoryId) + NEXT_SEQUENCE;
+        return cardRepository.getMaxSequence(categoryId);
     }
 
     @Override
