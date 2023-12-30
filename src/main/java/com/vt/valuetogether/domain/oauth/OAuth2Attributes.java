@@ -12,9 +12,8 @@ import lombok.RequiredArgsConstructor;
 public enum OAuth2Attributes {
     GITHUB("GITHUB") {
         @Override
-        public OAuth2LoginReq of(Map<String, Object> attributes, String username) {
+        public OAuth2LoginReq of(Map<String, Object> attributes) {
             return OAuth2LoginReq.builder()
-                    .username(username)
                     .oauthId(attributes.get("id").toString())
                     .email((String) attributes.get("email"))
                     .imageUrl((String) attributes.get("avatar_url"))
@@ -25,10 +24,9 @@ public enum OAuth2Attributes {
     NAVER("NAVER") {
         @Override
         @SuppressWarnings("unchecked")
-        public OAuth2LoginReq of(Map<String, Object> attributes, String username) {
+        public OAuth2LoginReq of(Map<String, Object> attributes) {
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
             return OAuth2LoginReq.builder()
-                    .username(username)
                     .oauthId((String) response.get("id"))
                     .email((String) response.get("email"))
                     .imageUrl((String) response.get("profile_image"))
@@ -38,9 +36,8 @@ public enum OAuth2Attributes {
     },
     GOOGLE("GOOGLE") {
         @Override
-        public OAuth2LoginReq of(Map<String, Object> attributes, String username) {
+        public OAuth2LoginReq of(Map<String, Object> attributes) {
             return OAuth2LoginReq.builder()
-                    .username(username)
                     .oauthId((String) attributes.get("sub"))
                     .email((String) attributes.get("email"))
                     .imageUrl((String) attributes.get("picture"))
@@ -51,14 +48,13 @@ public enum OAuth2Attributes {
 
     private final String providerName;
 
-    public static OAuth2LoginReq extract(
-            String providerName, Map<String, Object> attributes, String username) {
+    public static OAuth2LoginReq extract(String providerName, Map<String, Object> attributes) {
         return Arrays.stream(values())
                 .filter(provider -> providerName.equals(provider.providerName))
                 .findAny()
                 .orElseThrow(() -> new OAuth2ProviderInvalidException(ResultCode.INVALID_OAUTH_PROVIDER))
-                .of(attributes, username);
+                .of(attributes);
     }
 
-    public abstract OAuth2LoginReq of(Map<String, Object> attributes, String username);
+    public abstract OAuth2LoginReq of(Map<String, Object> attributes);
 }

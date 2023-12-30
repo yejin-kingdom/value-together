@@ -10,16 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OAuth2LoginReq {
 
-    private String username;
     private String oauthId;
     private String email;
     private String imageUrl;
     private Provider provider;
 
     @Builder
-    private OAuth2LoginReq(
-            String username, String oauthId, String email, String imageUrl, Provider provider) {
-        this.username = username;
+    private OAuth2LoginReq(String oauthId, String email, String imageUrl, Provider provider) {
         this.oauthId = oauthId;
         this.email = email;
         this.imageUrl = imageUrl;
