@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
@@ -36,7 +35,7 @@ class WorkerControllerTest extends BaseMvcTest implements WorkerTest {
                         .cardId(TEST_CARD_ID)
                         .userIds(List.of(TEST_USER_ID, TEST_ANOTHER_USER_ID))
                         .build();
-        WorkerAddRes workerAddRes = WorkerAddRes.builder().workerId(TEST_WORKER_ID).build();
+        WorkerAddRes workerAddRes = new WorkerAddRes();
 
         // when - then
         when(workerService.addWorker(any(WorkerAddReq.class))).thenReturn(workerAddRes);
@@ -46,15 +45,14 @@ class WorkerControllerTest extends BaseMvcTest implements WorkerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(workerAddReq)))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.workerId").value(workerAddRes.getWorkerId()));
+                .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("worker 삭제 테스트")
     void worker_삭제() throws Exception {
         // given
-        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().workerId(TEST_WORKER_ID).build();
+        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().cardId(TEST_CARD_ID).build();
         WorkerDeleteRes workerDeleteRes = new WorkerDeleteRes();
 
         // when - then
@@ -63,7 +61,8 @@ class WorkerControllerTest extends BaseMvcTest implements WorkerTest {
                 .perform(
                         delete("/api/v1/workers")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(workerDeleteReq)))
+                                .content(objectMapper.writeValueAsString(workerDeleteReq))
+                                .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

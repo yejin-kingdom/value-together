@@ -5,7 +5,9 @@ import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
+import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.worker.dto.request.WorkerAddReq;
 import com.vt.valuetogether.domain.worker.dto.request.WorkerDeleteReq;
@@ -56,14 +58,18 @@ class WorkerServiceImplTest implements WorkerTest {
     @DisplayName("worker 삭제  테스트")
     void worker_삭제() {
         // given
-        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().workerId(TEST_WORKER_ID).build();
+        WorkerDeleteReq workerDeleteReq = WorkerDeleteReq.builder().cardId(TEST_CARD_ID).build();
 
-        given(workerRepository.findByWorkerId(anyLong())).willReturn(TEST_WORKER);
+        given(cardRepository.findByCardId(anyLong())).willReturn(TEST_CARD);
+        given(userRepository.findByUsername(any())).willReturn(TEST_USER);
+        given(workerRepository.findByUserAndCard(any(User.class), any(Card.class)))
+                .willReturn(TEST_WORKER);
 
         // when
         workerService.deleteWorker(workerDeleteReq);
 
         // then
+        verify(workerRepository).findByUserAndCard(any(User.class), any(Card.class));
         verify(workerRepository).delete(any(Worker.class));
     }
 }
