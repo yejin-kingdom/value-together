@@ -4,10 +4,12 @@ import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.global.response.RestResponse;
@@ -69,5 +71,12 @@ public class TeamController {
     public RestResponse<TeamGetRes> getTeamInfo(
             @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
         return RestResponse.success(teamService.getTeamInfo(teamId, userDetails.getUsername()));
+    }
+
+    @DeleteMapping("/members")
+    public RestResponse<TeamMemberDeleteRes> deleteTeamMember(
+            @RequestBody TeamMemberDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
+        return RestResponse.success(teamService.deleteMember(req));
     }
 }

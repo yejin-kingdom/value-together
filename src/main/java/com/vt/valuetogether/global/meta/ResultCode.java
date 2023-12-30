@@ -39,8 +39,10 @@ public enum ResultCode {
     FORBIDDEN_TEAM_LEADER(HttpStatus.FORBIDDEN, 3003, "팀의 리더만 해당 작업을 수행할 수 있습니다."),
     NOT_FOUND_TEAM_ROLE(HttpStatus.NOT_FOUND, 3004, "teamRole 이 존재하지 않습니다."),
     FORBIDDEN_TEAM_ROLE(HttpStatus.FORBIDDEN, 3005, "팀의 멤버만 해당 작업을 수행할 수 있습니다."),
+    NOT_FOUND_TEAM_MEMBER(HttpStatus.NOT_FOUND, 3006, "팀의 멤버가 아닙니다."),
 
     // 카테고리 4000번대
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 4000, "존재하지 않는 카테고리 입니다."),
 
     // 카드 5000번대
     NOT_FOUND_CARD(HttpStatus.NOT_FOUND, 5000, "카드 정보를 찾을 수 없습니다."),
