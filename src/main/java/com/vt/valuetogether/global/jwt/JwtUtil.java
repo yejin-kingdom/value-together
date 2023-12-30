@@ -110,4 +110,8 @@ public class JwtUtil {
     public Claims getUserInfoFromToken(String token) {
         return jwtParser.parseClaimsJws(token).getBody();
     }
+
+    public String getUsernameFromToken(String token) {
+        return getUserInfoFromToken(token).getSubject();
+    }
 }
