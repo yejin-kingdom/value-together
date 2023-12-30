@@ -74,7 +74,8 @@ class CardControllerTest extends BaseMvcTest {
         CardSaveRes cardSaveRes = CardSaveRes.builder().cardId(cardId).build();
         when(cardService.saveCard(any(), any())).thenReturn(cardSaveRes);
         this.mockMvc
-                .perform(multipart("/api/v1/cards").file(multipartFile).file(req))
+                .perform(
+                        multipart("/api/v1/cards").file(multipartFile).file(req).principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -112,7 +113,11 @@ class CardControllerTest extends BaseMvcTest {
         CardUpdateRes cardUpdateRes = new CardUpdateRes();
         when(cardService.updateCard(any(), any())).thenReturn(cardUpdateRes);
         this.mockMvc
-                .perform(multipart(PATCH, "/api/v1/cards").file(multipartFile).file(req))
+                .perform(
+                        multipart(PATCH, "/api/v1/cards")
+                                .file(multipartFile)
+                                .file(req)
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -128,7 +133,8 @@ class CardControllerTest extends BaseMvcTest {
                 .perform(
                         delete("/api/v1/cards")
                                 .contentType(APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(cardDeleteReq)))
+                                .content(objectMapper.writeValueAsString(cardDeleteReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -161,8 +167,11 @@ class CardControllerTest extends BaseMvcTest {
                         .deadline(deadline)
                         .checklists(checklists)
                         .build();
-        when(cardService.getCard(any())).thenReturn(cardGetRes);
-        this.mockMvc.perform(get("/api/v1/cards/" + cardId)).andDo(print()).andExpect(status().isOk());
+        when(cardService.getCard(any(), any())).thenReturn(cardGetRes);
+        this.mockMvc
+                .perform(get("/api/v1/cards/" + cardId).principal(this.mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -180,15 +189,14 @@ class CardControllerTest extends BaseMvcTest {
                         .postSequence(postSeq)
                         .build();
 
-        String json = objectMapper.writeValueAsString(cardChangeSequenceReq);
-
         CardChangeSequenceRes cardChangeSequenceRes = new CardChangeSequenceRes();
         when(cardService.changeSequence(any())).thenReturn(cardChangeSequenceRes);
         this.mockMvc
                 .perform(
                         patch("/api/v1/cards/order")
                                 .contentType(APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(cardChangeSequenceRes)))
+                                .content(objectMapper.writeValueAsString(cardChangeSequenceRes))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

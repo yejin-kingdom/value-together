@@ -3,6 +3,8 @@ package com.vt.valuetogether.domain.card.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.vt.valuetogether.domain.card.entity.Card;
+import com.vt.valuetogether.domain.category.repository.CategoryRepository;
+import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.test.CardTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -17,11 +19,15 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class CardRepositoryTest implements CardTest {
     @Autowired private CardRepository cardRepository;
+    @Autowired private CategoryRepository categoryRepository;
+    @Autowired private TeamRepository teamRepository;
 
     @Test
     @DisplayName("card 저장 테스트")
     void card_저장() {
         // given
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
 
         // when
         Card card = cardRepository.save(TEST_CARD);
@@ -39,19 +45,23 @@ class CardRepositoryTest implements CardTest {
     void categoryId_max_sequence_조회() {
         // given
         Long categoryId = 1L;
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         Card saveCard = cardRepository.save(TEST_CARD);
 
         // when
         Double maxSequence = cardRepository.getMaxSequence(categoryId);
 
         // then
-        assertThat(maxSequence).isEqualTo(saveCard.getSequence());
+        assertThat(maxSequence).isEqualTo(saveCard.getSequence() + 1.0);
     }
 
     @Test
     @DisplayName("id로 card 조회 테스트")
     void id_card_조회() {
         // given
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         Card saveCard = cardRepository.save(TEST_CARD);
 
         // when
@@ -69,6 +79,8 @@ class CardRepositoryTest implements CardTest {
     @DisplayName("card 삭제 테스트")
     void card_삭제() {
         // given
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         cardRepository.save(TEST_CARD);
 
         // when
@@ -83,11 +95,13 @@ class CardRepositoryTest implements CardTest {
     @DisplayName("categoryId별 card list 조회 테스트")
     void categoryId_card_list_조회() {
         // given
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         Card saveCard = cardRepository.save(TEST_CARD);
         Card saveAnotherCard = cardRepository.save(TEST_ANOTHER_CARD);
 
         // when
-        List<Card> cards = cardRepository.findByOrderByCategoryIdAscSequenceAsc();
+        List<Card> cards = cardRepository.findByOrderByCategoryCategoryIdAscSequenceAsc();
 
         // then
         assertThat(cards.get(0).getName()).isEqualTo(saveCard.getName());
@@ -106,6 +120,8 @@ class CardRepositoryTest implements CardTest {
     @DisplayName("cards 저장 테스트")
     void cards_저장() {
         // given
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         List<Card> cards = List.of(TEST_CARD, TEST_ANOTHER_CARD);
 
         // when
