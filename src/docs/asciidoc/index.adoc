@@ -139,6 +139,16 @@ endif::[]
 
 - x
 
+== user API
+
+include::{snippets}/user-controller-test/send-email-test/auto-section.adoc[]
+include::{snippets}/user-controller-test/confirm-email-test/auto-section.adoc[]
+include::{snippets}/user-controller-test/signup-test/auto-section.adoc[]
+include::{snippets}/user-controller-test/confirm-username-test/auto-section.adoc[]
+include::{snippets}/user-controller-test/verify-password-test/auto-section.adoc[]
+include::{snippets}/user-controller-test/update-profile-test/auto-section.adoc[]
+include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
+
 == category API
 
 include::{snippets}/category-controller-test/category_저장/auto-section.adoc[]
@@ -167,3 +177,7 @@ include::{snippets}/task-controller-test/task_삭제/auto-section.adoc[]
 
 include::{snippets}/worker-controller-test/worker_저장/auto-section.adoc[]
 include::{snippets}/worker-controller-test/worker_삭제/auto-section.adoc[]
+
+== comment API
+
+include::{snippets}/comment-controller-test/save-comment-test/auto-section.adoc[]
