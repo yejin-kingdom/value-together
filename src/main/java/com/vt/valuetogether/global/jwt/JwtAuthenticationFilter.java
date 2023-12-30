@@ -96,8 +96,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
             throws IOException {
 
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-
+        log.info("login failed message : {}", failed.getMessage());
+        response.setStatus(NOT_FOUND_USER.getStatus().value());
         settingResponse(response, RestResponse.error(NOT_FOUND_USER));
     }
 
