@@ -11,6 +11,7 @@ import com.vt.valuetogether.domain.comment.service.CommentServiceMapper;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.global.validator.CardValidator;
+import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
         User user = findUser(req.getUsername());
         Card card = findCard(req.getCardId());
 
-        // 작성자가 해당 팀에 속해있는지 확인 로직 추가
+        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
 
         return CommentServiceMapper.INSTANCE.toCommentSaveRes(
                 commentRepository.save(
