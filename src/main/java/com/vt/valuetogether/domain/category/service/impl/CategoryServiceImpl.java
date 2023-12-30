@@ -9,6 +9,8 @@ import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
+import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
+import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
@@ -22,6 +24,7 @@ import com.vt.valuetogether.global.validator.CategoryValidator;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategorySaveRes saveCategory(CategorySaveReq categorySaveReq) {
-        User user = userRepository.findByUsername(categorySaveReq.getUsername());
-        UserValidator.validate(user);
+        User user = getUserByUsername(categorySaveReq.getUsername());
         Team team = teamRepository.findByTeamId(categorySaveReq.getTeamId());
         TeamValidator.validate(team);
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
@@ -56,9 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryEditRes editCategory(CategoryEditReq req) {
-        User user = userRepository.findByUsername(req.getUsername());
-        UserValidator.validate(user);
-
+        User user = getUserByUsername(req.getUsername());
         Category category = categoryRepository.findByCategoryId(req.getCategoryId());
         CategoryValidator.validate(category);
 
@@ -83,9 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDeleteRes deleteCategory(CategoryDeleteReq req) {
-        User user = userRepository.findByUsername(req.getUsername());
-        UserValidator.validate(user);
-
+        User user = getUserByUsername(req.getUsername());
         Category category = categoryRepository.findByCategoryId(req.getCategoryId());
         CategoryValidator.validate(category);
 
@@ -111,8 +109,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryChangeSequenceRes changeCategorySequence(
             CategoryChangeSequenceReq categoryChangeSequenceReq) {
-        User user = userRepository.findByUsername(categoryChangeSequenceReq.getUsername());
-        UserValidator.validate(user);
+        User user = getUserByUsername(categoryChangeSequenceReq.getUsername());
         Category category =
                 categoryRepository.findByCategoryId(categoryChangeSequenceReq.getCategoryId());
         CategoryValidator.validate(category);
@@ -133,6 +130,28 @@ public class CategoryServiceImpl implements CategoryService {
                         .build());
 
         return new CategoryChangeSequenceRes();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CategoryGetResList getAllCategories(Long teamId, String username) {
+        User user = getUserByUsername(username);
+        Team team = teamRepository.findByTeamId(teamId);
+        TeamValidator.validate(team);
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+        List<CategoryGetRes> categoryGetReses =
+                CategoryServiceMapper.INSTANCE.toCategoryGetResList(
+                        categoryRepository.findByTeamTeamIdOrderBySequenceAsc(teamId));
+        return CategoryGetResList.builder()
+                .categories(categoryGetReses)
+                .total(categoryGetReses.size())
+                .build();
+    }
+
+    private User getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        UserValidator.validate(user);
+        return user;
     }
 
     private Double getMaxSequence(Long teamId) {
