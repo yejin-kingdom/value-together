@@ -38,12 +38,11 @@ class CategoryRepositoryTest implements CategoryTest {
     @DisplayName("teamId로 max sequence 조회 테스트")
     void teamId_max_sequence_조회() {
         // given
-        Long teamId = 1L;
         teamRepository.save(TEST_TEAM);
         Category saveCategory = categoryRepository.save(TEST_CATEGORY);
 
         // when
-        Double maxSequence = categoryRepository.getMaxSequence(teamId);
+        Double maxSequence = categoryRepository.getMaxSequence(saveCategory.getTeam().getTeamId());
 
         // then
         assertThat(maxSequence).isEqualTo(saveCategory.getSequence() + 1.0);

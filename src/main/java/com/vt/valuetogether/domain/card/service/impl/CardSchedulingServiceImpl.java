@@ -19,12 +19,12 @@ public class CardSchedulingServiceImpl implements CardSchedulingService {
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void resetSequence() {
-        List<Card> cards = cardRepository.findByOrderByCategoryIdAscSequenceAsc();
-        Long prevCategoryId = cards.get(0).getCategoryId();
+        List<Card> cards = cardRepository.findByOrderByCategoryCategoryIdAscSequenceAsc();
+        Long prevCategoryId = cards.get(0).getCategory().getCategoryId();
         double sequence = 0.0;
         List<Card> newCards = new ArrayList<>();
         for (Card card : cards) {
-            sequence = getNewSequence(sequence, prevCategoryId, card.getCategoryId());
+            sequence = getNewSequence(sequence, prevCategoryId, card.getCategory().getCategoryId());
             newCards.add(
                     Card.builder()
                             .cardId(card.getCardId())
@@ -33,9 +33,9 @@ public class CardSchedulingServiceImpl implements CardSchedulingService {
                             .fileUrl(card.getFileUrl())
                             .sequence(sequence)
                             .deadline(card.getDeadline())
-                            .categoryId(card.getCategoryId())
+                            .category(card.getCategory())
                             .build());
-            prevCategoryId = card.getCategoryId();
+            prevCategoryId = card.getCategory().getCategoryId();
         }
         cardRepository.saveAll(newCards);
     }

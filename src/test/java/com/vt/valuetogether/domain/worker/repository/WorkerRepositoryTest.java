@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
+import com.vt.valuetogether.domain.category.repository.CategoryRepository;
+import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.worker.entity.Worker;
@@ -23,12 +25,16 @@ class WorkerRepositoryTest implements WorkerTest {
     @Autowired private UserRepository userRepository;
     @Autowired private CardRepository cardRepository;
     @Autowired private WorkerRepository workerRepository;
+    @Autowired private CategoryRepository categoryRepository;
+    @Autowired private TeamRepository teamRepository;
 
     @Test
     @DisplayName("worker 저장 테스트")
     void worker_저장() {
         // given
         User savedUser = userRepository.save(User.builder().build());
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         cardRepository.save(TEST_CARD);
 
         // when
@@ -43,6 +49,8 @@ class WorkerRepositoryTest implements WorkerTest {
     void id_worker_조회() {
         // given
         User savedUser = userRepository.save(TEST_USER);
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         Card savedCard = cardRepository.save(TEST_CARD);
         Worker savedWorker = workerRepository.save(TEST_WORKER);
 
@@ -58,6 +66,8 @@ class WorkerRepositoryTest implements WorkerTest {
     void worker_삭제() {
         // given
         User user = userRepository.save(User.builder().build());
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
         Card card = cardRepository.save(Card.builder().build());
         Worker worker = workerRepository.save(Worker.builder().user(user).card(card).build());
 

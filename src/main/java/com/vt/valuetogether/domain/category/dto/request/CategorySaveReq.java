@@ -15,9 +15,8 @@ public class CategorySaveReq {
     private String username;
 
     @Builder
-    private CategorySaveReq(Long teamId, String name, String username) {
+    private CategorySaveReq(Long teamId, String name) {
         this.teamId = teamId;
         this.name = name;
-        this.username = username;
     }
 }
