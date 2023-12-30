@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
-import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
+import com.vt.valuetogether.domain.card.dto.response.CardInnerCategoryRes;
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
@@ -19,8 +19,7 @@ import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.service.CategoryService;
-import com.vt.valuetogether.domain.checklist.dto.response.ChecklistGetRes;
-import com.vt.valuetogether.domain.task.dto.response.TaskGetRes;
+import com.vt.valuetogether.domain.worker.dto.response.WorkerGetRes;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,34 +77,25 @@ class CategoryControllerTest extends BaseMvcTest {
     @DisplayName("teamId로 category 전체 조회 테스트")
     void teamId_category_전체_조회() throws Exception {
         Long teamId = 1L;
-        Long taskId = 1L;
-        String content = "taskContent";
-        Boolean isCompleted = FALSE;
-        TaskGetRes taskGetRes =
-                TaskGetRes.builder().taskId(taskId).content(content).isCompleted(isCompleted).build();
-        Long checklistId = 1L;
-        String title = "checklistTitle";
-        ChecklistGetRes checklistGetRes =
-                ChecklistGetRes.builder()
-                        .checklistId(checklistId)
-                        .title(title)
-                        .tasks(List.of(taskGetRes))
-                        .build();
+        String username = "ysys";
+        String profileImageUrl = "profileUrl";
+        WorkerGetRes workerGetRes =
+                WorkerGetRes.builder().username(username).profileImageUrl(profileImageUrl).build();
         Long cardId = 1L;
         String cardName = "cardName";
         String description = "description";
         String fileUrl = "fileUrl";
         Double cardSequence = 1.0;
         String deadline = "2023.12.31 23:59:59";
-        CardGetRes cardGetRes =
-                CardGetRes.builder()
+        CardInnerCategoryRes cardInnerCategoryRes =
+                CardInnerCategoryRes.builder()
                         .cardId(cardId)
                         .name(cardName)
                         .description(description)
                         .fileUrl(fileUrl)
                         .sequence(cardSequence)
                         .deadline(deadline)
-                        .checklists(List.of(checklistGetRes))
+                        .workers(List.of(workerGetRes))
                         .build();
         Long categoryId = 1L;
         String categoryName = "categoryName";
@@ -117,7 +107,7 @@ class CategoryControllerTest extends BaseMvcTest {
                         .name(categoryName)
                         .sequence(categorySequence)
                         .isDeleted(isDeleted)
-                        .cards(List.of(cardGetRes))
+                        .cards(List.of(cardInnerCategoryRes))
                         .build();
         int total = 1;
         CategoryGetResList categoryGetResList =

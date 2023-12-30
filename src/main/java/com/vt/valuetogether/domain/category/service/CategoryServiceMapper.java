@@ -1,6 +1,6 @@
 package com.vt.valuetogether.domain.category.service;
 
-import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
+import com.vt.valuetogether.domain.card.dto.response.CardInnerCategoryRes;
 import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
@@ -28,9 +28,9 @@ public interface CategoryServiceMapper {
     }
 
     @Mapping(source = "deadline", target = "deadline")
-    CardGetRes toCardGetRes(Card card);
+    CardInnerCategoryRes toCardGetRes(Card card);
 
-    List<CardGetRes> toCardGetReses(List<Card> cards);
+    List<CardInnerCategoryRes> toCardGetReses(List<Card> cards);
 
     List<CategoryGetRes> toCategoryGetResList(List<Category> categories);
 

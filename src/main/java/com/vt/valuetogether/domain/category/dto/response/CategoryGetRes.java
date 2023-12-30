@@ -1,6 +1,6 @@
 package com.vt.valuetogether.domain.category.dto.response;
 
-import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
+import com.vt.valuetogether.domain.card.dto.response.CardInnerCategoryRes;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,11 +14,15 @@ public class CategoryGetRes {
     private String name;
     private Double sequence;
     private Boolean isDeleted;
-    private List<CardGetRes> cards;
+    private List<CardInnerCategoryRes> cards;
 
     @Builder
     private CategoryGetRes(
-            Long categoryId, String name, Double sequence, Boolean isDeleted, List<CardGetRes> cards) {
+            Long categoryId,
+            String name,
+            Double sequence,
+            Boolean isDeleted,
+            List<CardInnerCategoryRes> cards) {
         this.categoryId = categoryId;
         this.name = name;
         this.sequence = sequence;
