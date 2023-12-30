@@ -52,12 +52,15 @@ public class WorkerServiceImpl implements WorkerService {
     @Transactional
     @Override
     public WorkerDeleteRes deleteWorker(WorkerDeleteReq req) {
-        workerRepository.delete(findWorker(req.getWorkerId()));
+        workerRepository.delete(findWorker(req));
         return new WorkerDeleteRes();
     }
 
-    private Worker findWorker(Long workerId) {
-        Worker worker = workerRepository.findByWorkerId(workerId);
+    private Worker findWorker(WorkerDeleteReq req) {
+        User user = findUser(req.getUsername());
+        Card card = findCard(req.getCardId());
+
+        Worker worker = workerRepository.findByUserAndCard(user, card);
         WorkerValidator.validator(worker);
         return worker;
     }
