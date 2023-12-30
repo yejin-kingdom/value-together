@@ -84,6 +84,8 @@ public class JwtUtil {
         try {
             jwtParser.parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (UnsupportedJwtException e) {
