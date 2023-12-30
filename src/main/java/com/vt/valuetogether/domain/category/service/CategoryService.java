@@ -1,8 +1,10 @@
 package com.vt.valuetogether.domain.category.service;
 
+import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
+import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
@@ -13,4 +15,7 @@ public interface CategoryService {
     CategoryEditRes editCategory(CategoryEditReq req);
 
     CategoryDeleteRes deleteCategory(CategoryDeleteReq req);
+
+    CategoryChangeSequenceRes changeCategorySequence(
+            CategoryChangeSequenceReq categoryChangeSequenceReq);
 }
