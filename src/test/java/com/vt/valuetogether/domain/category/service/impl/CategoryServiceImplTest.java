@@ -1,11 +1,13 @@
 package com.vt.valuetogether.domain.category.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
+import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
 import com.vt.valuetogether.domain.team.entity.Team;
@@ -30,6 +32,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Mock private CategoryRepository categoryRepository;
     @Mock private TeamRepository teamRepository;
     @Mock private UserRepository userRepository;
+    private List<Category> categories;
     private Category category;
     private Team team;
 
@@ -52,6 +55,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
                         .isDeleted(TEST_CATEGORY_IS_DELETED)
                         .team(team)
                         .build();
+        categories = List.of(category);
     }
 
     @Test
@@ -100,5 +104,22 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
         verify(userRepository).findByUsername(any());
         verify(categoryRepository).findByCategoryId(any());
         verify(categoryRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("teamId로 category 전체 조회 테스트")
+    void teamId_category_전체_조회() {
+        // given
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(teamRepository.findByTeamId(any())).thenReturn(team);
+        when(categoryRepository.findByTeamTeamIdOrderBySequenceAsc(any())).thenReturn(categories);
+
+        // when
+        CategoryGetResList categoryGetResList =
+                categoryService.getAllCategories(team.getTeamId(), TEST_USER_NAME);
+
+        // then
+        assertThat(categoryGetResList.getCategories().get(0).getName()).isEqualTo(category.getName());
+        assertThat(categoryGetResList.getTotal()).isEqualTo(1);
     }
 }
