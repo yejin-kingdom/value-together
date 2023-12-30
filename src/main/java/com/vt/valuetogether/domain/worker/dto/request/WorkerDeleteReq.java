@@ -1,4 +1,4 @@
-package com.vt.valuetogether.domain.card.dto.request;
+package com.vt.valuetogether.domain.worker.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -6,15 +6,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CardDeleteReq {
+public class WorkerDeleteReq {
+
     private Long cardId;
     private String username;
 
     @Builder
-    private CardDeleteReq(Long cardId) {
+    private WorkerDeleteReq(Long cardId) {
         this.cardId = cardId;
     }
 }

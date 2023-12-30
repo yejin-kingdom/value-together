@@ -49,6 +49,7 @@ public enum ResultCode {
     NOT_FOUND_CARD(HttpStatus.NOT_FOUND, 5000, "카드 정보를 찾을 수 없습니다."),
 
     // 작업자 6000번대
+    NOT_FOUND_WORKER(HttpStatus.NOT_FOUND, 6000, "작업자를 찾을 수 없습니다."),
 
     // 체크리스트 7000번대
     NOT_FOUND_CHECKLIST(HttpStatus.NOT_FOUND, 7000, "체크리스트를 찾을 수 없습니다."),

@@ -3,7 +3,7 @@ package com.vt.valuetogether.test;
 import com.vt.valuetogether.domain.card.entity.Card;
 import java.time.LocalDateTime;
 
-public interface CardTest {
+public interface CardTest extends CategoryTest {
 
     Long TEST_CARD_ID = 1L;
     String TEST_NAME = "name";
@@ -11,7 +11,6 @@ public interface CardTest {
     String TEST_FILE_URL = "url";
     Double TEST_SEQUENCE = 1.0;
     LocalDateTime TEST_DEADLINE = LocalDateTime.now();
-    Long TEST_CATEGORY_ID = 1L;
 
     String TEST_UPDATED_NAME = "updatedName";
     String TEST_UPDATED_DESCRIPTION = "updatedDescription";
@@ -33,7 +32,7 @@ public interface CardTest {
                     .fileUrl(TEST_FILE_URL)
                     .sequence(TEST_SEQUENCE)
                     .deadline(TEST_DEADLINE)
-                    .categoryId(TEST_CATEGORY_ID)
+                    .category(TEST_CATEGORY)
                     .build();
 
     Card TEST_UPDATED_CARD =
@@ -44,7 +43,7 @@ public interface CardTest {
                     .fileUrl(TEST_UPDATED_FILE_URL)
                     .sequence(TEST_SEQUENCE)
                     .deadline(TEST_UPDATED_DEADLINE)
-                    .categoryId(TEST_CATEGORY_ID)
+                    .category(TEST_CATEGORY)
                     .build();
 
     Card TEST_ANOTHER_CARD =
@@ -55,6 +54,6 @@ public interface CardTest {
                     .fileUrl(TEST_ANOTHER_FILE_URL)
                     .sequence(TEST_ANOTHER_SEQUENCE)
                     .deadline(TEST_ANOTHER_DEADLINE)
-                    .categoryId(TEST_CATEGORY_ID)
+                    .category(TEST_CATEGORY)
                     .build();
 }

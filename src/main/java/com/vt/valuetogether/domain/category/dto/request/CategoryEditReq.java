@@ -15,9 +15,8 @@ public class CategoryEditReq {
     private String username;
 
     @Builder
-    private CategoryEditReq(Long categoryId, String name, String username) {
+    private CategoryEditReq(Long categoryId, String name) {
         this.categoryId = categoryId;
         this.name = name;
-        this.username = username;
     }
 }

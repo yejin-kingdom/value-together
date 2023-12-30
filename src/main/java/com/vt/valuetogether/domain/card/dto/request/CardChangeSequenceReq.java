@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CardChangeSequenceReq {
@@ -13,6 +15,7 @@ public class CardChangeSequenceReq {
     private Long cardId;
     private Double preSequence;
     private Double postSequence;
+    private String username;
 
     @Builder
     private CardChangeSequenceReq(
