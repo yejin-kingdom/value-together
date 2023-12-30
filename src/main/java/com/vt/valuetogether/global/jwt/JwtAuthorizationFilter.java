@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /** 헤더에서 JWT 가져와서 인증 객체 생성 */
-@Slf4j(topic = "JWT 검증 및 인가")
+@Slf4j(topic = "JWT validation & authorization")
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
