@@ -21,9 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 class CommentRepositoryTest implements CommentTest {
 
     @Autowired private CommentRepository commentRepository;
-
     @Autowired private UserRepository userRepository;
-
     @Autowired private CardRepository cardRepository;
     @Autowired private CategoryRepository categoryRepository;
     @Autowired private TeamRepository teamRepository;
@@ -36,15 +34,13 @@ class CommentRepositoryTest implements CommentTest {
         categoryRepository.save(TEST_CATEGORY);
         userRepository.save(TEST_USER);
         cardRepository.save(TEST_CARD);
-        Comment comment =
-                Comment.builder().content(TEST_COMMENT_CONTENT).card(TEST_CARD).user(TEST_USER).build();
 
         // when
-        Comment saveComment = commentRepository.save(comment);
+        Comment saveComment = commentRepository.save(TEST_COMMENT);
 
         // then
-        assertEquals(saveComment.getContent(), comment.getContent());
-        assertEquals(saveComment.getUser(), comment.getUser());
-        assertEquals(saveComment.getCard(), comment.getCard());
+        assertEquals(saveComment.getContent(), TEST_COMMENT.getContent());
+        assertEquals(saveComment.getUser().getUserId(), TEST_COMMENT.getUser().getUserId());
+        assertEquals(saveComment.getCard().getCardId(), TEST_COMMENT.getCard().getCardId());
     }
 }
