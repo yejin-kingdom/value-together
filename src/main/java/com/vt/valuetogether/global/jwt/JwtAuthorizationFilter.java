@@ -33,7 +33,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private static final List<RequestMatcher> whiteList =
-            List.of(new AntPathRequestMatcher("/api/v1/users/signup", HttpMethod.POST.name()));
+            List.of(new AntPathRequestMatcher("/api/v1/users/signup/**", HttpMethod.POST.name()));
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
     private final UserDetailsService userDetailsService;
