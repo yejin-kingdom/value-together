@@ -14,8 +14,7 @@ public class CategoryDeleteReq {
     private String username;
 
     @Builder
-    private CategoryDeleteReq(Long categoryId, String username) {
+    private CategoryDeleteReq(Long categoryId) {
         this.categoryId = categoryId;
-        this.username = username;
     }
 }

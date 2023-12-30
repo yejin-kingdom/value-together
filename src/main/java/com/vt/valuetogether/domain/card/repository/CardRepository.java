@@ -18,7 +18,7 @@ public interface CardRepository {
 
     void delete(Card card);
 
-    List<Card> findByOrderByCategoryIdAscSequenceAsc();
+    List<Card> findByOrderByCategoryCategoryIdAscSequenceAsc();
 
     List<Card> saveAll(Iterable<Card> cards);
 }

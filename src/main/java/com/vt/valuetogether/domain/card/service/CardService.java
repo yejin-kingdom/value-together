@@ -18,7 +18,7 @@ public interface CardService {
 
     CardDeleteRes deleteCard(CardDeleteReq cardDeleteReq);
 
-    CardGetRes getCard(Long cardId);
+    CardGetRes getCard(Long cardId, String username);
 
     CardChangeSequenceRes changeSequence(CardChangeSequenceReq cardChangeSequenceReq);
 }
