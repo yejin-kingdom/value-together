@@ -41,17 +41,16 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        OAuth2LoginReq oAuth2LoginReq =
-                OAuth2Attributes.extract(providerType, attributes, makeRandomName());
+        OAuth2LoginReq oAuth2LoginReq = OAuth2Attributes.extract(providerType, attributes);
 
         User saveUser = userRepository.findByOauthId(oAuth2LoginReq.getOauthId());
 
         if (saveUser == null) {
-            save(oAuth2LoginReq);
+            saveUser = save(oAuth2LoginReq);
         }
 
         Map<String, Object> customAttribute =
-                customAttribute(attributes, userNameAttributeName, oAuth2LoginReq);
+                customAttribute(attributes, userNameAttributeName, oAuth2LoginReq, saveUser.getUsername());
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(Role.USER.getValue())),
@@ -71,10 +70,10 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         return DEFAULT_NAME + UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private void save(OAuth2LoginReq oAuth2LoginReq) {
+    private User save(OAuth2LoginReq oAuth2LoginReq) {
         User user =
                 User.builder()
-                        .username(oAuth2LoginReq.getUsername())
+                        .username(makeRandomName())
                         .email(oAuth2LoginReq.getEmail())
                         .profileImageUrl(oAuth2LoginReq.getImageUrl())
                         .oauthId(oAuth2LoginReq.getOauthId())
@@ -82,16 +81,17 @@ public class OAuth2Service extends DefaultOAuth2UserService {
                         .role(Role.USER)
                         .build();
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     private Map<String, Object> customAttribute(
             Map<String, Object> attributes,
             String userNameAttributeName,
-            OAuth2LoginReq oauthUserProfile) {
+            OAuth2LoginReq oauthUserProfile,
+            String username) {
         Map<String, Object> customAttribute = new LinkedHashMap<>();
         customAttribute.put(userNameAttributeName, attributes.get(userNameAttributeName));
-        customAttribute.put("username", oauthUserProfile.getUsername());
+        customAttribute.put("username", username);
         customAttribute.put("provider", oauthUserProfile.getProvider());
         customAttribute.put("email", oauthUserProfile.getEmail());
         customAttribute.put("oAuthId", oauthUserProfile.getOauthId());
