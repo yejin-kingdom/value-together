@@ -42,11 +42,13 @@ public class Team extends BaseEntity {
             String teamName,
             String teamDescription,
             String backgroundColor,
-            boolean isDeleted) {
+            boolean isDeleted,
+            List<TeamRole> teamRoleList) {
         this.teamId = teamId;
         this.teamName = teamName;
         this.teamDescription = teamDescription;
         this.backgroundColor = backgroundColor;
         this.isDeleted = isDeleted;
+        this.teamRoleList = teamRoleList;
     }
 }
