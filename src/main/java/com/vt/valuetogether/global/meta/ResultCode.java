@@ -52,11 +52,13 @@ public enum ResultCode {
 
     // 체크리스트 7000번대
     NOT_FOUND_CHECKLIST(HttpStatus.NOT_FOUND, 7000, "체크리스트를 찾을 수 없습니다."),
+
     // 할일 8000대
     NOT_FOUND_TASK(HttpStatus.NOT_FOUND, 8000, "할일 정보를 찾을 수 없습니다."),
-    NULL_CONTENT(HttpStatus.BAD_REQUEST, 8001, "할일 내용을 작성해주셔야 합니다.");
+    NULL_CONTENT(HttpStatus.BAD_REQUEST, 8001, "할일 내용을 작성해주셔야 합니다."),
 
     // 댓글 9000대
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, 9000, "댓글을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final Integer code;
