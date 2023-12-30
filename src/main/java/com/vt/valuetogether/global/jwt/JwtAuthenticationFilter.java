@@ -86,7 +86,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(JwtUtil.ACCESS_TOKEN_HEADER, accessToken);
         response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken);
 
-        redisUtil.set(jwtUtil.substringToken(refreshToken), username, REFRESH_TOKEN_TIME);
+        redisUtil.set(jwtUtil.substringToken(accessToken), username, ACCESS_TOKEN_EXPIRED_TIME);
 
         return new UserLocalLoginRes();
     }
