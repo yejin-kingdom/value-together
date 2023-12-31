@@ -185,3 +185,4 @@ include::{snippets}/worker-controller-test/worker_삭제/auto-section.adoc[]
 == comment API
 
 include::{snippets}/comment-controller-test/save-comment-test/auto-section.adoc[]
+include::{snippets}/comment-controller-test/delete-comment-test/auto-section.adoc[]
