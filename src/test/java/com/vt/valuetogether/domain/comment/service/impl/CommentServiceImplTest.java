@@ -2,12 +2,14 @@ package com.vt.valuetogether.domain.comment.service.impl;
 
 import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_ROLE;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.category.entity.Category;
+import com.vt.valuetogether.domain.comment.dto.request.CommentDeleteReq;
 import com.vt.valuetogether.domain.comment.dto.request.CommentSaveReq;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.comment.repository.CommentRepository;
@@ -130,5 +132,24 @@ class CommentServiceImplTest implements CommentTest {
 
         // then
         assertEquals(FORBIDDEN_TEAM_ROLE.getMessage(), exception.getResultCode().getMessage());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 테스트")
+    void deleteCommentTest() {
+        // given
+        CommentDeleteReq req =
+            CommentDeleteReq.builder()
+                .commentId(TEST_COMMENT_ID)
+                .username(TEST_USER_NAME)
+                .build();
+
+        given(commentRepository.findByCommentId(req.getCommentId())).willReturn(comment);
+
+        // when
+        commentService.deleteComment(req);
+
+        // then
+        verify(commentRepository).delete(any());
     }
 }
