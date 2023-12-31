@@ -7,6 +7,7 @@ import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
+import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 
 public interface CategoryService {
@@ -18,4 +19,6 @@ public interface CategoryService {
 
     CategoryChangeSequenceRes changeCategorySequence(
             CategoryChangeSequenceReq categoryChangeSequenceReq);
+
+    CategoryGetResList getAllCategories(Long teamId, String username);
 }
