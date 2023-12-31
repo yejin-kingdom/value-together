@@ -25,6 +25,7 @@ import com.vt.valuetogether.infra.mail.MailUtil;
 import com.vt.valuetogether.infra.s3.S3Util;
 import com.vt.valuetogether.infra.s3.S3Util.FilePath;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,9 @@ public class UserServiceImpl implements UserService {
     private static final String EMAIL_AUTHENTICATION = "이메일 인증";
 
     private static final String DEFAULT_PROFILE_INTRODUCE = "자기소개를 입력해주세요.";
-    private static final String DEFAULT_PROFILE_IMAGE_URL = "";
+
+    @Value("${default.image.address}")
+    private String defaultProfileImageUrl;
 
     @Override
     public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
@@ -76,7 +79,7 @@ public class UserServiceImpl implements UserService {
                         .password(passwordEncoder.encode(req.getPassword()))
                         .email(req.getEmail())
                         .introduce(DEFAULT_PROFILE_INTRODUCE)
-                        .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
+                        .profileImageUrl(defaultProfileImageUrl)
                         .provider(Provider.LOCAL)
                         .role(Role.USER)
                         .build());
@@ -108,11 +111,11 @@ public class UserServiceImpl implements UserService {
         User savedUser = getUser(req.getPreUsername());
 
         String imageUrl = savedUser.getProfileImageUrl();
-        if (!imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
+        if (!imageUrl.equals(defaultProfileImageUrl)) {
             s3Util.deleteFile(imageUrl, FilePath.PROFILE);
         }
         if (multipartFile == null || multipartFile.isEmpty()) {
-            imageUrl = DEFAULT_PROFILE_IMAGE_URL;
+            imageUrl = defaultProfileImageUrl;
         } else {
             S3Validator.isProfileImageFile(multipartFile);
             imageUrl = s3Util.uploadFile(multipartFile, FilePath.PROFILE);
