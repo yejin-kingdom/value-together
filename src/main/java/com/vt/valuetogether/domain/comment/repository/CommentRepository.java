@@ -6,4 +6,8 @@ import org.springframework.data.repository.RepositoryDefinition;
 @RepositoryDefinition(domainClass = Comment.class, idClass = Long.class)
 public interface CommentRepository {
     Comment save(Comment comment);
+
+    Comment findByCommentId(Long commentId);
+
+    void delete(Comment comment);
 }
