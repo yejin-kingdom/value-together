@@ -2,7 +2,7 @@ package com.vt.valuetogether.global.jwt;
 
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_USER;
 import static com.vt.valuetogether.global.meta.ResultCode.SYSTEM_ERROR;
-import static com.vt.valuetogether.global.redis.RedisUtil.ACCESS_TOKEN_EXPIRED_TIME;
+import static com.vt.valuetogether.global.redis.RedisUtil.REFRESH_TOKEN_EXPIRED_TIME;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vt.valuetogether.domain.user.dto.request.UserLocalLoginReq;
@@ -28,7 +28,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Slf4j(topic = "로그인 및 JWT 생성")
+@Slf4j(topic = "login & JWT creation")
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -86,7 +86,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(JwtUtil.ACCESS_TOKEN_HEADER, accessToken);
         response.addHeader(JwtUtil.REFRESH_TOKEN_HEADER, refreshToken);
 
-        redisUtil.set(jwtUtil.substringToken(accessToken), username, ACCESS_TOKEN_EXPIRED_TIME);
+        redisUtil.set(jwtUtil.substringToken(refreshToken), username, REFRESH_TOKEN_EXPIRED_TIME);
 
         return new UserLocalLoginRes();
     }
