@@ -54,20 +54,23 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest {
     void updateCommentTest() throws Exception {
         // given
         CommentUpdateReq req =
-            CommentUpdateReq.builder().commentId(TEST_COMMENT_ID).content(TEST_COMMENT_ANOTHER_CONTENT).build();
+                CommentUpdateReq.builder()
+                        .commentId(TEST_COMMENT_ID)
+                        .content(TEST_COMMENT_ANOTHER_CONTENT)
+                        .build();
         CommentUpdateRes res = new CommentUpdateRes();
         when(commentService.updateComment(req)).thenReturn(res);
 
         // when - then
         mockMvc
-            .perform(
-                patch("/api/v1/comments")
-                    .content(objectMapper.writeValueAsString(req))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .principal(mockPrincipal))
-            .andDo(print())
-            .andExpect(status().isOk());
+                .perform(
+                        patch("/api/v1/comments")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
