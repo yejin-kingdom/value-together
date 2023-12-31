@@ -30,7 +30,6 @@ public class Comment extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "cardId")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Card card;
 
     @ManyToOne

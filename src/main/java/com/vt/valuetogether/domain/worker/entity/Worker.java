@@ -32,7 +32,6 @@ public class Worker {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cardId")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Card card;
 
     @Builder

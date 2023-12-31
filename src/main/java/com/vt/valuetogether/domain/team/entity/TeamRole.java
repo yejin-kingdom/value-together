@@ -37,7 +37,6 @@ public class TeamRole {
 
     @ManyToOne
     @JoinColumn(name = "teamId")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Team team;
 
     @Enumerated(value = EnumType.STRING)
