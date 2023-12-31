@@ -102,4 +102,17 @@ class CategoryRepositoryTest implements CategoryTest {
         assertThat(categories.get(0)).isEqualTo(saveCategory1);
         assertThat(categories.get(1)).isEqualTo(saveCategory2);
     }
+
+    @Test
+    @DisplayName("teamId별 category list 조회 테스트")
+    void teamId_category_list_조회() {
+        // given
+
+        // when
+        List<Category> categories = categoryRepository.findByOrderByTeamTeamIdAscSequenceAsc();
+
+        // then
+        assertThat(categories.get(0)).isEqualTo(saveCategory1);
+        assertThat(categories.get(1)).isEqualTo(saveCategory2);
+    }
 }
