@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @EnableScheduling
@@ -18,6 +19,7 @@ public class CardSchedulingServiceImpl implements CardSchedulingService {
     private final double ADD_SEQUENCE = 1.0;
 
     @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
     public void resetSequence() {
         List<Card> cards = cardRepository.findByOrderByCategoryCategoryIdAscSequenceAsc();
         Long prevCategoryId = cards.get(0).getCategory().getCategoryId();

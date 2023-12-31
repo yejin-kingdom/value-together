@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @EnableScheduling
@@ -17,7 +18,8 @@ public class CategorySchedulingServiceImpl implements CategorySchedulingService 
     private final CategoryRepository categoryRepository;
     private final double ADD_SEQUENCE = 1.0;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 30 0 * * ?")
+    @Transactional
     public void resetSequence() {
         List<Category> categories = categoryRepository.findByOrderByTeamTeamIdAscSequenceAsc();
         Long prevTeamId = categories.get(0).getTeam().getTeamId();
