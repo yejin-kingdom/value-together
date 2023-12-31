@@ -35,7 +35,7 @@ public class Checklist extends BaseEntity {
     private Card card;
 
     @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL)
-    private final List<Task> tasks = new ArrayList<>();
+    private List<Task> tasks = new ArrayList<>();
 
     @Builder
     private Checklist(Long checklistId, String title, Card card) {
