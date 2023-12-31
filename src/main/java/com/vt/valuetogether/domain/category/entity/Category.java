@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,7 +42,7 @@ public class Category extends BaseEntity {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @OrderBy("sequence asc")
-    private List<Card> cards;
+    private List<Card> cards = new ArrayList<>();
 
     @Builder
     private Category(Long categoryId, String name, Double sequence, Boolean isDeleted, Team team) {
