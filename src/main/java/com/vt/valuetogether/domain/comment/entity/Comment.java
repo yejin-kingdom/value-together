@@ -14,6 +14,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -32,6 +34,7 @@ public class Comment extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "userId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Builder
