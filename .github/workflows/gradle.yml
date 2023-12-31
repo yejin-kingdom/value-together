@@ -9,9 +9,24 @@ jobs:
   push_to_registry:
     name: Push to aws container registry
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Connect to Redis
+        run: node client.js
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
