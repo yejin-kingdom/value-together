@@ -19,4 +19,8 @@ public interface CategoryRepository {
     Category findByCategoryId(Long categoryId);
 
     List<Category> findByTeamTeamIdOrderBySequenceAsc(Long teamId);
+
+    List<Category> findByOrderByTeamTeamIdAscSequenceAsc();
+
+    List<Category> saveAll(Iterable<Category> categories);
 }
