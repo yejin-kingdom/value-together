@@ -24,7 +24,9 @@ import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
 import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.service.CardService;
 import com.vt.valuetogether.domain.checklist.dto.response.ChecklistGetRes;
+import com.vt.valuetogether.domain.comment.dto.response.CommentGetRes;
 import com.vt.valuetogether.domain.task.dto.response.TaskGetRes;
+import com.vt.valuetogether.domain.worker.dto.response.WorkerGetRes;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -143,11 +145,24 @@ class CardControllerTest extends BaseMvcTest {
     @DisplayName("card 단건 조회 테스트")
     void card_단건_조회() throws Exception {
         Long cardId = 1L;
+        String username = "ysys";
+        String profileImageUrl = "profileUrl";
+        WorkerGetRes workerGetRes =
+                WorkerGetRes.builder().username(username).profileImageUrl(profileImageUrl).build();
+        Long commentId = 1L;
+        String commentContent = "commentContent";
+        String commentUsername = "anotherUser";
+        CommentGetRes commentGetRes =
+                CommentGetRes.builder()
+                        .commentId(commentId)
+                        .content(commentContent)
+                        .username(commentUsername)
+                        .build();
         Long taskId = 1L;
-        String content = "taskContent";
+        String taskContent = "taskContent";
         Boolean isCompleted = false;
         TaskGetRes taskGetRes =
-                TaskGetRes.builder().taskId(taskId).content(content).isCompleted(isCompleted).build();
+                TaskGetRes.builder().taskId(taskId).content(taskContent).isCompleted(isCompleted).build();
         Long checklistId = 1L;
         String title = "checklistTitle";
         List<TaskGetRes> tasks = List.of(taskGetRes);
@@ -156,6 +171,7 @@ class CardControllerTest extends BaseMvcTest {
         String name = "cardName";
         String description = "cardDescription";
         String fileUrl = "fileUrl";
+        Double cardSequence = 1.0;
         String deadline = "2023.12.29 10:29:18";
         List<ChecklistGetRes> checklists = List.of(checklistGetRes);
         CardGetRes cardGetRes =
@@ -164,8 +180,11 @@ class CardControllerTest extends BaseMvcTest {
                         .name(name)
                         .description(description)
                         .fileUrl(fileUrl)
+                        .sequence(cardSequence)
                         .deadline(deadline)
                         .checklists(checklists)
+                        .workers(List.of(workerGetRes))
+                        .comments(List.of(commentGetRes))
                         .build();
         when(cardService.getCard(any(), any())).thenReturn(cardGetRes);
         this.mockMvc
@@ -195,7 +214,7 @@ class CardControllerTest extends BaseMvcTest {
                 .perform(
                         patch("/api/v1/cards/order")
                                 .contentType(APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(cardChangeSequenceRes))
+                                .content(objectMapper.writeValueAsString(cardChangeSequenceReq))
                                 .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());

@@ -1,6 +1,7 @@
 package com.vt.valuetogether.domain.category.repository;
 
 import com.vt.valuetogether.domain.category.entity.Category;
+import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.RepositoryDefinition;
 
@@ -16,4 +17,10 @@ public interface CategoryRepository {
     Double getMaxSequence(Long teamId);
 
     Category findByCategoryId(Long categoryId);
+
+    List<Category> findByTeamTeamIdOrderBySequenceAsc(Long teamId);
+
+    List<Category> findByOrderByTeamTeamIdAscSequenceAsc();
+
+    List<Category> saveAll(Iterable<Category> categories);
 }
