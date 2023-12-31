@@ -9,6 +9,11 @@ public interface CategoryTest extends TeamTest {
     Double TEST_CATEGORY_SEQUENCE = 1.0;
     Boolean TEST_CATEGORY_IS_DELETED = Boolean.FALSE;
 
+    Long TEST_ANOTHER_CATEGORY_ID = 2L;
+    String TEST_ANOTHER_CATEGORY_NAME = "name2";
+    Double TEST_ANOTHER_CATEGORY_SEQUENCE = 2.0;
+    Boolean TEST_ANOTHER_CATEGORY_IS_DELETED = Boolean.FALSE;
+
     Category TEST_CATEGORY =
             Category.builder()
                     .categoryId(TEST_CATEGORY_ID)
