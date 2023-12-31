@@ -115,4 +115,23 @@ class CategoryRepositoryTest implements CategoryTest {
         assertThat(categories.get(0)).isEqualTo(saveCategory1);
         assertThat(categories.get(1)).isEqualTo(saveCategory2);
     }
+
+    @Test
+    @DisplayName("categories 저장 테스트")
+    void categories_저장() {
+        // given
+        List<Category> categories = List.of(TEST_CATEGORY, TEST_ANOTHER_CATEGORY);
+
+        // when
+        List<Category> saveCategories = categoryRepository.saveAll(categories);
+
+        // then
+        assertThat(saveCategories.get(0).getName()).isEqualTo(categories.get(0).getName());
+        assertThat(saveCategories.get(0).getSequence()).isEqualTo(categories.get(0).getSequence());
+        assertThat(saveCategories.get(0).getIsDeleted()).isEqualTo(categories.get(0).getIsDeleted());
+
+        assertThat(saveCategories.get(1).getName()).isEqualTo(categories.get(1).getName());
+        assertThat(saveCategories.get(1).getSequence()).isEqualTo(categories.get(1).getSequence());
+        assertThat(saveCategories.get(1).getIsDeleted()).isEqualTo(categories.get(1).getIsDeleted());
+    }
 }
