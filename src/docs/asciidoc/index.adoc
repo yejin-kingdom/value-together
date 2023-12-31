@@ -32,8 +32,12 @@ endif::[]
 |정보
 |Optional
 
-|TOKEN
-|구글 토큰 정보
+|AccessToken
+|JWT 토큰
+|false
+
+|RefreshToken
+|JWT 토큰
 |false
 |===
 
