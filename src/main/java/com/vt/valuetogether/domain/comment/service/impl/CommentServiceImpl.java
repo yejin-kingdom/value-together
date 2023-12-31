@@ -4,8 +4,10 @@ import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.comment.dto.request.CommentDeleteReq;
 import com.vt.valuetogether.domain.comment.dto.request.CommentSaveReq;
+import com.vt.valuetogether.domain.comment.dto.request.CommentUpdateReq;
 import com.vt.valuetogether.domain.comment.dto.response.CommentDeleteRes;
 import com.vt.valuetogether.domain.comment.dto.response.CommentSaveRes;
+import com.vt.valuetogether.domain.comment.dto.response.CommentUpdateRes;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.comment.repository.CommentRepository;
 import com.vt.valuetogether.domain.comment.service.CommentService;
@@ -41,6 +43,23 @@ public class CommentServiceImpl implements CommentService {
         return CommentServiceMapper.INSTANCE.toCommentSaveRes(
                 commentRepository.save(
                         Comment.builder().content(req.getContent()).card(card).user(user).build()));
+    }
+
+    @Override
+    @Transactional
+    public CommentUpdateRes updateComment(CommentUpdateReq req) {
+        Comment comment = findComment(req.getCommentId());
+        CommentValidator.checkCommentUser(comment.getUser().getUsername(), req.getUsername());
+
+        commentRepository.save(
+                Comment.builder()
+                        .commentId(req.getCommentId())
+                        .content(req.getContent())
+                        .card(comment.getCard())
+                        .user(comment.getUser())
+                        .build());
+
+        return new CommentUpdateRes();
     }
 
     @Override
