@@ -1,6 +1,7 @@
 package com.vt.valuetogether.domain.comment.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -35,7 +36,7 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest {
         CommentSaveReq req =
                 CommentSaveReq.builder().cardId(TEST_CARD_ID).content(TEST_COMMENT_CONTENT).build();
         CommentSaveRes res = CommentSaveRes.builder().commentId(TEST_COMMENT_ID).build();
-        when(commentService.saveComment(req)).thenReturn(res);
+        when(commentService.saveComment(any())).thenReturn(res);
 
         // when - then
         mockMvc
@@ -58,7 +59,7 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest {
                         .content(TEST_COMMENT_ANOTHER_CONTENT)
                         .build();
         CommentUpdateRes res = new CommentUpdateRes();
-        when(commentService.updateComment(req)).thenReturn(res);
+        when(commentService.updateComment(any())).thenReturn(res);
 
         // when - then
         mockMvc
@@ -77,7 +78,7 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest {
         // given
         CommentDeleteReq req = CommentDeleteReq.builder().commentId(TEST_CARD_ID).build();
         CommentDeleteRes res = new CommentDeleteRes();
-        when(commentService.deleteComment(req)).thenReturn(res);
+        when(commentService.deleteComment(any())).thenReturn(res);
 
         // when - then
         mockMvc
