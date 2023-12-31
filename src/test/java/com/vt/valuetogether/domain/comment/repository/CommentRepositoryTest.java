@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.comment.repository;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.vt.valuetogether.domain.card.repository.CardRepository;
@@ -42,5 +43,42 @@ class CommentRepositoryTest implements CommentTest {
         assertEquals(saveComment.getContent(), TEST_COMMENT.getContent());
         assertEquals(saveComment.getUser().getUserId(), TEST_COMMENT.getUser().getUserId());
         assertEquals(saveComment.getCard().getCardId(), TEST_COMMENT.getCard().getCardId());
+    }
+
+    @Test
+    @DisplayName("findByCommentId 테스트")
+    void findByCommentIdTest() {
+        // given
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
+        userRepository.save(TEST_USER);
+        cardRepository.save(TEST_CARD);
+        Comment comment = commentRepository.save(TEST_COMMENT);
+
+        // when
+        Comment findComment = commentRepository.findByCommentId(comment.getCommentId());
+
+        // then
+        assertEquals(findComment.getContent(), TEST_COMMENT.getContent());
+        assertEquals(findComment.getUser().getUserId(), TEST_COMMENT.getUser().getUserId());
+        assertEquals(findComment.getCard().getCardId(), TEST_COMMENT.getCard().getCardId());
+    }
+
+    @Test
+    @DisplayName("delete 테스트")
+    void deleteTest() {
+        // given
+        teamRepository.save(TEST_TEAM);
+        categoryRepository.save(TEST_CATEGORY);
+        userRepository.save(TEST_USER);
+        cardRepository.save(TEST_CARD);
+        commentRepository.save(TEST_COMMENT);
+
+        // when
+        commentRepository.delete(TEST_COMMENT);
+        Comment findComment = commentRepository.findByCommentId(TEST_COMMENT_ID);
+
+        // then
+        assertThat(findComment).isNull();
     }
 }
