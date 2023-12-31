@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisUtil {
 
-    public static final int ACCESS_TOKEN_EXPIRED_TIME = 60 * 24 * 14;
+    public static final int REFRESH_TOKEN_EXPIRED_TIME = 60 * 24 * 14;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void set(String key, Object o, int minutes) {
