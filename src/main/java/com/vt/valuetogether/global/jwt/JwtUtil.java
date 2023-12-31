@@ -84,6 +84,8 @@ public class JwtUtil {
         try {
             jwtParser.parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (UnsupportedJwtException e) {
@@ -95,9 +97,9 @@ public class JwtUtil {
     }
 
     /** 토큰 만료 여부 검증. */
-    public boolean isTokenExpired(String accessToken) {
+    public boolean isTokenExpired(String token) {
         try {
-            jwtParser.parseClaimsJws(accessToken);
+            jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             return true;
         }
@@ -107,5 +109,16 @@ public class JwtUtil {
     /** 토큰에서 사용자 정보 가져오기 */
     public Claims getUserInfoFromToken(String token) {
         return jwtParser.parseClaimsJws(token).getBody();
+    }
+
+    public String getUsernameFromToken(String token) {
+        return getUserInfoFromToken(token).getSubject();
+    }
+
+    public String getTokenWithoutBearer(String token) {
+        if (token == null) {
+            return null;
+        }
+        return substringToken(token);
     }
 }

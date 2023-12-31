@@ -1,6 +1,7 @@
 package com.vt.valuetogether.domain.user.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,17 +49,16 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         // given
         UserVerifyEmailReq req = UserVerifyEmailReq.builder().email(TEST_USER_EMAIL).build();
         UserVerifyEmailRes res = new UserVerifyEmailRes();
-        when(userService.sendEmail(req)).thenReturn(res);
+        when(userService.sendEmail(any())).thenReturn(res);
 
         // when - then
         mockMvc
                 .perform(
                         post("/api/v1/users/signup/email")
                                 .content(objectMapper.writeValueAsString(req))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -69,7 +69,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         String code = "abdEfs";
 
         UserConfirmEmailRes res = UserConfirmEmailRes.builder().email(email).build();
-        when(userService.confirmEmail(email, code)).thenReturn(res);
+        when(userService.confirmEmail(any(), any())).thenReturn(res);
 
         MultiValueMap<String, String> info = new LinkedMultiValueMap<>();
 
@@ -79,8 +79,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         // when - then
         mockMvc
                 .perform(get("/api/v1/users/signup/email/check").params(info))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -94,17 +94,16 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                         .email(TEST_USER_EMAIL)
                         .build();
         UserSignupRes res = new UserSignupRes();
-        when(userService.signup(req)).thenReturn(res);
+        when(userService.signup(any())).thenReturn(res);
 
         // when - then
         mockMvc
                 .perform(
                         post("/api/v1/users/signup")
                                 .content(objectMapper.writeValueAsString(req))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -115,17 +114,16 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                 UserCheckDuplicateUsernameReq.builder().username(TEST_USER_NAME).build();
         UserCheckDuplicateUsernameRes res =
                 UserCheckDuplicateUsernameRes.builder().isDuplicated(true).build();
-        when(userService.checkDuplicateUsername(req)).thenReturn(res);
+        when(userService.checkDuplicateUsername(any())).thenReturn(res);
 
         // when - then
         mockMvc
                 .perform(
                         post("/api/v1/users/username")
                                 .content(objectMapper.writeValueAsString(req))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -135,7 +133,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
         UserVerifyPasswordReq req =
                 UserVerifyPasswordReq.builder().password(TEST_USER_PASSWORD).build();
         UserVerifyPasswordRes res = UserVerifyPasswordRes.builder().isMatched(true).build();
-        when(userService.verifyPassword(req)).thenReturn(res);
+        when(userService.verifyPassword(any())).thenReturn(res);
 
         // when - then
         mockMvc
@@ -143,10 +141,9 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                         post("/api/v1/users/password/verify")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -174,7 +171,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                         objectMapper.writeValueAsString(request).getBytes(StandardCharsets.UTF_8));
 
         UserUpdateProfileRes res = new UserUpdateProfileRes();
-        when(userService.updateProfile(request, file)).thenReturn(res);
+        when(userService.updateProfile(any(), any())).thenReturn(res);
 
         // when - then
         mockMvc
@@ -185,8 +182,8 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .principal(mockPrincipal))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -201,12 +198,12 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
                         .introduce(TEST_USER_INTRODUCE)
                         .profileImageUrl(TEST_USER_PROFILE_URL)
                         .build();
-        when(userService.getProfile(TEST_USER_ID)).thenReturn(res);
+        when(userService.getProfile(any())).thenReturn(res);
 
         // when - then
         mockMvc
                 .perform(get("/api/v1/users/{userId}", TEST_USER_ID))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }

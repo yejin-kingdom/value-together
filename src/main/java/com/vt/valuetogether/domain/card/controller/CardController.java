@@ -12,6 +12,8 @@ import com.vt.valuetogether.domain.card.dto.response.CardUpdateRes;
 import com.vt.valuetogether.domain.card.service.CardService;
 import com.vt.valuetogether.global.response.RestResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,30 +34,39 @@ public class CardController {
     @PostMapping
     public RestResponse<CardSaveRes> saveCard(
             @RequestPart CardSaveReq cardSaveReq,
-            @RequestPart(required = false) MultipartFile multipartFile) {
+            @RequestPart(required = false) MultipartFile multipartFile,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        cardSaveReq.setUsername(userDetails.getUsername());
         return RestResponse.success(cardService.saveCard(cardSaveReq, multipartFile));
     }
 
     @PatchMapping
     public RestResponse<CardUpdateRes> updateCard(
             @RequestPart CardUpdateReq cardUpdateReq,
-            @RequestPart(required = false) MultipartFile multipartFile) {
+            @RequestPart(required = false) MultipartFile multipartFile,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        cardUpdateReq.setUsername(userDetails.getUsername());
         return RestResponse.success(cardService.updateCard(cardUpdateReq, multipartFile));
     }
 
     @DeleteMapping
-    public RestResponse<CardDeleteRes> deleteCard(@RequestBody CardDeleteReq cardDeleteReq) {
+    public RestResponse<CardDeleteRes> deleteCard(
+            @RequestBody CardDeleteReq cardDeleteReq, @AuthenticationPrincipal UserDetails userDetails) {
+        cardDeleteReq.setUsername(userDetails.getUsername());
         return RestResponse.success(cardService.deleteCard(cardDeleteReq));
     }
 
     @GetMapping("/{cardId}")
-    public RestResponse<CardGetRes> getCard(@PathVariable Long cardId) {
-        return RestResponse.success(cardService.getCard(cardId));
+    public RestResponse<CardGetRes> getCard(
+            @PathVariable Long cardId, @AuthenticationPrincipal UserDetails userDetails) {
+        return RestResponse.success(cardService.getCard(cardId, userDetails.getUsername()));
     }
 
     @PatchMapping("/order")
     public RestResponse<CardChangeSequenceRes> changeSequence(
-            @RequestBody CardChangeSequenceReq cardChangeSequenceReq) {
+            @RequestBody CardChangeSequenceReq cardChangeSequenceReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        cardChangeSequenceReq.setUsername(userDetails.getUsername());
         return RestResponse.success(cardService.changeSequence(cardChangeSequenceReq));
     }
 }

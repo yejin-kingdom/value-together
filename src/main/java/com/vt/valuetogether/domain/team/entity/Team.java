@@ -4,7 +4,6 @@ import com.vt.valuetogether.domain.model.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,7 +33,7 @@ public class Team extends BaseEntity {
     private String backgroundColor;
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<TeamRole> teamRoleList = new ArrayList<>();
 
     @Builder
@@ -43,11 +42,13 @@ public class Team extends BaseEntity {
             String teamName,
             String teamDescription,
             String backgroundColor,
-            boolean isDeleted) {
+            boolean isDeleted,
+            List<TeamRole> teamRoleList) {
         this.teamId = teamId;
         this.teamName = teamName;
         this.teamDescription = teamDescription;
         this.backgroundColor = backgroundColor;
         this.isDeleted = isDeleted;
+        this.teamRoleList = teamRoleList;
     }
 }

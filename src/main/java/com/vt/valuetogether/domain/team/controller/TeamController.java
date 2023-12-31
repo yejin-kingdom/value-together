@@ -3,19 +3,27 @@ package com.vt.valuetogether.domain.team.controller;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberDeleteRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.global.response.RestResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -44,5 +52,31 @@ public class TeamController {
             @RequestBody TeamEditReq req, @AuthenticationPrincipal UserDetails userDetails) {
         req.setUsername(userDetails.getUsername());
         return RestResponse.success(teamService.editTeam(req));
+    }
+
+    @PostMapping("/members")
+    public RestResponse<TeamMemberInviteRes> inviteMember(
+            @RequestBody TeamMemberInviteReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
+        return RestResponse.success(teamService.inviteMember(req));
+    }
+
+    @GetMapping("/members/email")
+    public RestResponse<TeamMemberInviteRes> confirmEmail(
+            @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
+        return RestResponse.success(teamService.confirmEmail(email, code));
+    }
+
+    @GetMapping("/{teamId}")
+    public RestResponse<TeamGetRes> getTeamInfo(
+            @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
+        return RestResponse.success(teamService.getTeamInfo(teamId, userDetails.getUsername()));
+    }
+
+    @DeleteMapping("/members")
+    public RestResponse<TeamMemberDeleteRes> deleteTeamMember(
+            @RequestBody TeamMemberDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
+        return RestResponse.success(teamService.deleteMember(req));
     }
 }

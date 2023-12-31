@@ -74,6 +74,10 @@ public class BaseMvcTest implements UserTest {
                                                 AutoDocumentation.methodAndPath(),
                                                 AutoDocumentation.section()))
                         .build();
+        mockUserSetup();
+    }
+
+    private void mockUserSetup() {
         UserDetails testUserDetails = new UserDetailsImpl(TEST_USER);
         mockPrincipal =
                 new UsernamePasswordAuthenticationToken(

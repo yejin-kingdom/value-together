@@ -33,7 +33,7 @@ public class Checklist extends BaseEntity {
     @JoinColumn(name = "cardId")
     private Card card;
 
-    @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     @Builder

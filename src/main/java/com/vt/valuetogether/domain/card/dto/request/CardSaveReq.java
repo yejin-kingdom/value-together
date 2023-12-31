@@ -5,7 +5,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CardSaveReq {
@@ -13,6 +15,7 @@ public class CardSaveReq {
     private String name;
     private String description;
     private LocalDateTime deadline;
+    private String username;
 
     @Builder
     private CardSaveReq(Long categoryId, String name, String description, LocalDateTime deadline) {

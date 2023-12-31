@@ -31,6 +31,7 @@ public enum ResultCode {
     INVALID_CODE(HttpStatus.BAD_REQUEST, 2010, "인증코드가 일치하지 않습니다."),
     INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, 2011, "올바르지 않은 로그인 접근입니다."),
     INVALID_PROFILE_IMAGE_FILE(HttpStatus.BAD_REQUEST, 2012, "이미지 파일만 업로드 가능합니다."),
+    LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, 2013, "로그인이 필요합니다."),
 
     // 팀 3000번대
     NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 팀입니다."),
@@ -38,21 +39,27 @@ public enum ResultCode {
     DUPLICATED_TEAM_NAME(HttpStatus.BAD_REQUEST, 3002, "중복된 팀 이름 입니다."),
     FORBIDDEN_TEAM_LEADER(HttpStatus.FORBIDDEN, 3003, "팀의 리더만 해당 작업을 수행할 수 있습니다."),
     NOT_FOUND_TEAM_ROLE(HttpStatus.NOT_FOUND, 3004, "teamRole 이 존재하지 않습니다."),
+    FORBIDDEN_TEAM_ROLE(HttpStatus.FORBIDDEN, 3005, "팀의 멤버만 해당 작업을 수행할 수 있습니다."),
+    NOT_FOUND_TEAM_MEMBER(HttpStatus.NOT_FOUND, 3006, "팀의 멤버가 아닙니다."),
 
     // 카테고리 4000번대
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 4000, "존재하지 않는 카테고리 입니다."),
 
     // 카드 5000번대
     NOT_FOUND_CARD(HttpStatus.NOT_FOUND, 5000, "카드 정보를 찾을 수 없습니다."),
 
     // 작업자 6000번대
+    NOT_FOUND_WORKER(HttpStatus.NOT_FOUND, 6000, "작업자를 찾을 수 없습니다."),
 
     // 체크리스트 7000번대
     NOT_FOUND_CHECKLIST(HttpStatus.NOT_FOUND, 7000, "체크리스트를 찾을 수 없습니다."),
+
     // 할일 8000대
     NOT_FOUND_TASK(HttpStatus.NOT_FOUND, 8000, "할일 정보를 찾을 수 없습니다."),
-    NULL_CONTENT(HttpStatus.BAD_REQUEST, 8001, "할일 내용을 작성해주셔야 합니다.");
+    NULL_CONTENT(HttpStatus.BAD_REQUEST, 8001, "할일 내용을 작성해주셔야 합니다."),
 
     // 댓글 9000대
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, 9000, "댓글을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final Integer code;
