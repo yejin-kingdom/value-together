@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.category.repository;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -101,7 +102,8 @@ class CategoryRepositoryTest implements CategoryTest {
 
         // when
         List<Category> categories =
-                categoryRepository.findByTeamTeamIdOrderBySequenceAsc(saveTeam.getTeamId());
+                categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(
+                        saveTeam.getTeamId(), FALSE);
 
         // then
         assertThat(categories.get(0)).isEqualTo(saveCategory1);

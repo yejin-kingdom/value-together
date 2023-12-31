@@ -13,20 +13,14 @@ public class CategoryGetRes {
     private Long categoryId;
     private String name;
     private Double sequence;
-    private Boolean isDeleted;
     private List<CardInnerCategoryRes> cards;
 
     @Builder
     private CategoryGetRes(
-            Long categoryId,
-            String name,
-            Double sequence,
-            Boolean isDeleted,
-            List<CardInnerCategoryRes> cards) {
+            Long categoryId, String name, Double sequence, List<CardInnerCategoryRes> cards) {
         this.categoryId = categoryId;
         this.name = name;
         this.sequence = sequence;
-        this.isDeleted = isDeleted;
         this.cards = cards;
     }
 }
