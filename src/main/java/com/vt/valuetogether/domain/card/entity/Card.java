@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,14 +44,14 @@ public class Card extends BaseEntity {
     private Category category;
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-    private List<Checklist> checklists;
+    private List<Checklist> checklists = new ArrayList<>();
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-    private List<Worker> workers;
+    private List<Worker> workers = new ArrayList<>();
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
     @OrderBy("createdAt desc")
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     private Card(

@@ -13,11 +13,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -34,11 +37,12 @@ public class Category extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "teamId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Team team;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @OrderBy("sequence asc")
-    private List<Card> cards;
+    private List<Card> cards = new ArrayList<>();
 
     @Builder
     private Category(Long categoryId, String name, Double sequence, Boolean isDeleted, Team team) {

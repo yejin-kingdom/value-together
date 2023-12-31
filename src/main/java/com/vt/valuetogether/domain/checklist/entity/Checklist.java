@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,7 +35,7 @@ public class Checklist extends BaseEntity {
     private Card card;
 
     @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL)
-    private List<Task> tasks;
+    private List<Task> tasks = new ArrayList<>();
 
     @Builder
     private Checklist(Long checklistId, String title, Card card) {

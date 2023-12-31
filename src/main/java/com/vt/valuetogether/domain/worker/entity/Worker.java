@@ -2,7 +2,6 @@ package com.vt.valuetogether.domain.worker.entity;
 
 import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.user.entity.User;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -14,6 +13,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -25,10 +26,11 @@ public class Worker {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cardId")
     private Card card;
 
