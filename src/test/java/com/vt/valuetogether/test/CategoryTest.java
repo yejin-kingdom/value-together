@@ -22,4 +22,13 @@ public interface CategoryTest extends TeamTest {
                     .isDeleted(TEST_CATEGORY_IS_DELETED)
                     .team(TEST_TEAM)
                     .build();
+
+    Category TEST_ANOTHER_CATEGORY =
+            Category.builder()
+                    .categoryId(TEST_ANOTHER_CATEGORY_ID)
+                    .name(TEST_ANOTHER_CATEGORY_NAME)
+                    .sequence(TEST_ANOTHER_CATEGORY_SEQUENCE)
+                    .isDeleted(TEST_ANOTHER_CATEGORY_IS_DELETED)
+                    .team(TEST_TEAM)
+                    .build();
 }
