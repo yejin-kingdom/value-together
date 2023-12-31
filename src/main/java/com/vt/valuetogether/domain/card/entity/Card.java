@@ -49,7 +49,7 @@ public class Card extends BaseEntity {
     private List<Worker> workers;
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-    @OrderBy("modifiedAt desc")
+    @OrderBy("createdAt desc")
     private List<Comment> comments;
 
     @Builder
