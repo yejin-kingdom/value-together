@@ -69,7 +69,7 @@ public class UserController {
             @RequestPart(name = "data") UserUpdateProfileReq req,
             @RequestPart(name = "image", required = false) MultipartFile multipartfile,
             @AuthenticationPrincipal UserDetails userDetails) {
-        req.setUsername(userDetails.getUsername());
+        req.setPreUsername(userDetails.getUsername());
         return RestResponse.success(userService.updateProfile(req, multipartfile));
     }
 
