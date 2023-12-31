@@ -11,6 +11,7 @@ import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.comment.dto.request.CommentDeleteReq;
 import com.vt.valuetogether.domain.comment.dto.request.CommentSaveReq;
+import com.vt.valuetogether.domain.comment.dto.request.CommentUpdateReq;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.comment.repository.CommentRepository;
 import com.vt.valuetogether.domain.team.entity.Team;
@@ -132,6 +133,27 @@ class CommentServiceImplTest implements CommentTest {
 
         // then
         assertEquals(FORBIDDEN_TEAM_ROLE.getMessage(), exception.getResultCode().getMessage());
+    }
+
+    @Test
+    @DisplayName("댓글 수정 테스트")
+    void updateCommentTest() {
+        // given
+        CommentUpdateReq req =
+                CommentUpdateReq.builder()
+                        .commentId(TEST_COMMENT_ID)
+                        .content(TEST_COMMENT_ANOTHER_CONTENT)
+                        .username(TEST_USER_NAME)
+                        .build();
+
+        given(commentRepository.findByCommentId(req.getCommentId())).willReturn(comment);
+
+        // when
+        commentService.updateComment(req);
+
+        // then
+        verify(commentRepository).save(argumentCaptor.capture());
+        assertEquals(TEST_COMMENT_ANOTHER_CONTENT, argumentCaptor.getValue().getContent());
     }
 
     @Test
