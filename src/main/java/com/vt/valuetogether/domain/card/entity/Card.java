@@ -19,6 +19,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -38,6 +40,7 @@ public class Card extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
 
     // TODO ADD Comments
