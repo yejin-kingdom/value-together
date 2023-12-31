@@ -1,11 +1,15 @@
 package com.vt.valuetogether.domain.category.repository;
 
+import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.test.CategoryTest;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -133,5 +138,31 @@ class CategoryRepositoryTest implements CategoryTest {
         assertThat(saveCategories.get(1).getName()).isEqualTo(categories.get(1).getName());
         assertThat(saveCategories.get(1).getSequence()).isEqualTo(categories.get(1).getSequence());
         assertThat(saveCategories.get(1).getIsDeleted()).isEqualTo(categories.get(1).getIsDeleted());
+    }
+
+    @Test
+    @DisplayName("categories 삭제 테스트")
+    void categories_삭제() {
+        // given
+        Boolean isDeleted = TRUE;
+        ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        LocalDateTime localDateTime = dateTime.toLocalDate().plusDays(1L).atStartOfDay();
+        Category saveCategory3 =
+                Category.builder()
+                        .categoryId(3L)
+                        .name(TEST_ANOTHER_CATEGORY_NAME)
+                        .sequence(TEST_ANOTHER_CATEGORY_SEQUENCE)
+                        .isDeleted(TRUE)
+                        .team(saveTeam)
+                        .build();
+        saveCategory3 = categoryRepository.save(saveCategory3);
+        ReflectionTestUtils.setField(saveCategory3, "modifiedAt", LocalDateTime.now());
+
+        // when
+        categoryRepository.deleteByIsDeletedAndModifiedAtBefore(isDeleted, localDateTime);
+        Category category = categoryRepository.findByCategoryId(saveCategory3.getCategoryId());
+
+        // then
+        assertThat(category).isNull();
     }
 }
