@@ -17,6 +17,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -31,6 +33,7 @@ public class Checklist extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "cardId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Card card;
 
     @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL)
