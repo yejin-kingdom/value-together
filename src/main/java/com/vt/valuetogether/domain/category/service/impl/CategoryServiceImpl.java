@@ -141,7 +141,7 @@ public class CategoryServiceImpl implements CategoryService {
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
         List<CategoryGetRes> categoryGetReses =
                 CategoryServiceMapper.INSTANCE.toCategoryGetResList(
-                        categoryRepository.findByTeamTeamIdOrderBySequenceAsc(teamId));
+                        categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, FALSE));
         return CategoryGetResList.builder()
                 .categories(categoryGetReses)
                 .total(categoryGetReses.size())

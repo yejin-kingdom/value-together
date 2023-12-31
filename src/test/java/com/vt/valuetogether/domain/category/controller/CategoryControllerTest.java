@@ -1,6 +1,5 @@
 package com.vt.valuetogether.domain.category.controller;
 
-import static java.lang.Boolean.FALSE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -100,13 +99,11 @@ class CategoryControllerTest extends BaseMvcTest {
         Long categoryId = 1L;
         String categoryName = "categoryName";
         Double categorySequence = 1.0;
-        Boolean isDeleted = FALSE;
         CategoryGetRes categoryGetRes =
                 CategoryGetRes.builder()
                         .categoryId(categoryId)
                         .name(categoryName)
                         .sequence(categorySequence)
-                        .isDeleted(isDeleted)
                         .cards(List.of(cardInnerCategoryRes))
                         .build();
         int total = 1;

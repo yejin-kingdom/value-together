@@ -19,7 +19,7 @@ public interface CategoryRepository {
 
     Category findByCategoryId(Long categoryId);
 
-    List<Category> findByTeamTeamIdOrderBySequenceAsc(Long teamId);
+    List<Category> findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(Long teamId, Boolean isDeleted);
 
     List<Category> findByOrderByTeamTeamIdAscSequenceAsc();
 

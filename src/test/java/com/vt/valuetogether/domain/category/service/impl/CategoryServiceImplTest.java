@@ -112,7 +112,8 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
         // given
         when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
         when(teamRepository.findByTeamId(any())).thenReturn(team);
-        when(categoryRepository.findByTeamTeamIdOrderBySequenceAsc(any())).thenReturn(categories);
+        when(categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(any(), any()))
+                .thenReturn(categories);
 
         // when
         CategoryGetResList categoryGetResList =
