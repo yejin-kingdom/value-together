@@ -155,6 +155,7 @@ include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
 == category API
 
 include::{snippets}/category-controller-test/category_저장/auto-section.adoc[]
+include::{snippets}/category-controller-test/category_순서_변경/auto-section.adoc[]
 
 == card API
 

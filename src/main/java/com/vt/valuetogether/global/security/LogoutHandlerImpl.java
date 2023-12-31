@@ -23,9 +23,10 @@ public class LogoutHandlerImpl implements LogoutHandler {
     public void logout(
             HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
-        String refreshToken = request.getHeader(JwtUtil.REFRESH_TOKEN_HEADER);
+        String refreshToken =
+                jwtUtil.getTokenWithoutBearer(request.getHeader(JwtUtil.REFRESH_TOKEN_HEADER));
         log.info("refresh token : {}", refreshToken);
-        refreshToken = jwtUtil.substringToken(refreshToken);
+
         TokenValidator.checkValidToken(jwtUtil.isTokenValid(refreshToken));
 
         if (redisUtil.hasKey(refreshToken)) {

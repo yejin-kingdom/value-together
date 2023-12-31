@@ -1,8 +1,10 @@
 package com.vt.valuetogether.domain.category.controller;
 
+import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
+import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
@@ -45,5 +47,13 @@ public class CategoryController {
             @RequestBody CategoryDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
         req.setUsername(userDetails.getUsername());
         return RestResponse.success(categoryService.deleteCategory(req));
+    }
+
+    @PatchMapping("/order")
+    public RestResponse<CategoryChangeSequenceRes> changeCategorySequence(
+            @RequestBody CategoryChangeSequenceReq categoryChangeSequenceReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        categoryChangeSequenceReq.setUsername(userDetails.getUsername());
+        return RestResponse.success(categoryService.changeCategorySequence(categoryChangeSequenceReq));
     }
 }

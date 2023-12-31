@@ -2,9 +2,11 @@ package com.vt.valuetogether.domain.category.service.impl;
 
 import static java.lang.Boolean.FALSE;
 
+import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
+import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
@@ -105,7 +107,39 @@ public class CategoryServiceImpl implements CategoryService {
         return new CategoryDeleteRes();
     }
 
+    @Override
+    @Transactional
+    public CategoryChangeSequenceRes changeCategorySequence(
+            CategoryChangeSequenceReq categoryChangeSequenceReq) {
+        User user = userRepository.findByUsername(categoryChangeSequenceReq.getUsername());
+        UserValidator.validate(user);
+        Category category =
+                categoryRepository.findByCategoryId(categoryChangeSequenceReq.getCategoryId());
+        CategoryValidator.validate(category);
+        TeamRoleValidator.checkIsTeamMember(category.getTeam().getTeamRoleList(), user);
+
+        Double sequence =
+                getAverageSequence(
+                        categoryChangeSequenceReq.getPreSequence(),
+                        categoryChangeSequenceReq.getPostSequence());
+
+        categoryRepository.save(
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(sequence)
+                        .isDeleted(category.getIsDeleted())
+                        .team(category.getTeam())
+                        .build());
+
+        return new CategoryChangeSequenceRes();
+    }
+
     private Double getMaxSequence(Long teamId) {
         return categoryRepository.getMaxSequence(teamId);
+    }
+
+    private Double getAverageSequence(Double preSequence, Double postSequence) {
+        return (preSequence + postSequence) / 2;
     }
 }
