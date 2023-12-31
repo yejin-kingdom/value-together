@@ -139,10 +139,7 @@ class CommentServiceImplTest implements CommentTest {
     void deleteCommentTest() {
         // given
         CommentDeleteReq req =
-            CommentDeleteReq.builder()
-                .commentId(TEST_COMMENT_ID)
-                .username(TEST_USER_NAME)
-                .build();
+                CommentDeleteReq.builder().commentId(TEST_COMMENT_ID).username(TEST_USER_NAME).build();
 
         given(commentRepository.findByCommentId(req.getCommentId())).willReturn(comment);
 
