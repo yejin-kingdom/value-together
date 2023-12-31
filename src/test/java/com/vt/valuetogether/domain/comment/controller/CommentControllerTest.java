@@ -43,7 +43,6 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest {
                         post("/api/v1/comments")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -67,7 +66,6 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest {
                         patch("/api/v1/comments")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -87,7 +85,6 @@ class CommentControllerTest extends BaseMvcTest implements CommentTest {
                         delete("/api/v1/comments")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
