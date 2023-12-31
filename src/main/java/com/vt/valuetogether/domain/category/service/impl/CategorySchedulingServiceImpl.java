@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @EnableScheduling
@@ -26,6 +27,10 @@ public class CategorySchedulingServiceImpl implements CategorySchedulingService 
     @Transactional
     public void resetSequence() {
         List<Category> categories = categoryRepository.findByOrderByTeamTeamIdAscSequenceAsc();
+        if (CollectionUtils.isEmpty(categories)) {
+            return;
+        }
+
         Long prevTeamId = categories.get(0).getTeam().getTeamId();
         double sequence = 0.0;
         List<Category> newCategories = new ArrayList<>();

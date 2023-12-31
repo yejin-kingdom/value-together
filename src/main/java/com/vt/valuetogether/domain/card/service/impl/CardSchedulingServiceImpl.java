@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @EnableScheduling
@@ -22,6 +23,10 @@ public class CardSchedulingServiceImpl implements CardSchedulingService {
     @Transactional
     public void resetSequence() {
         List<Card> cards = cardRepository.findByOrderByCategoryCategoryIdAscSequenceAsc();
+        if (CollectionUtils.isEmpty(cards)) {
+            return;
+        }
+
         Long prevCategoryId = cards.get(0).getCategory().getCategoryId();
         double sequence = 0.0;
         List<Card> newCards = new ArrayList<>();
