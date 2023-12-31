@@ -3,6 +3,10 @@ package com.vt.valuetogether.domain.card.service;
 import com.vt.valuetogether.domain.card.dto.response.CardGetRes;
 import com.vt.valuetogether.domain.card.dto.response.CardSaveRes;
 import com.vt.valuetogether.domain.card.entity.Card;
+import com.vt.valuetogether.domain.comment.dto.response.CommentGetRes;
+import com.vt.valuetogether.domain.comment.entity.Comment;
+import com.vt.valuetogether.domain.worker.dto.response.WorkerGetRes;
+import com.vt.valuetogether.domain.worker.entity.Worker;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,6 +27,13 @@ public interface CardServiceMapper {
         ZonedDateTime zonedDateTime = deadline.atZone(ZoneId.of("Asia/Seoul"));
         return zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
+
+    @Mapping(source = "user.username", target = "username")
+    CommentGetRes toCommentGetRes(Comment comment);
+
+    @Mapping(source = "user.profileImageUrl", target = "profileImageUrl")
+    @Mapping(source = "user.username", target = "username")
+    WorkerGetRes toWorkerGetRes(Worker worker);
 
     @Mapping(source = "deadline", target = "deadline")
     CardGetRes toCardGetRes(Card card);
