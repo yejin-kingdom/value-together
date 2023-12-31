@@ -3,6 +3,9 @@ package com.vt.valuetogether.domain.category.service.impl;
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
 import com.vt.valuetogether.domain.category.service.CategorySchedulingService;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategorySchedulingServiceImpl implements CategorySchedulingService {
     private final CategoryRepository categoryRepository;
     private final double ADD_SEQUENCE = 1.0;
+    private final long CATEGORY_RETENTION_PERIOD = 90L;
 
     @Scheduled(cron = "0 30 0 * * ?")
     @Transactional
@@ -45,5 +49,14 @@ public class CategorySchedulingServiceImpl implements CategorySchedulingService 
             return ADD_SEQUENCE;
         }
         return sequence + ADD_SEQUENCE;
+    }
+
+    @Scheduled(cron = "0 0 1 * * ?")
+    @Transactional
+    public void deleteAllCategory() {
+        ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        LocalDateTime localDateTime =
+                dateTime.toLocalDate().minusDays(CATEGORY_RETENTION_PERIOD).atStartOfDay();
+        categoryRepository.deleteByIsDeletedAndModifiedAtBefore(true, localDateTime);
     }
 }
