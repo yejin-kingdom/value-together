@@ -1,5 +1,9 @@
 package com.vt.valuetogether.domain.user.service.impl;
 
+import static com.vt.valuetogether.global.meta.ResultCode.DUPLICATED_USERNAME;
+import static com.vt.valuetogether.global.meta.ResultCode.INVALID_EMAIL_PATTERN;
+import static com.vt.valuetogether.global.meta.ResultCode.INVALID_PASSWORD_PATTERN;
+import static com.vt.valuetogether.global.meta.ResultCode.INVALID_USERNAME_PATTERN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -111,7 +115,7 @@ class UserServiceImplTest implements UserTest {
                             });
 
             // then
-            assertEquals("username 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
+            assertEquals(INVALID_USERNAME_PATTERN.getMessage(), exception.getResultCode().getMessage());
         }
 
         @Test
@@ -134,7 +138,7 @@ class UserServiceImplTest implements UserTest {
                             });
 
             // then
-            assertEquals("password 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
+            assertEquals(INVALID_PASSWORD_PATTERN.getMessage(), exception.getResultCode().getMessage());
         }
 
         @Test
@@ -157,7 +161,7 @@ class UserServiceImplTest implements UserTest {
                             });
 
             // then
-            assertEquals("email 형식에 맞지 않습니다.", exception.getResultCode().getMessage());
+            assertEquals(INVALID_EMAIL_PATTERN.getMessage(), exception.getResultCode().getMessage());
         }
     }
 
@@ -183,7 +187,7 @@ class UserServiceImplTest implements UserTest {
                         });
 
         // then
-        assertEquals("중복된 username 입니다.", exception.getResultCode().getMessage());
+        assertEquals(DUPLICATED_USERNAME.getMessage(), exception.getResultCode().getMessage());
     }
 
     @Test
