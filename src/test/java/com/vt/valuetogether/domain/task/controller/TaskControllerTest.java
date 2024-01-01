@@ -40,7 +40,8 @@ class TaskControllerTest extends BaseMvcTest {
                 .perform(
                         post("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(taskSaveReq)))
+                                .content(objectMapper.writeValueAsString(taskSaveReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
