@@ -57,7 +57,8 @@ class ChecklistControllerTest extends BaseMvcTest {
                 .perform(
                         patch("/api/v1/checklists")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(checklistUpdateReq)))
+                                .content(objectMapper.writeValueAsString(checklistUpdateReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
