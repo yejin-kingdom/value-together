@@ -40,7 +40,8 @@ class TaskControllerTest extends BaseMvcTest {
                 .perform(
                         post("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(taskSaveReq)))
+                                .content(objectMapper.writeValueAsString(taskSaveReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -59,7 +60,8 @@ class TaskControllerTest extends BaseMvcTest {
                 .perform(
                         patch("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(taskUpdateReq)))
+                                .content(objectMapper.writeValueAsString(taskUpdateReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -75,7 +77,8 @@ class TaskControllerTest extends BaseMvcTest {
                 .perform(
                         delete("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(taskDeleteReq)))
+                                .content(objectMapper.writeValueAsString(taskDeleteReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
