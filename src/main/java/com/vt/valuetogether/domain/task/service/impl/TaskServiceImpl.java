@@ -50,10 +50,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskUpdateRes updateTask(TaskUpdateReq taskUpdateReq) {
-        User user = getUserByUsername(taskUpdateReq.getUsername());
         TaskValidator.validate(taskUpdateReq);
-        Task prevTask = taskRepository.findByTaskId(taskUpdateReq.getTaskId());
-        TaskValidator.validate(prevTask);
+        User user = getUserByUsername(taskUpdateReq.getUsername());
+        Task prevTask = getTaskById(taskUpdateReq.getTaskId());
         TeamRoleValidator.checkIsTeamMember(
                 prevTask.getChecklist().getCard().getCategory().getTeam().getTeamRoleList(), user);
         taskRepository.save(
@@ -70,8 +69,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDeleteRes deleteTask(TaskDeleteReq taskDeleteReq) {
         User user = getUserByUsername(taskDeleteReq.getUsername());
-        Task task = taskRepository.findByTaskId(taskDeleteReq.getTaskId());
-        TaskValidator.validate(task);
+        Task task = getTaskById(taskDeleteReq.getTaskId());
         TeamRoleValidator.checkIsTeamMember(
                 task.getChecklist().getCard().getCategory().getTeam().getTeamRoleList(), user);
         taskRepository.delete(task);
@@ -82,5 +80,11 @@ public class TaskServiceImpl implements TaskService {
         User user = userRepository.findByUsername(username);
         UserValidator.validate(user);
         return user;
+    }
+
+    private Task getTaskById(Long taskId) {
+        Task task = taskRepository.findByTaskId(taskId);
+        TaskValidator.validate(task);
+        return task;
     }
 }
