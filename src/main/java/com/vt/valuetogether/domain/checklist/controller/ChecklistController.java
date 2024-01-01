@@ -9,6 +9,8 @@ import com.vt.valuetogether.domain.checklist.dto.response.ChecklistUpdateRes;
 import com.vt.valuetogether.domain.checklist.service.ChecklistService;
 import com.vt.valuetogether.global.response.RestResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +26,9 @@ public class ChecklistController {
 
     @PostMapping
     public RestResponse<ChecklistSaveRes> saveChecklist(
-            @RequestBody ChecklistSaveReq checklistSaveReq) {
+            @RequestBody ChecklistSaveReq checklistSaveReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        checklistSaveReq.setUsername(userDetails.getUsername());
         return RestResponse.success(checklistService.saveChecklist(checklistSaveReq));
     }
 
