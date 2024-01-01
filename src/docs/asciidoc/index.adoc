@@ -129,6 +129,9 @@ endif::[]
 |4000
 |존재하지 않는 카테고리 입니다.
 
+|4001
+|해당 카테고리는 삭제되지 않은 카테고리 입니다.
+
 |5000
 |카드 정보를 찾을 수 없습니다.
 
@@ -166,12 +169,16 @@ include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_조회/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_삭제/auto-section.adoc[]
+include::{snippets}/team-controller-test/team_초대/auto-section.adoc[]
+include::{snippets}/team-controller-test/team_member_삭제/auto-section.adoc[]
+
 
 == category API
 
 include::{snippets}/category-controller-test/category_저장/auto-section.adoc[]
 include::{snippets}/category-controller-test/category_순서_변경/auto-section.adoc[]
 include::{snippets}/category-controller-test/team-id_category_전체_조회/auto-section.adoc[]
+include::{snippets}/category-controller-test/category_복구/auto-section.adoc[]
 
 == card API
 

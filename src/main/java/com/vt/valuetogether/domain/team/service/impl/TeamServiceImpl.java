@@ -29,13 +29,13 @@ import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import com.vt.valuetogether.infra.mail.MailUtil;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -141,6 +141,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
     public TeamMemberInviteRes inviteMember(TeamMemberInviteReq req) {
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.validate(team);
@@ -154,6 +155,7 @@ public class TeamServiceImpl implements TeamService {
 
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.validate(user);
+        TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
 
         List<User> memberList = userRepository.findAllByUsernameIn(req.getMemberNameList());
 
@@ -199,9 +201,7 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamRepository.findByTeamId(teamId);
         TeamValidator.validate(team);
-
-        List<TeamRole> teamRoleList = team.getTeamRoleList();
-        TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
 
         return TeamServiceMapper.INSTANCE.toTeamGetRes(team);
     }

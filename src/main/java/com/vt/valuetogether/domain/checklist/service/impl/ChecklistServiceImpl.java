@@ -12,31 +12,42 @@ import com.vt.valuetogether.domain.checklist.entity.Checklist;
 import com.vt.valuetogether.domain.checklist.repository.ChecklistRepository;
 import com.vt.valuetogether.domain.checklist.service.ChecklistService;
 import com.vt.valuetogether.domain.checklist.service.ChecklistServiceMapper;
+import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.global.validator.CardValidator;
 import com.vt.valuetogether.global.validator.ChecklistValidator;
+import com.vt.valuetogether.global.validator.TeamRoleValidator;
+import com.vt.valuetogether.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class ChecklistServiceImpl implements ChecklistService {
     private final ChecklistRepository checklistRepository;
     private final CardRepository cardRepository;
+    private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public ChecklistSaveRes saveChecklist(ChecklistSaveReq checklistSaveReq) {
+        User user = getUserByUsername(checklistSaveReq.getUsername());
         Card card = cardRepository.findByCardId(checklistSaveReq.getCardId());
         CardValidator.validate(card);
+        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
         return ChecklistServiceMapper.INSTANCE.toChecklistSaveRes(
                 checklistRepository.save(
                         Checklist.builder().card(card).title(checklistSaveReq.getTitle()).build()));
     }
 
     @Override
+    @Transactional
     public ChecklistUpdateRes updateChecklist(ChecklistUpdateReq checklistUpdateReq) {
-        Checklist prevChecklist =
-                checklistRepository.findByChecklistId(checklistUpdateReq.getChecklistId());
-        ChecklistValidator.validate(prevChecklist);
+        User user = getUserByUsername(checklistUpdateReq.getUsername());
+        Checklist prevChecklist = getChecklistById(checklistUpdateReq.getChecklistId());
+        TeamRoleValidator.checkIsTeamMember(
+                prevChecklist.getCard().getCategory().getTeam().getTeamRoleList(), user);
         checklistRepository.save(
                 Checklist.builder()
                         .checklistId(checklistUpdateReq.getChecklistId())
@@ -47,11 +58,25 @@ public class ChecklistServiceImpl implements ChecklistService {
     }
 
     @Override
+    @Transactional
     public ChecklistDeleteRes deleteChecklist(ChecklistDeleteReq checklistDeleteReq) {
-        Checklist checklist =
-                checklistRepository.findByChecklistId(checklistDeleteReq.getChecklistId());
-        ChecklistValidator.validate(checklist);
+        User user = getUserByUsername(checklistDeleteReq.getUsername());
+        Checklist checklist = getChecklistById(checklistDeleteReq.getChecklistId());
+        TeamRoleValidator.checkIsTeamMember(
+                checklist.getCard().getCategory().getTeam().getTeamRoleList(), user);
         checklistRepository.delete(checklist);
         return new ChecklistDeleteRes();
+    }
+
+    private User getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        UserValidator.validate(user);
+        return user;
+    }
+
+    private Checklist getChecklistById(Long checklistId) {
+        Checklist checklist = checklistRepository.findByChecklistId(checklistId);
+        ChecklistValidator.validate(checklist);
+        return checklist;
     }
 }

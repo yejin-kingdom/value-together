@@ -1,6 +1,9 @@
 package com.vt.valuetogether.domain.category.controller;
 
+import static org.apache.commons.lang3.BooleanUtils.FALSE;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -19,6 +22,7 @@ import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceR
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
+import com.vt.valuetogether.domain.category.dto.response.CategoryRestoreRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.service.CategoryService;
 import com.vt.valuetogether.domain.worker.dto.response.WorkerGetRes;
@@ -31,19 +35,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 @WebMvcTest(controllers = {CategoryController.class})
 class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
-
     @MockBean private CategoryService categoryService;
 
     @Test
     @DisplayName("category 저장 테스트")
     void category_저장() throws Exception {
-        CategorySaveReq categorySaveReq =
-                CategorySaveReq.builder().teamId(TEST_TEAM_ID).name(TEST_CATEGORY_NAME).build();
-        CategorySaveRes categorySaveRes =
-                CategorySaveRes.builder().categoryId(TEST_CATEGORY_ID).build();
-
+        Long teamId = 1L;
+        String name = "category";
+        CategorySaveReq categorySaveReq = CategorySaveReq.builder().teamId(teamId).name(name).build();
+        Long categoryId = 1L;
+        CategorySaveRes categorySaveRes = CategorySaveRes.builder().categoryId(categoryId).build();
         when(categoryService.saveCategory(any())).thenReturn(categorySaveRes);
-
         this.mockMvc
                 .perform(
                         post("/api/v1/categories")
@@ -57,19 +59,17 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
     @Test
     @DisplayName("category 순서 변경 테스트")
     void category_순서_변경() throws Exception {
+        Long categoryId = 1L;
         Double preSequence = 2.0;
         Double postSequence = 3.0;
         CategoryChangeSequenceReq categoryChangeSequenceReq =
                 CategoryChangeSequenceReq.builder()
-                        .categoryId(TEST_CATEGORY_ID)
+                        .categoryId(categoryId)
                         .preSequence(preSequence)
                         .postSequence(postSequence)
                         .build();
-
         CategoryChangeSequenceRes categoryChangeSequenceRes = new CategoryChangeSequenceRes();
-
         when(categoryService.changeCategorySequence(any())).thenReturn(categoryChangeSequenceRes);
-
         this.mockMvc
                 .perform(
                         patch("/api/v1/categories/order")
@@ -117,9 +117,30 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
         int total = 1;
         CategoryGetResList categoryGetResList =
                 CategoryGetResList.builder().categories(List.of(categoryGetRes)).total(total).build();
-        when(categoryService.getAllCategories(any(), any())).thenReturn(categoryGetResList);
+        when(categoryService.getAllCategories(anyLong(), anyBoolean(), any()))
+                .thenReturn(categoryGetResList);
         this.mockMvc
-                .perform(get("/api/v1/teams/{teamId}/categories", teamId).principal(this.mockPrincipal))
+                .perform(
+                        get("/api/v1/teams/{teamId}/categories")
+                                .param("isDeleted", FALSE)
+                                .principal(this.mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("category 복구 테스트")
+    void category_복구() throws Exception {
+        Long categoryId = 1L;
+        CategoryRestoreReq req = CategoryRestoreReq.builder().categoryId(categoryId).build();
+        CategoryRestoreRes res = new CategoryRestoreRes();
+        when(categoryService.restoreCategory(any())).thenReturn(res);
+        this.mockMvc
+                .perform(
+                        patch("/api/v1/categories/restore")
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req))
+                                .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -128,10 +149,10 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
     @DisplayName("카테고리 이름 수정")
     void category_이름_수정() throws Exception {
         CategoryEditReq req =
-                CategoryEditReq.builder()
-                        .categoryId(TEST_CATEGORY_ID)
-                        .name(TEST_ANOTHER_CATEGORY_NAME)
-                        .build();
+            CategoryEditReq.builder()
+                .categoryId(TEST_CATEGORY_ID)
+                .name(TEST_ANOTHER_CATEGORY_NAME)
+                .build();
         req.setName(this.mockPrincipal.getName());
 
         CategoryEditRes res = new CategoryEditRes();
@@ -139,12 +160,12 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
         given(categoryService.editCategory(any(CategoryEditReq.class))).willReturn(res);
 
         this.mockMvc
-                .perform(
-                        patch("/api/v1/categories")
-                                .principal(this.mockPrincipal)
-                                .contentType(APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(req)))
-                .andDo(print())
-                .andExpect(status().isOk());
+            .perform(
+                patch("/api/v1/categories")
+                    .principal(this.mockPrincipal)
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(req)))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }
