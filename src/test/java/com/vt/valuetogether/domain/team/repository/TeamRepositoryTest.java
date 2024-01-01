@@ -24,7 +24,6 @@ public class TeamRepositoryTest implements TeamTest {
 
         // when
         Team actual = teamRepository.save(TEST_TEAM);
-        System.out.println(actual.getTeamId());
 
         // then
         Assertions.assertThat(actual.getTeamName()).isEqualTo(TEST_TEAM_NAME);
@@ -57,7 +56,7 @@ public class TeamRepositoryTest implements TeamTest {
     void team_teamId_조회_실패() {
         // given
         teamRepository.save(TEST_TEAM);
-        Long failTeamId = 2L;
+        Long failTeamId = 0L;
 
         // when
         Team actual = teamRepository.findByTeamId(failTeamId);
@@ -74,7 +73,6 @@ public class TeamRepositoryTest implements TeamTest {
 
         // when
         Team actual = teamRepository.findByTeamName(TEST_TEAM_NAME);
-        System.out.println(actual.getTeamId());
 
         // then
         Assertions.assertThat(actual)
@@ -92,8 +90,8 @@ public class TeamRepositoryTest implements TeamTest {
     void team_name_조회_실페() {
         // given
         teamRepository.save(TEST_TEAM);
-
         String failTeamName = "fail";
+
         // when
         Team actual = teamRepository.findByTeamName(failTeamName);
 
