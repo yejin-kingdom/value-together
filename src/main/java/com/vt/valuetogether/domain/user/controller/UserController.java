@@ -35,6 +35,16 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/{userId}")
+    public RestResponse<UserGetProfileRes> getProfile(@PathVariable Long userId) {
+        return RestResponse.success(userService.getProfile(userId));
+    }
+
+    @PostMapping("/signup")
+    public RestResponse<UserSignupRes> signup(@RequestBody UserSignupReq req) {
+        return RestResponse.success(userService.signup(req));
+    }
+
     @PostMapping("/signup/email")
     public RestResponse<UserVerifyEmailRes> sendEmail(@RequestBody UserVerifyEmailReq req) {
         return RestResponse.success(userService.sendEmail(req));
@@ -44,11 +54,6 @@ public class UserController {
     public RestResponse<UserConfirmEmailRes> confirmEmail(
             @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
         return RestResponse.success(userService.confirmEmail(email, code));
-    }
-
-    @PostMapping("/signup")
-    public RestResponse<UserSignupRes> signup(@RequestBody UserSignupReq req) {
-        return RestResponse.success(userService.signup(req));
     }
 
     @PostMapping("/username")
@@ -71,10 +76,5 @@ public class UserController {
             @AuthenticationPrincipal UserDetails userDetails) {
         req.setPreUsername(userDetails.getUsername());
         return RestResponse.success(userService.updateProfile(req, multipartfile));
-    }
-
-    @GetMapping("/{userId}")
-    public RestResponse<UserGetProfileRes> getProfile(@PathVariable Long userId) {
-        return RestResponse.success(userService.getProfile(userId));
     }
 }

@@ -32,10 +32,20 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
+
     private final CardRepository cardRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final S3Util s3Util;
+
+    @Override
+    @Transactional(readOnly = true)
+    public CardGetRes getCard(Long cardId, String username) {
+        User user = getUserByUsername(username);
+        Card card = getCardByCardId(cardId);
+        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
+        return CardServiceMapper.INSTANCE.toCardGetRes(card);
+    }
 
     @Override
     @Transactional
@@ -90,34 +100,6 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
-    public CardDeleteRes deleteCard(CardDeleteReq cardDeleteReq) {
-        User user = getUserByUsername(cardDeleteReq.getUsername());
-        Card card = getCardByCardId(cardDeleteReq.getCardId());
-        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
-
-        deleteFile(card.getFileUrl());
-        cardRepository.delete(card);
-        return new CardDeleteRes();
-    }
-
-    private void deleteFile(String fileUrl) {
-        if (fileUrl == null || fileUrl.isBlank()) {
-            return;
-        }
-        s3Util.deleteFile(fileUrl, CARD);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public CardGetRes getCard(Long cardId, String username) {
-        User user = getUserByUsername(username);
-        Card card = getCardByCardId(cardId);
-        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
-        return CardServiceMapper.INSTANCE.toCardGetRes(card);
-    }
-
-    @Override
-    @Transactional
     public CardChangeSequenceRes changeSequence(CardChangeSequenceReq cardChangeSequenceReq) {
         User user = getUserByUsername(cardChangeSequenceReq.getUsername());
         Card card = getCardByCardId(cardChangeSequenceReq.getCardId());
@@ -147,6 +129,18 @@ public class CardServiceImpl implements CardService {
         return (preSequence + postSequence) / 2;
     }
 
+    @Override
+    @Transactional
+    public CardDeleteRes deleteCard(CardDeleteReq cardDeleteReq) {
+        User user = getUserByUsername(cardDeleteReq.getUsername());
+        Card card = getCardByCardId(cardDeleteReq.getCardId());
+        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
+
+        deleteFile(card.getFileUrl());
+        cardRepository.delete(card);
+        return new CardDeleteRes();
+    }
+
     private User getUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
         UserValidator.validate(user);
@@ -157,5 +151,12 @@ public class CardServiceImpl implements CardService {
         Card card = cardRepository.findByCardId(cardId);
         CardValidator.validate(card);
         return card;
+    }
+
+    private void deleteFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) {
+            return;
+        }
+        s3Util.deleteFile(fileUrl, CARD);
     }
 }

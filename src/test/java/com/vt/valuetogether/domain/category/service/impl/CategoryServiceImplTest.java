@@ -16,7 +16,6 @@ import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
-import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.test.CategoryTest;
 import com.vt.valuetogether.test.TeamRoleTest;
@@ -40,8 +39,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Mock private TeamRepository teamRepository;
     @Mock private UserRepository userRepository;
 
-    @Captor
-    ArgumentCaptor<Category> argumentCaptor;
+    @Captor ArgumentCaptor<Category> argumentCaptor;
     private List<Category> categories;
     private Category category;
     private Team team;
@@ -138,18 +136,20 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @DisplayName("삭제된 카테고리 복구 테스트")
     void category_복구() {
         // given
-        CategoryRestoreReq req = CategoryRestoreReq.builder()
-            .categoryId(category.getCategoryId())
-            .username(TEST_USER_NAME)
-            .build();
+        CategoryRestoreReq req =
+                CategoryRestoreReq.builder()
+                        .categoryId(category.getCategoryId())
+                        .username(TEST_USER_NAME)
+                        .build();
 
-        Category restoredCategory = Category.builder()
-            .categoryId(category.getCategoryId())
-            .name(category.getName())
-            .sequence(category.getSequence())
-            .isDeleted(TRUE)
-            .team(category.getTeam())
-            .build();
+        Category restoredCategory =
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(category.getSequence())
+                        .isDeleted(TRUE)
+                        .team(category.getTeam())
+                        .build();
 
         when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
         when(categoryRepository.findByCategoryId(any())).thenReturn(restoredCategory);
