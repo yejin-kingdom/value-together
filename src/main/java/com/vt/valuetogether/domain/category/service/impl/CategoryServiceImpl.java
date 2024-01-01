@@ -89,7 +89,7 @@ public class CategoryServiceImpl implements CategoryService {
                         .name(req.getName())
                         .sequence(category.getSequence())
                         .team(category.getTeam())
-                        .isDeleted(false)
+                        .isDeleted(category.getIsDeleted())
                         .build());
 
         return new CategoryEditRes();
