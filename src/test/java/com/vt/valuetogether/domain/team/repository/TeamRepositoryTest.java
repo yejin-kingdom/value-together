@@ -1,6 +1,5 @@
 package com.vt.valuetogether.domain.team.repository;
 
-
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.test.TeamTest;
@@ -14,11 +13,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @DataJpaTest
 public class TeamRepositoryTest {
 
-    @Autowired
-    TeamRepository teamRepository;
+    @Autowired TeamRepository teamRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    @Autowired UserRepository userRepository;
 
     @Test
     @DisplayName("team 생성 테스트")
@@ -34,6 +31,5 @@ public class TeamRepositoryTest {
         Assertions.assertThat(actual.getTeamName()).isEqualTo(TeamTest.TEST_TEAM_NAME);
         Assertions.assertThat(actual.getTeamDescription()).isEqualTo(TeamTest.TEST_TEAM_DESCRIPTION);
         Assertions.assertThat(actual.getBackgroundColor()).isEqualTo(TeamTest.TEST_BACKGROUND_COLOR);
-     }
-
+    }
 }
