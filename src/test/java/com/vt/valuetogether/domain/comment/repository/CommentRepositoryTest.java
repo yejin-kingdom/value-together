@@ -7,6 +7,7 @@ import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
+import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.test.CommentTest;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,7 @@ class CommentRepositoryTest implements CommentTest {
     @Autowired private CardRepository cardRepository;
     @Autowired private CategoryRepository categoryRepository;
     @Autowired private TeamRepository teamRepository;
+    @Autowired private TeamRoleRepository teamRoleRepository;
 
     @Test
     @DisplayName("save 테스트")
@@ -34,6 +36,7 @@ class CommentRepositoryTest implements CommentTest {
         teamRepository.save(TEST_TEAM);
         categoryRepository.save(TEST_CATEGORY);
         userRepository.save(TEST_USER);
+        teamRoleRepository.save(TEST_TEAM_ROLE);
         cardRepository.save(TEST_CARD);
 
         // when
@@ -41,7 +44,9 @@ class CommentRepositoryTest implements CommentTest {
 
         // then
         assertEquals(saveComment.getContent(), TEST_COMMENT.getContent());
-        assertEquals(saveComment.getUser().getUserId(), TEST_COMMENT.getUser().getUserId());
+        assertEquals(
+                saveComment.getTeamRole().getUser().getUserId(),
+                TEST_COMMENT.getTeamRole().getUser().getUserId());
         assertEquals(saveComment.getCard().getCardId(), TEST_COMMENT.getCard().getCardId());
     }
 
@@ -52,6 +57,7 @@ class CommentRepositoryTest implements CommentTest {
         teamRepository.save(TEST_TEAM);
         categoryRepository.save(TEST_CATEGORY);
         userRepository.save(TEST_USER);
+        teamRoleRepository.save(TEST_TEAM_ROLE);
         cardRepository.save(TEST_CARD);
         Comment comment = commentRepository.save(TEST_COMMENT);
 
@@ -60,7 +66,9 @@ class CommentRepositoryTest implements CommentTest {
 
         // then
         assertEquals(findComment.getContent(), TEST_COMMENT.getContent());
-        assertEquals(findComment.getUser().getUserId(), TEST_COMMENT.getUser().getUserId());
+        assertEquals(
+                findComment.getTeamRole().getUser().getUserId(),
+                TEST_COMMENT.getTeamRole().getUser().getUserId());
         assertEquals(findComment.getCard().getCardId(), TEST_COMMENT.getCard().getCardId());
     }
 
@@ -71,6 +79,7 @@ class CommentRepositoryTest implements CommentTest {
         teamRepository.save(TEST_TEAM);
         categoryRepository.save(TEST_CATEGORY);
         userRepository.save(TEST_USER);
+        teamRoleRepository.save(TEST_TEAM_ROLE);
         cardRepository.save(TEST_CARD);
         commentRepository.save(TEST_COMMENT);
 

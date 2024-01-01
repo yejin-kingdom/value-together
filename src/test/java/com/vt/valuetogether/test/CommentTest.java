@@ -13,6 +13,6 @@ public interface CommentTest extends TeamRoleTest, CardTest {
                     .commentId(TEST_COMMENT_ID)
                     .content(TEST_COMMENT_CONTENT)
                     .card(TEST_CARD)
-                    .user(TEST_USER)
+                    .teamRole(TEST_TEAM_ROLE)
                     .build();
 }
