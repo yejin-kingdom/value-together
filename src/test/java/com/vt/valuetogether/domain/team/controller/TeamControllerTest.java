@@ -22,7 +22,6 @@ import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.test.TeamTest;
-import com.vt.valuetogether.test.UserTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
