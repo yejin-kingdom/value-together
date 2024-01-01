@@ -20,5 +20,5 @@ public interface CategoryService {
     CategoryChangeSequenceRes changeCategorySequence(
             CategoryChangeSequenceReq categoryChangeSequenceReq);
 
-    CategoryGetResList getAllCategories(Long teamId, String username);
+    CategoryGetResList getAllCategories(Long teamId, boolean isDeleted, String username);
 }

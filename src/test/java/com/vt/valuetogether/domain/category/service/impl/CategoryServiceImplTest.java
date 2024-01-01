@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.category.service.impl;
 
+import static java.lang.Boolean.FALSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -117,7 +118,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
 
         // when
         CategoryGetResList categoryGetResList =
-                categoryService.getAllCategories(team.getTeamId(), TEST_USER_NAME);
+                categoryService.getAllCategories(team.getTeamId(), FALSE, TEST_USER_NAME);
 
         // then
         assertThat(categoryGetResList.getCategories().get(0).getName()).isEqualTo(category.getName());

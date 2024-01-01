@@ -134,14 +134,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryGetResList getAllCategories(Long teamId, String username) {
+    public CategoryGetResList getAllCategories(Long teamId, boolean isDeleted, String username) {
         User user = getUserByUsername(username);
         Team team = teamRepository.findByTeamId(teamId);
         TeamValidator.validate(team);
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
         List<CategoryGetRes> categoryGetReses =
                 CategoryServiceMapper.INSTANCE.toCategoryGetResList(
-                        categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, FALSE));
+                        categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, isDeleted));
         return CategoryGetResList.builder()
                 .categories(categoryGetReses)
                 .total(categoryGetReses.size())
