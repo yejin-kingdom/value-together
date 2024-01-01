@@ -29,44 +29,46 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/cards")
 @RequiredArgsConstructor
 public class CardController {
+
     private final CardService cardService;
+
+    @GetMapping("/{cardId}")
+    public RestResponse<CardGetRes> getCard(
+        @PathVariable Long cardId, @AuthenticationPrincipal UserDetails userDetails) {
+        return RestResponse.success(cardService.getCard(cardId, userDetails.getUsername()));
+    }
 
     @PostMapping
     public RestResponse<CardSaveRes> saveCard(
-            @RequestPart CardSaveReq cardSaveReq,
-            @RequestPart(required = false) MultipartFile multipartFile,
-            @AuthenticationPrincipal UserDetails userDetails) {
+        @RequestPart CardSaveReq cardSaveReq,
+        @RequestPart(required = false) MultipartFile multipartFile,
+        @AuthenticationPrincipal UserDetails userDetails) {
         cardSaveReq.setUsername(userDetails.getUsername());
         return RestResponse.success(cardService.saveCard(cardSaveReq, multipartFile));
     }
 
     @PatchMapping
     public RestResponse<CardUpdateRes> updateCard(
-            @RequestPart CardUpdateReq cardUpdateReq,
-            @RequestPart(required = false) MultipartFile multipartFile,
-            @AuthenticationPrincipal UserDetails userDetails) {
+        @RequestPart CardUpdateReq cardUpdateReq,
+        @RequestPart(required = false) MultipartFile multipartFile,
+        @AuthenticationPrincipal UserDetails userDetails) {
         cardUpdateReq.setUsername(userDetails.getUsername());
         return RestResponse.success(cardService.updateCard(cardUpdateReq, multipartFile));
     }
 
-    @DeleteMapping
-    public RestResponse<CardDeleteRes> deleteCard(
-            @RequestBody CardDeleteReq cardDeleteReq, @AuthenticationPrincipal UserDetails userDetails) {
-        cardDeleteReq.setUsername(userDetails.getUsername());
-        return RestResponse.success(cardService.deleteCard(cardDeleteReq));
-    }
-
-    @GetMapping("/{cardId}")
-    public RestResponse<CardGetRes> getCard(
-            @PathVariable Long cardId, @AuthenticationPrincipal UserDetails userDetails) {
-        return RestResponse.success(cardService.getCard(cardId, userDetails.getUsername()));
-    }
-
     @PatchMapping("/order")
     public RestResponse<CardChangeSequenceRes> changeSequence(
-            @RequestBody CardChangeSequenceReq cardChangeSequenceReq,
-            @AuthenticationPrincipal UserDetails userDetails) {
+        @RequestBody CardChangeSequenceReq cardChangeSequenceReq,
+        @AuthenticationPrincipal UserDetails userDetails) {
         cardChangeSequenceReq.setUsername(userDetails.getUsername());
         return RestResponse.success(cardService.changeSequence(cardChangeSequenceReq));
+    }
+
+    @DeleteMapping
+    public RestResponse<CardDeleteRes> deleteCard(
+        @RequestBody CardDeleteReq cardDeleteReq,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        cardDeleteReq.setUsername(userDetails.getUsername());
+        return RestResponse.success(cardService.deleteCard(cardDeleteReq));
     }
 }

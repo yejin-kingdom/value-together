@@ -32,10 +32,20 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
+
     private final CardRepository cardRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final S3Util s3Util;
+
+    @Override
+    @Transactional(readOnly = true)
+    public CardGetRes getCard(Long cardId, String username) {
+        User user = getUserByUsername(username);
+        Card card = getCardByCardId(cardId);
+        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
+        return CardServiceMapper.INSTANCE.toCardGetRes(card);
+    }
 
     @Override
     @Transactional
@@ -48,15 +58,15 @@ public class CardServiceImpl implements CardService {
         Double sequence = getMaxSequence(cardSaveReq.getCategoryId());
         String fileUrl = s3Util.uploadFile(multipartFile, CARD);
         return CardServiceMapper.INSTANCE.toCardSavaRes(
-                cardRepository.save(
-                        Card.builder()
-                                .name(cardSaveReq.getName())
-                                .description(cardSaveReq.getDescription())
-                                .fileUrl(fileUrl)
-                                .sequence(sequence)
-                                .deadline(cardSaveReq.getDeadline())
-                                .category(category)
-                                .build()));
+            cardRepository.save(
+                Card.builder()
+                    .name(cardSaveReq.getName())
+                    .description(cardSaveReq.getDescription())
+                    .fileUrl(fileUrl)
+                    .sequence(sequence)
+                    .deadline(cardSaveReq.getDeadline())
+                    .category(category)
+                    .build()));
     }
 
     private Double getMaxSequence(Long categoryId) {
@@ -68,7 +78,8 @@ public class CardServiceImpl implements CardService {
     public CardUpdateRes updateCard(CardUpdateReq cardUpdateReq, MultipartFile multipartFile) {
         User user = getUserByUsername(cardUpdateReq.getUsername());
         Card prevCard = getCardByCardId(cardUpdateReq.getCardId());
-        TeamRoleValidator.checkIsTeamMember(prevCard.getCategory().getTeam().getTeamRoleList(), user);
+        TeamRoleValidator.checkIsTeamMember(prevCard.getCategory().getTeam().getTeamRoleList(),
+            user);
 
         deleteFile(prevCard.getFileUrl());
         String fileUrl = null;
@@ -76,16 +87,48 @@ public class CardServiceImpl implements CardService {
             fileUrl = s3Util.uploadFile(multipartFile, CARD);
         }
         cardRepository.save(
-                Card.builder()
-                        .cardId(prevCard.getCardId())
-                        .name(cardUpdateReq.getName())
-                        .description(cardUpdateReq.getDescription())
-                        .fileUrl(fileUrl)
-                        .sequence(prevCard.getSequence())
-                        .deadline(cardUpdateReq.getDeadline())
-                        .category(prevCard.getCategory())
-                        .build());
+            Card.builder()
+                .cardId(prevCard.getCardId())
+                .name(cardUpdateReq.getName())
+                .description(cardUpdateReq.getDescription())
+                .fileUrl(fileUrl)
+                .sequence(prevCard.getSequence())
+                .deadline(cardUpdateReq.getDeadline())
+                .category(prevCard.getCategory())
+                .build());
         return new CardUpdateRes();
+    }
+
+    @Override
+    @Transactional
+    public CardChangeSequenceRes changeSequence(CardChangeSequenceReq cardChangeSequenceReq) {
+        User user = getUserByUsername(cardChangeSequenceReq.getUsername());
+        Card card = getCardByCardId(cardChangeSequenceReq.getCardId());
+        Category category = categoryRepository.findByCategoryId(
+            cardChangeSequenceReq.getCategoryId());
+        CategoryValidator.validate(category);
+        TeamRoleValidator.checkIsTeamMember(category.getTeam().getTeamRoleList(), user);
+
+        Double averageSequence =
+            getAverageSequence(
+                cardChangeSequenceReq.getPreSequence(), cardChangeSequenceReq.getPostSequence());
+
+        cardRepository.save(
+            Card.builder()
+                .cardId(card.getCardId())
+                .name(card.getName())
+                .description(card.getDescription())
+                .fileUrl(card.getFileUrl())
+                .sequence(averageSequence)
+                .deadline(card.getDeadline())
+                .category(category)
+                .build());
+
+        return new CardChangeSequenceRes();
+    }
+
+    private Double getAverageSequence(Double preSequence, Double postSequence) {
+        return (preSequence + postSequence) / 2;
     }
 
     @Override
@@ -100,53 +143,6 @@ public class CardServiceImpl implements CardService {
         return new CardDeleteRes();
     }
 
-    private void deleteFile(String fileUrl) {
-        if (fileUrl == null || fileUrl.isBlank()) {
-            return;
-        }
-        s3Util.deleteFile(fileUrl, CARD);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public CardGetRes getCard(Long cardId, String username) {
-        User user = getUserByUsername(username);
-        Card card = getCardByCardId(cardId);
-        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
-        return CardServiceMapper.INSTANCE.toCardGetRes(card);
-    }
-
-    @Override
-    @Transactional
-    public CardChangeSequenceRes changeSequence(CardChangeSequenceReq cardChangeSequenceReq) {
-        User user = getUserByUsername(cardChangeSequenceReq.getUsername());
-        Card card = getCardByCardId(cardChangeSequenceReq.getCardId());
-        Category category = categoryRepository.findByCategoryId(cardChangeSequenceReq.getCategoryId());
-        CategoryValidator.validate(category);
-        TeamRoleValidator.checkIsTeamMember(category.getTeam().getTeamRoleList(), user);
-
-        Double averageSequence =
-                getAverageSequence(
-                        cardChangeSequenceReq.getPreSequence(), cardChangeSequenceReq.getPostSequence());
-
-        cardRepository.save(
-                Card.builder()
-                        .cardId(card.getCardId())
-                        .name(card.getName())
-                        .description(card.getDescription())
-                        .fileUrl(card.getFileUrl())
-                        .sequence(averageSequence)
-                        .deadline(card.getDeadline())
-                        .category(category)
-                        .build());
-
-        return new CardChangeSequenceRes();
-    }
-
-    private Double getAverageSequence(Double preSequence, Double postSequence) {
-        return (preSequence + postSequence) / 2;
-    }
-
     private User getUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
         UserValidator.validate(user);
@@ -157,5 +153,12 @@ public class CardServiceImpl implements CardService {
         Card card = cardRepository.findByCardId(cardId);
         CardValidator.validate(card);
         return card;
+    }
+
+    private void deleteFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) {
+            return;
+        }
+        s3Util.deleteFile(fileUrl, CARD);
     }
 }
