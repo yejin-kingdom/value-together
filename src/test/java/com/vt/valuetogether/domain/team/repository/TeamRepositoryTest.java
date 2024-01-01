@@ -98,4 +98,19 @@ public class TeamRepositoryTest implements TeamTest {
         // then
         Assertions.assertThat(actual).isNull();
     }
+
+    @Test
+    @DisplayName("team 삭제 테스트")
+    void team_삭제() {
+        // given
+        Team team = teamRepository.save(TEST_TEAM);
+
+        // when
+        teamRepository.deleteByTeamId(team.getTeamId());
+
+        Team actual = teamRepository.findByTeamId(team.getTeamId());
+
+        // then
+        Assertions.assertThat(actual).isNull();
+    }
 }
