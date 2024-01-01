@@ -50,9 +50,12 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskUpdateRes updateTask(TaskUpdateReq taskUpdateReq) {
+        User user = getUserByUsername(taskUpdateReq.getUsername());
         TaskValidator.validate(taskUpdateReq);
         Task prevTask = taskRepository.findByTaskId(taskUpdateReq.getTaskId());
         TaskValidator.validate(prevTask);
+        TeamRoleValidator.checkIsTeamMember(
+                prevTask.getChecklist().getCard().getCategory().getTeam().getTeamRoleList(), user);
         taskRepository.save(
                 Task.builder()
                         .taskId(prevTask.getTaskId())

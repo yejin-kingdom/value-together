@@ -32,7 +32,9 @@ public class TaskController {
     }
 
     @PatchMapping
-    public RestResponse<TaskUpdateRes> updateTask(@RequestBody TaskUpdateReq taskUpdateReq) {
+    public RestResponse<TaskUpdateRes> updateTask(
+            @RequestBody TaskUpdateReq taskUpdateReq, @AuthenticationPrincipal UserDetails userDetails) {
+        taskUpdateReq.setUsername(userDetails.getUsername());
         return RestResponse.success(taskService.updateTask(taskUpdateReq));
     }
 
