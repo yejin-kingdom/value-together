@@ -75,7 +75,8 @@ class ChecklistControllerTest extends BaseMvcTest {
                 .perform(
                         delete("/api/v1/checklists")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(checklistDeleteReq)))
+                                .content(objectMapper.writeValueAsString(checklistDeleteReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
