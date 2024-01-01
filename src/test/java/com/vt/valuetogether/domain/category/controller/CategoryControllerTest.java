@@ -17,6 +17,7 @@ import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.card.dto.response.CardInnerCategoryRes;
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryRestoreReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
@@ -35,6 +36,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 @WebMvcTest(controllers = {CategoryController.class})
 class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
+
     @MockBean private CategoryService categoryService;
 
     @Test
@@ -121,7 +123,7 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
                 .thenReturn(categoryGetResList);
         this.mockMvc
                 .perform(
-                        get("/api/v1/teams/{teamId}/categories")
+                        get("/api/v1/teams/{teamId}/categories", teamId)
                                 .param("isDeleted", FALSE)
                                 .principal(this.mockPrincipal))
                 .andDo(print())
@@ -149,10 +151,10 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
     @DisplayName("카테고리 이름 수정")
     void category_이름_수정() throws Exception {
         CategoryEditReq req =
-            CategoryEditReq.builder()
-                .categoryId(TEST_CATEGORY_ID)
-                .name(TEST_ANOTHER_CATEGORY_NAME)
-                .build();
+                CategoryEditReq.builder()
+                        .categoryId(TEST_CATEGORY_ID)
+                        .name(TEST_ANOTHER_CATEGORY_NAME)
+                        .build();
         req.setName(this.mockPrincipal.getName());
 
         CategoryEditRes res = new CategoryEditRes();
@@ -160,12 +162,12 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
         given(categoryService.editCategory(any(CategoryEditReq.class))).willReturn(res);
 
         this.mockMvc
-            .perform(
-                patch("/api/v1/categories")
-                    .principal(this.mockPrincipal)
-                    .contentType(APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(req)))
-            .andDo(print())
-            .andExpect(status().isOk());
+                .perform(
+                        patch("/api/v1/categories")
+                                .principal(this.mockPrincipal)
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }
