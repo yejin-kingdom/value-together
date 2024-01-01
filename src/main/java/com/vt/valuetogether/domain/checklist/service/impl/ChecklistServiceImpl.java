@@ -45,9 +45,7 @@ public class ChecklistServiceImpl implements ChecklistService {
     @Transactional
     public ChecklistUpdateRes updateChecklist(ChecklistUpdateReq checklistUpdateReq) {
         User user = getUserByUsername(checklistUpdateReq.getUsername());
-        Checklist prevChecklist =
-                checklistRepository.findByChecklistId(checklistUpdateReq.getChecklistId());
-        ChecklistValidator.validate(prevChecklist);
+        Checklist prevChecklist = getChecklistById(checklistUpdateReq.getChecklistId());
         TeamRoleValidator.checkIsTeamMember(
                 prevChecklist.getCard().getCategory().getTeam().getTeamRoleList(), user);
         checklistRepository.save(
@@ -63,9 +61,7 @@ public class ChecklistServiceImpl implements ChecklistService {
     @Transactional
     public ChecklistDeleteRes deleteChecklist(ChecklistDeleteReq checklistDeleteReq) {
         User user = getUserByUsername(checklistDeleteReq.getUsername());
-        Checklist checklist =
-                checklistRepository.findByChecklistId(checklistDeleteReq.getChecklistId());
-        ChecklistValidator.validate(checklist);
+        Checklist checklist = getChecklistById(checklistDeleteReq.getChecklistId());
         TeamRoleValidator.checkIsTeamMember(
                 checklist.getCard().getCategory().getTeam().getTeamRoleList(), user);
         checklistRepository.delete(checklist);
@@ -76,5 +72,11 @@ public class ChecklistServiceImpl implements ChecklistService {
         User user = userRepository.findByUsername(username);
         UserValidator.validate(user);
         return user;
+    }
+
+    private Checklist getChecklistById(Long checklistId) {
+        Checklist checklist = checklistRepository.findByChecklistId(checklistId);
+        ChecklistValidator.validate(checklist);
+        return checklist;
     }
 }
