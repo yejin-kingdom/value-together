@@ -1,13 +1,17 @@
 package com.vt.valuetogether.domain.team.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.test.TeamTest;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +38,7 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
 
         TeamCreateRes res = TeamCreateRes.builder().teamId(TEST_TEAM_ID).build();
 
-        BDDMockito.given(teamService.createTeam(any())).willReturn(res);
+        given(teamService.createTeam(any())).willReturn(res);
         // when, then
         mockMvc
                 .perform(
@@ -44,5 +48,29 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
                                 .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("팀 수정 테스트")
+    void team_수정() throws Exception {
+        TeamEditReq req =
+            TeamEditReq.builder()
+                .teamId(TEST_TEAM_ID)
+                .teamName(TEST_TEAM_NAME)
+                .teamDescription(TEST_TEAM_DESCRIPTION)
+                .build();
+
+        TeamEditRes res = new TeamEditRes();
+
+        given(teamService.editTeam(any())).willReturn(res);
+
+        mockMvc
+            .perform(
+                patch("/api/v1/teams")
+                    .content(objectMapper.writeValueAsString(req))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .principal(mockPrincipal))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }
