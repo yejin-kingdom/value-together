@@ -1,7 +1,7 @@
 package com.vt.valuetogether.domain.worker.repository;
 
 import com.vt.valuetogether.domain.card.entity.Card;
-import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.worker.entity.Worker;
 import com.vt.valuetogether.domain.worker.entity.WorkerPK;
 import org.springframework.data.repository.RepositoryDefinition;
@@ -11,7 +11,7 @@ public interface WorkerRepository {
 
     Worker save(Worker worker);
 
-    Worker findByUserAndCard(User user, Card card);
+    Worker findByTeamRoleAndCard(TeamRole teamRole, Card card);
 
     void delete(Worker worker);
 }

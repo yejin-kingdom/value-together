@@ -1,6 +1,5 @@
 package com.vt.valuetogether.domain.worker.dto.request;
 
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,11 +13,11 @@ public class WorkerAddReq {
 
     private Long cardId;
     private String username;
-    private List<Long> userIds;
+    private String addUsername;
 
     @Builder
-    private WorkerAddReq(Long cardId, List<Long> userIds) {
+    private WorkerAddReq(Long cardId, String addUsername) {
         this.cardId = cardId;
-        this.userIds = userIds;
+        this.addUsername = addUsername;
     }
 }

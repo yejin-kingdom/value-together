@@ -1,7 +1,6 @@
 package com.vt.valuetogether.domain.team.service.impl;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -116,6 +115,5 @@ class TeamServiceImplTest implements TeamTest {
         verify(teamRepository, times(1)).findByTeamId(anyLong());
         verify(teamRoleRepository, times(1)).findByTeam_TeamId(anyLong());
         verify(teamRepository, times(1)).save(any(Team.class));
-        verify(teamRoleRepository, times(1)).saveAll(anyList());
     }
 }

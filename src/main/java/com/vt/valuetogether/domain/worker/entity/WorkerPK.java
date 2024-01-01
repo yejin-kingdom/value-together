@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class WorkerPK implements Serializable {
 
-    private Long user;
+    private Long teamRole;
     private Long card;
 }

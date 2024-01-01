@@ -31,8 +31,8 @@ public interface CardServiceMapper {
     @Mapping(source = "user.username", target = "username")
     CommentGetRes toCommentGetRes(Comment comment);
 
-    @Mapping(source = "user.profileImageUrl", target = "profileImageUrl")
-    @Mapping(source = "user.username", target = "username")
+    @Mapping(source = "teamRole.user.profileImageUrl", target = "profileImageUrl")
+    @Mapping(source = "teamRole.user.username", target = "username")
     WorkerGetRes toWorkerGetRes(Worker worker);
 
     @Mapping(source = "deadline", target = "deadline")
