@@ -28,7 +28,7 @@ public interface CardServiceMapper {
         return zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    @Mapping(source = "user.username", target = "username")
+    @Mapping(source = "teamRole.user.username", target = "username")
     CommentGetRes toCommentGetRes(Comment comment);
 
     @Mapping(source = "teamRole.user.profileImageUrl", target = "profileImageUrl")

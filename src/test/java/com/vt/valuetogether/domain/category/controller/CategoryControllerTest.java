@@ -1,6 +1,9 @@
 package com.vt.valuetogether.domain.category.controller;
 
+import static org.apache.commons.lang3.BooleanUtils.FALSE;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,10 +15,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.card.dto.response.CardInnerCategoryRes;
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryRestoreReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
+import com.vt.valuetogether.domain.category.dto.response.CategoryRestoreRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.service.CategoryService;
 import com.vt.valuetogether.domain.worker.dto.response.WorkerGetRes;
@@ -109,9 +114,30 @@ class CategoryControllerTest extends BaseMvcTest {
         int total = 1;
         CategoryGetResList categoryGetResList =
                 CategoryGetResList.builder().categories(List.of(categoryGetRes)).total(total).build();
-        when(categoryService.getAllCategories(any(), any())).thenReturn(categoryGetResList);
+        when(categoryService.getAllCategories(anyLong(), anyBoolean(), any()))
+                .thenReturn(categoryGetResList);
         this.mockMvc
-                .perform(get("/api/v1/teams/" + teamId + "/categories").principal(this.mockPrincipal))
+                .perform(
+                        get("/api/v1/teams/" + teamId + "/categories")
+                                .param("isDeleted", FALSE)
+                                .principal(this.mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("category 복구 테스트")
+    void category_복구() throws Exception {
+        Long categoryId = 1L;
+        CategoryRestoreReq req = CategoryRestoreReq.builder().categoryId(categoryId).build();
+        CategoryRestoreRes res = new CategoryRestoreRes();
+        when(categoryService.restoreCategory(any())).thenReturn(res);
+        this.mockMvc
+                .perform(
+                        patch("/api/v1/categories/restore")
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req))
+                                .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
