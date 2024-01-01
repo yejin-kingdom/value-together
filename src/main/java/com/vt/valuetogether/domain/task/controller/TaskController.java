@@ -39,7 +39,9 @@ public class TaskController {
     }
 
     @DeleteMapping
-    public RestResponse<TaskDeleteRes> deleteTask(@RequestBody TaskDeleteReq taskDeleteReq) {
+    public RestResponse<TaskDeleteRes> deleteTask(
+            @RequestBody TaskDeleteReq taskDeleteReq, @AuthenticationPrincipal UserDetails userDetails) {
+        taskDeleteReq.setUsername(userDetails.getUsername());
         return RestResponse.success(taskService.deleteTask(taskDeleteReq));
     }
 }

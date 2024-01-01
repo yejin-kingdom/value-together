@@ -69,8 +69,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskDeleteRes deleteTask(TaskDeleteReq taskDeleteReq) {
+        User user = getUserByUsername(taskDeleteReq.getUsername());
         Task task = taskRepository.findByTaskId(taskDeleteReq.getTaskId());
         TaskValidator.validate(task);
+        TeamRoleValidator.checkIsTeamMember(
+                task.getChecklist().getCard().getCategory().getTeam().getTeamRoleList(), user);
         taskRepository.delete(task);
         return new TaskDeleteRes();
     }
