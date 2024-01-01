@@ -12,13 +12,13 @@ import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
-import com.vt.valuetogether.infra.mail.MailUtil;
 import com.vt.valuetogether.test.TeamRoleTest;
 import com.vt.valuetogether.test.TeamTest;
 import com.vt.valuetogether.test.UserTest;
@@ -39,7 +39,6 @@ class TeamServiceImplTest implements TeamTest {
     @Mock private TeamRepository teamRepository;
     @Mock private TeamRoleRepository teamRoleRepository;
     @Mock private UserRepository userRepository;
-    @Mock private MailUtil mailUtil;
 
     private Team team;
 
@@ -147,5 +146,30 @@ class TeamServiceImplTest implements TeamTest {
         verify(teamRepository, times(1)).findByTeamId(anyLong());
         verify(teamRoleRepository, times(1)).findByTeam_TeamId(anyLong());
         verify(teamRepository, times(1)).save(any(Team.class));
+    }
+
+    @Test
+    @DisplayName("team member 삭제 테스트")
+    void team_member_삭제() {
+        // given
+        TeamMemberDeleteReq req =
+                TeamMemberDeleteReq.builder()
+                        .teamId(team.getTeamId())
+                        .memberName(UserTest.TEST_USER_NAME)
+                        .build();
+
+        req.setUsername(UserTest.TEST_USER_NAME);
+
+        given(userRepository.findByUsername(anyString())).willReturn(UserTest.TEST_USER);
+        given(teamRoleRepository.findByUserUsernameAndTeamTeamId(anyString(), anyLong()))
+                .willReturn(TeamRoleTest.TEST_TEAM_ROLE);
+
+        // when
+        teamService.deleteMember(req);
+
+        // then
+        verify(userRepository, times(2)).findByUsername(anyString());
+        verify(teamRoleRepository, times(2)).findByUserUsernameAndTeamTeamId(anyString(), anyLong());
+        verify(teamRoleRepository, times(1)).delete(any(TeamRole.class));
     }
 }

@@ -15,9 +15,8 @@ public class TeamMemberDeleteReq {
     private String username;
 
     @Builder
-    private TeamMemberDeleteReq(Long teamId, String memberName, String username) {
+    private TeamMemberDeleteReq(Long teamId, String memberName) {
         this.teamId = teamId;
         this.memberName = memberName;
-        this.username = username;
     }
 }
