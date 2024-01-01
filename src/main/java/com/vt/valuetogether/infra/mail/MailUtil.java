@@ -49,7 +49,7 @@ public class MailUtil {
     public void sendMessage(String to, String subject) {
         try {
             String code = createAuthCode();
-            MimeMessage message = createMessage(to, subject, code);
+            MimeMessage message = createMessage(to, subject, code, authEmailLink);
 
             if (emailService.hasMail(to)) {
                 emailService.delete(to);
@@ -66,7 +66,7 @@ public class MailUtil {
     public void sendInviteMessage(String to, String subject, Long teamId, Long userId) {
         try {
             String code = createAuthCode();
-            MimeMessage message = createInviteMessage(to, subject, code);
+            MimeMessage message = createMessage(to, subject, code, inviteEmailLink);
 
             InviteCode inviteCode = InviteCode.builder().teamId(teamId).userId(userId).code(code).build();
 
@@ -98,7 +98,7 @@ public class MailUtil {
         return emailAuth;
     }
 
-    private MimeMessage createMessage(String to, String subject, String code)
+    private MimeMessage createMessage(String to, String subject, String code, String emailLink)
             throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
@@ -106,21 +106,7 @@ public class MailUtil {
         message.addRecipients(RecipientType.TO, to);
         message.setSubject(subject, StandardCharsets.UTF_8.name());
         message.setContent(
-                authEmailLink + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
-                ContentType.TEXT_HTML.getMimeType());
-
-        return message;
-    }
-
-    private MimeMessage createInviteMessage(String to, String subject, String code)
-            throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-
-        message.setFrom(email);
-        message.addRecipients(RecipientType.TO, to);
-        message.setSubject(subject, StandardCharsets.UTF_8.name());
-        message.setContent(
-                inviteEmailLink + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
+                emailLink + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
                 ContentType.TEXT_HTML.getMimeType());
 
         return message;
