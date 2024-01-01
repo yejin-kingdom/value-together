@@ -2,7 +2,7 @@ package com.vt.valuetogether.domain.comment.entity;
 
 import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.model.BaseEntity;
-import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.team.entity.TeamRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,15 +33,15 @@ public class Comment extends BaseEntity {
     private Card card;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "teamRoleId")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+    private TeamRole teamRole;
 
     @Builder
-    private Comment(Long commentId, String content, Card card, User user) {
+    private Comment(Long commentId, String content, Card card, TeamRole teamRole) {
         this.commentId = commentId;
         this.content = content;
         this.card = card;
-        this.user = user;
+        this.teamRole = teamRole;
     }
 }
