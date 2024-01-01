@@ -22,6 +22,8 @@ import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.test.TeamTest;
+import com.vt.valuetogether.test.UserTest;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -56,8 +58,14 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     @DisplayName("팀 생성 테스트")
     void team_생성() throws Exception {
         // given
-        TeamCreateReq req = TeamCreateReq.builder().build();
+        TeamCreateReq req =
+                TeamCreateReq.builder()
+                        .teamName(TEST_TEAM_NAME)
+                        .teamDescription(TEST_TEAM_DESCRIPTION)
+                        .backgroundColor(TEST_BACKGROUND_COLOR)
+                        .build();
 
+        req.setUsername(UserTest.TEST_USER_NAME);
         TeamCreateRes res = TeamCreateRes.builder().teamId(TEST_TEAM_ID).build();
 
         given(teamService.createTeam(any())).willReturn(res);
@@ -76,7 +84,13 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     @DisplayName("팀 초대 테스트")
     void team_초대() throws Exception {
         // given
-        TeamMemberInviteReq req = TeamMemberInviteReq.builder().build();
+        TeamMemberInviteReq req =
+                TeamMemberInviteReq.builder()
+                        .teamId(TEST_TEAM_ID)
+                        .memberNameList(List.of("testMember"))
+                        .build();
+
+        req.setUsername(UserTest.TEST_USER_NAME);
         TeamMemberInviteRes res = new TeamMemberInviteRes();
 
         given(teamService.inviteMember(req)).willReturn(res);
@@ -96,7 +110,8 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     @DisplayName("팀 삭제 테스트")
     void team_삭제() throws Exception {
         // given
-        TeamDeleteReq req = TeamDeleteReq.builder().build();
+        TeamDeleteReq req = TeamDeleteReq.builder().teamId(TEST_TEAM_ID).build();
+        req.setUsername(UserTest.TEST_USER_NAME);
         TeamDeleteRes res = new TeamDeleteRes();
 
         given(teamService.deleteTeam(any(TeamDeleteReq.class))).willReturn(res);
@@ -116,8 +131,10 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     @DisplayName("팀 멤버 삭제 테스트")
     void team_member_삭제() throws Exception {
         // given
-        TeamMemberDeleteReq req = TeamMemberDeleteReq.builder().build();
+        TeamMemberDeleteReq req =
+                TeamMemberDeleteReq.builder().teamId(TEST_TEAM_ID).memberName("testMember").build();
 
+        req.setUsername(UserTest.TEST_USER_NAME);
         TeamMemberDeleteRes res = new TeamMemberDeleteRes();
 
         given(teamService.deleteMember(any(TeamMemberDeleteReq.class))).willReturn(res);
