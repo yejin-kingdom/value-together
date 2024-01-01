@@ -170,6 +170,7 @@ include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_조회/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_삭제/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_초대/auto-section.adoc[]
+include::{snippets}/team-controller-test/team_member_삭제/auto-section.adoc[]
 
 
 == category API
