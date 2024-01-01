@@ -164,6 +164,7 @@ include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
 
 == team API
 include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
+include::{snippets}/team-controller-test/team_조회/auto-section.adoc[]
 
 == category API
 
