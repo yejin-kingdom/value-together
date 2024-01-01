@@ -44,8 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategorySaveRes saveCategory(CategorySaveReq categorySaveReq) {
         User user = getUserByUsername(categorySaveReq.getUsername());
         Team team = teamRepository.findByTeamId(categorySaveReq.getTeamId());
-        TeamValidator.validate(team);
-        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+        checkTeamMember(team, user);
 
         return CategoryServiceMapper.INSTANCE.toCategorySaveRes(
                 categoryRepository.save(
@@ -61,21 +60,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryEditRes editCategory(CategoryEditReq req) {
         User user = getUserByUsername(req.getUsername());
-        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
-        CategoryValidator.validate(category);
+        Category category = getCategoryById(req.getCategoryId());
 
-        Team team = category.getTeam();
-        TeamValidator.validate(team);
-
-        TeamRoleValidator.validate(team.getTeamRoleList());
-        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+        checkTeamMember(category.getTeam(), user);
 
         categoryRepository.save(
                 Category.builder()
                         .categoryId(category.getCategoryId())
                         .name(req.getName())
                         .sequence(category.getSequence())
-                        .team(team)
+                        .team(category.getTeam())
                         .isDeleted(false)
                         .build());
 
@@ -86,21 +80,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDeleteRes deleteCategory(CategoryDeleteReq req) {
         User user = getUserByUsername(req.getUsername());
-        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
-        CategoryValidator.validate(category);
+        Category category = getCategoryById(req.getCategoryId());
 
-        Team team = category.getTeam();
-        TeamValidator.validate(team);
-
-        TeamRoleValidator.validate(team.getTeamRoleList());
-        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+        checkTeamMember(category.getTeam(), user);
 
         categoryRepository.save(
                 Category.builder()
                         .categoryId(category.getCategoryId())
                         .name(category.getName())
                         .sequence(0.0)
-                        .team(team)
+                        .team(category.getTeam())
                         .isDeleted(true)
                         .build());
 
@@ -112,10 +101,9 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryChangeSequenceRes changeCategorySequence(
             CategoryChangeSequenceReq categoryChangeSequenceReq) {
         User user = getUserByUsername(categoryChangeSequenceReq.getUsername());
-        Category category =
-                categoryRepository.findByCategoryId(categoryChangeSequenceReq.getCategoryId());
-        CategoryValidator.validate(category);
-        TeamRoleValidator.checkIsTeamMember(category.getTeam().getTeamRoleList(), user);
+        Category category = getCategoryById(categoryChangeSequenceReq.getCategoryId());
+
+        checkTeamMember(category.getTeam(), user);
 
         Double sequence =
                 getAverageSequence(
@@ -139,8 +127,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryGetResList getAllCategories(Long teamId, boolean isDeleted, String username) {
         User user = getUserByUsername(username);
         Team team = teamRepository.findByTeamId(teamId);
-        TeamValidator.validate(team);
-        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+        checkTeamMember(team, user);
         List<CategoryGetRes> categoryGetReses =
                 CategoryServiceMapper.INSTANCE.toCategoryGetResList(
                         categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, isDeleted));
@@ -154,21 +141,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryRestoreRes restoreCategory(CategoryRestoreReq req) {
         User user = getUserByUsername(req.getUsername());
-        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
-        CategoryValidator.isSoftDeleted(category);
+        Category category = getCategoryById(req.getCategoryId());
 
-        Team team = category.getTeam();
-        TeamValidator.validate(team);
-
-        TeamRoleValidator.validate(team.getTeamRoleList());
-        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+        checkTeamMember(category.getTeam(), user);
 
         categoryRepository.save(
                 Category.builder()
                         .categoryId(category.getCategoryId())
                         .name(category.getName())
                         .sequence(category.getSequence())
-                        .team(team)
+                        .team(category.getTeam())
                         .isDeleted(false)
                         .build());
 
@@ -181,11 +163,23 @@ public class CategoryServiceImpl implements CategoryService {
         return user;
     }
 
+    private Category getCategoryById(Long categoryId){
+        Category category = categoryRepository.findByCategoryId(categoryId);
+        CategoryValidator.isSoftDeleted(category);
+        return category;
+    }
+
     private Double getMaxSequence(Long teamId) {
         return categoryRepository.getMaxSequence(teamId);
     }
 
     private Double getAverageSequence(Double preSequence, Double postSequence) {
         return (preSequence + postSequence) / 2;
+    }
+
+    private void checkTeamMember(Team team, User user){
+        TeamValidator.validate(team);
+        TeamRoleValidator.validate(team.getTeamRoleList());
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
     }
 }
