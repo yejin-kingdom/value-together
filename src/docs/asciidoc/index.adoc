@@ -152,6 +152,9 @@ include::{snippets}/user-controller-test/verify-password-test/auto-section.adoc[
 include::{snippets}/user-controller-test/update-profile-test/auto-section.adoc[]
 include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
 
+== team API
+include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
+
 == category API
 
 include::{snippets}/category-controller-test/category_저장/auto-section.adoc[]
