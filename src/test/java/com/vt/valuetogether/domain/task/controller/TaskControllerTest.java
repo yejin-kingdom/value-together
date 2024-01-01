@@ -60,7 +60,8 @@ class TaskControllerTest extends BaseMvcTest {
                 .perform(
                         patch("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(taskUpdateReq)))
+                                .content(objectMapper.writeValueAsString(taskUpdateReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
