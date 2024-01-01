@@ -96,6 +96,7 @@ class TaskServiceImplTest implements TaskTest, UserTest, TeamRoleTest {
         taskService.saveTask(taskSaveReq);
 
         // then
+        verify(userRepository).findByUsername(any());
         verify(checklistRepository).findByChecklistId(any());
         verify(taskRepository).save(any());
     }
@@ -109,13 +110,15 @@ class TaskServiceImplTest implements TaskTest, UserTest, TeamRoleTest {
         Boolean isCompleted = true;
         TaskUpdateReq taskUpdateReq =
                 TaskUpdateReq.builder().taskId(taskId).content(content).isCompleted(isCompleted).build();
-        when(taskRepository.findByTaskId(any())).thenReturn(TEST_TASK);
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(taskRepository.findByTaskId(any())).thenReturn(task);
         when(taskRepository.save(any())).thenReturn(TEST_UPDATED_TASK);
 
         // when
         taskService.updateTask(taskUpdateReq);
 
         // then
+        verify(userRepository).findByUsername(any());
         verify(taskRepository).findByTaskId(any());
         verify(taskRepository).save(any());
     }
