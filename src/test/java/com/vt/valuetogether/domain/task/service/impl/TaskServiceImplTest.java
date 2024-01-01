@@ -129,12 +129,14 @@ class TaskServiceImplTest implements TaskTest, UserTest, TeamRoleTest {
         // given
         Long taskId = 1L;
         TaskDeleteReq taskDeleteReq = TaskDeleteReq.builder().taskId(taskId).build();
-        when(taskRepository.findByTaskId(any())).thenReturn(TEST_TASK);
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(taskRepository.findByTaskId(any())).thenReturn(task);
 
         // when
         taskService.deleteTask(taskDeleteReq);
 
         // then
+        verify(userRepository).findByUsername(any());
         verify(taskRepository).findByTaskId(any());
         verify(taskRepository).delete(any());
     }
