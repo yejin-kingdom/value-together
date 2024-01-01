@@ -9,6 +9,7 @@ import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
+import com.vt.valuetogether.test.TeamTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -17,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 @WebMvcTest(controllers = TeamController.class)
-public class TeamControllerTest extends BaseMvcTest {
+public class TeamControllerTest extends BaseMvcTest implements TeamTest {
 
     @MockBean private TeamService teamService;
 
@@ -25,18 +26,13 @@ public class TeamControllerTest extends BaseMvcTest {
     @DisplayName("팀 생성 테스트")
     void team_생성() throws Exception {
         // given
-        Long teamId = 1L;
-        String description = "teamDescription";
-        String backGroundColor = "#12345";
-        String teamName = "teamName";
         TeamCreateReq req =
                 TeamCreateReq.builder()
-                        .teamName(teamName)
-                        .teamDescription(description)
-                        .backgroundColor(backGroundColor)
+                        .teamName(TEST_TEAM_NAME)
+                        .teamDescription(TEST_TEAM_DESCRIPTION)
                         .build();
 
-        TeamCreateRes res = TeamCreateRes.builder().teamId(teamId).build();
+        TeamCreateRes res = TeamCreateRes.builder().teamId(TEST_TEAM_ID).build();
 
         BDDMockito.given(teamService.createTeam(any())).willReturn(res);
         // when, then
