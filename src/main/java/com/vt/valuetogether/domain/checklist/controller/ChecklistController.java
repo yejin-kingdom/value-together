@@ -34,7 +34,9 @@ public class ChecklistController {
 
     @PatchMapping
     public RestResponse<ChecklistUpdateRes> updateChecklist(
-            @RequestBody ChecklistUpdateReq checklistUpdateReq) {
+            @RequestBody ChecklistUpdateReq checklistUpdateReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        checklistUpdateReq.setUsername(userDetails.getUsername());
         return RestResponse.success(checklistService.updateChecklist(checklistUpdateReq));
     }
 

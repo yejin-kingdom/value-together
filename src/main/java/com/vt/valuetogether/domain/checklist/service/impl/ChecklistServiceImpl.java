@@ -44,9 +44,12 @@ public class ChecklistServiceImpl implements ChecklistService {
     @Override
     @Transactional
     public ChecklistUpdateRes updateChecklist(ChecklistUpdateReq checklistUpdateReq) {
+        User user = getUserByUsername(checklistUpdateReq.getUsername());
         Checklist prevChecklist =
                 checklistRepository.findByChecklistId(checklistUpdateReq.getChecklistId());
         ChecklistValidator.validate(prevChecklist);
+        TeamRoleValidator.checkIsTeamMember(
+                prevChecklist.getCard().getCategory().getTeam().getTeamRoleList(), user);
         checklistRepository.save(
                 Checklist.builder()
                         .checklistId(checklistUpdateReq.getChecklistId())
