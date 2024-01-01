@@ -99,13 +99,15 @@ class ChecklistServiceImplTest implements ChecklistTest, UserTest, TeamRoleTest 
         String title = "updatedTitle";
         ChecklistUpdateReq checklistUpdateReq =
                 ChecklistUpdateReq.builder().checklistId(checklistId).title(title).build();
-        when(checklistRepository.findByChecklistId(any())).thenReturn(TEST_CHECKLIST);
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(checklistRepository.findByChecklistId(any())).thenReturn(checklist);
         when(checklistRepository.save(any())).thenReturn(TEST_UPDATED_CHECKLIST);
 
         // when
         checklistService.updateChecklist(checklistUpdateReq);
 
         // then
+        verify(userRepository).findByUsername(any());
         verify(checklistRepository).findByChecklistId(any());
         verify(checklistRepository).save(any());
     }
