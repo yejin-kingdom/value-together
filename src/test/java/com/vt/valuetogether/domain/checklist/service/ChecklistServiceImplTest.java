@@ -119,12 +119,14 @@ class ChecklistServiceImplTest implements ChecklistTest, UserTest, TeamRoleTest 
         Long checklistId = 1L;
         ChecklistDeleteReq checklistDeleteReq =
                 ChecklistDeleteReq.builder().checklistId(checklistId).build();
-        when(checklistRepository.findByChecklistId(any())).thenReturn(TEST_CHECKLIST);
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(checklistRepository.findByChecklistId(any())).thenReturn(checklist);
 
         // when
         checklistService.deleteChecklist(checklistDeleteReq);
 
         // then
+        verify(userRepository).findByUsername(any());
         verify(checklistRepository).findByChecklistId(any());
         verify(checklistRepository).delete(any());
     }
