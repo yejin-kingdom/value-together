@@ -12,5 +12,5 @@ public interface TeamRepository {
 
     Team save(Team team);
 
-    void deleteTeamByTeamId(Long teamId);
+    void deleteByTeamId(Long teamId);
 }
