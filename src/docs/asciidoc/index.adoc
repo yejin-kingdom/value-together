@@ -32,8 +32,12 @@ endif::[]
 |정보
 |Optional
 
-|TOKEN
-|구글 토큰 정보
+|AccessToken
+|JWT 토큰
+|false
+
+|RefreshToken
+|JWT 토큰
 |false
 |===
 
@@ -98,6 +102,9 @@ endif::[]
 |2012
 |이미지 파일만 업로드 가능합니다.
 
+|2013
+|로그인이 필요합니다.
+
 |3000
 |존재하지 않는 팀입니다.
 
@@ -125,6 +132,9 @@ endif::[]
 |5000
 |카드 정보를 찾을 수 없습니다.
 
+|6000
+|작업자를 찾을 수 없습니다.
+
 |7000
 |체크리스트를 찾을 수 없습니다.
 
@@ -151,6 +161,9 @@ include::{snippets}/user-controller-test/confirm-username-test/auto-section.adoc
 include::{snippets}/user-controller-test/verify-password-test/auto-section.adoc[]
 include::{snippets}/user-controller-test/update-profile-test/auto-section.adoc[]
 include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
+
+== team API
+include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
 
 == category API
 
