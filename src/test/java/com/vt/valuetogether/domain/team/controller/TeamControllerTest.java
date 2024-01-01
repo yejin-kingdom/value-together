@@ -65,7 +65,6 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
                         .backgroundColor(TEST_BACKGROUND_COLOR)
                         .build();
 
-        req.setUsername(UserTest.TEST_USER_NAME);
         TeamCreateRes res = TeamCreateRes.builder().teamId(TEST_TEAM_ID).build();
 
         given(teamService.createTeam(any())).willReturn(res);
@@ -90,7 +89,6 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
                         .memberNameList(List.of("testMember"))
                         .build();
 
-        req.setUsername(UserTest.TEST_USER_NAME);
         TeamMemberInviteRes res = new TeamMemberInviteRes();
 
         given(teamService.inviteMember(req)).willReturn(res);
@@ -111,7 +109,6 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     void team_삭제() throws Exception {
         // given
         TeamDeleteReq req = TeamDeleteReq.builder().teamId(TEST_TEAM_ID).build();
-        req.setUsername(UserTest.TEST_USER_NAME);
         TeamDeleteRes res = new TeamDeleteRes();
 
         given(teamService.deleteTeam(any(TeamDeleteReq.class))).willReturn(res);
@@ -134,7 +131,6 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
         TeamMemberDeleteReq req =
                 TeamMemberDeleteReq.builder().teamId(TEST_TEAM_ID).memberName("testMember").build();
 
-        req.setUsername(UserTest.TEST_USER_NAME);
         TeamMemberDeleteRes res = new TeamMemberDeleteRes();
 
         given(teamService.deleteMember(any(TeamMemberDeleteReq.class))).willReturn(res);
