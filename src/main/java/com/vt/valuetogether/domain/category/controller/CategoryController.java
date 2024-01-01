@@ -32,38 +32,37 @@ public class CategoryController {
 
     @GetMapping("/teams/{teamId}/categories")
     public RestResponse<CategoryGetResList> getAllCategories(
-        @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
         return RestResponse.success(
-            categoryService.getAllCategories(teamId, userDetails.getUsername()));
+                categoryService.getAllCategories(teamId, userDetails.getUsername()));
     }
 
     @PostMapping("/categories")
     public RestResponse<CategorySaveRes> saveCategory(
-        @RequestBody CategorySaveReq categorySaveReq,
-        @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestBody CategorySaveReq categorySaveReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
         categorySaveReq.setUsername(userDetails.getUsername());
         return RestResponse.success(categoryService.saveCategory(categorySaveReq));
     }
 
     @PatchMapping("/categories")
     public RestResponse<CategoryEditRes> editCategory(
-        @RequestBody CategoryEditReq req, @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestBody CategoryEditReq req, @AuthenticationPrincipal UserDetails userDetails) {
         req.setUsername(userDetails.getUsername());
         return RestResponse.success(categoryService.editCategory(req));
     }
 
     @PatchMapping("/categories/order")
     public RestResponse<CategoryChangeSequenceRes> changeCategorySequence(
-        @RequestBody CategoryChangeSequenceReq categoryChangeSequenceReq,
-        @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestBody CategoryChangeSequenceReq categoryChangeSequenceReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
         categoryChangeSequenceReq.setUsername(userDetails.getUsername());
-        return RestResponse.success(
-            categoryService.changeCategorySequence(categoryChangeSequenceReq));
+        return RestResponse.success(categoryService.changeCategorySequence(categoryChangeSequenceReq));
     }
 
     @DeleteMapping("/categories")
     public RestResponse<CategoryDeleteRes> deleteCategory(
-        @RequestBody CategoryDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestBody CategoryDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
         req.setUsername(userDetails.getUsername());
         return RestResponse.success(categoryService.deleteCategory(req));
     }

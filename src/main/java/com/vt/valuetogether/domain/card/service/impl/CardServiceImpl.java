@@ -58,15 +58,15 @@ public class CardServiceImpl implements CardService {
         Double sequence = getMaxSequence(cardSaveReq.getCategoryId());
         String fileUrl = s3Util.uploadFile(multipartFile, CARD);
         return CardServiceMapper.INSTANCE.toCardSavaRes(
-            cardRepository.save(
-                Card.builder()
-                    .name(cardSaveReq.getName())
-                    .description(cardSaveReq.getDescription())
-                    .fileUrl(fileUrl)
-                    .sequence(sequence)
-                    .deadline(cardSaveReq.getDeadline())
-                    .category(category)
-                    .build()));
+                cardRepository.save(
+                        Card.builder()
+                                .name(cardSaveReq.getName())
+                                .description(cardSaveReq.getDescription())
+                                .fileUrl(fileUrl)
+                                .sequence(sequence)
+                                .deadline(cardSaveReq.getDeadline())
+                                .category(category)
+                                .build()));
     }
 
     private Double getMaxSequence(Long categoryId) {
@@ -78,8 +78,7 @@ public class CardServiceImpl implements CardService {
     public CardUpdateRes updateCard(CardUpdateReq cardUpdateReq, MultipartFile multipartFile) {
         User user = getUserByUsername(cardUpdateReq.getUsername());
         Card prevCard = getCardByCardId(cardUpdateReq.getCardId());
-        TeamRoleValidator.checkIsTeamMember(prevCard.getCategory().getTeam().getTeamRoleList(),
-            user);
+        TeamRoleValidator.checkIsTeamMember(prevCard.getCategory().getTeam().getTeamRoleList(), user);
 
         deleteFile(prevCard.getFileUrl());
         String fileUrl = null;
@@ -87,15 +86,15 @@ public class CardServiceImpl implements CardService {
             fileUrl = s3Util.uploadFile(multipartFile, CARD);
         }
         cardRepository.save(
-            Card.builder()
-                .cardId(prevCard.getCardId())
-                .name(cardUpdateReq.getName())
-                .description(cardUpdateReq.getDescription())
-                .fileUrl(fileUrl)
-                .sequence(prevCard.getSequence())
-                .deadline(cardUpdateReq.getDeadline())
-                .category(prevCard.getCategory())
-                .build());
+                Card.builder()
+                        .cardId(prevCard.getCardId())
+                        .name(cardUpdateReq.getName())
+                        .description(cardUpdateReq.getDescription())
+                        .fileUrl(fileUrl)
+                        .sequence(prevCard.getSequence())
+                        .deadline(cardUpdateReq.getDeadline())
+                        .category(prevCard.getCategory())
+                        .build());
         return new CardUpdateRes();
     }
 
@@ -104,25 +103,24 @@ public class CardServiceImpl implements CardService {
     public CardChangeSequenceRes changeSequence(CardChangeSequenceReq cardChangeSequenceReq) {
         User user = getUserByUsername(cardChangeSequenceReq.getUsername());
         Card card = getCardByCardId(cardChangeSequenceReq.getCardId());
-        Category category = categoryRepository.findByCategoryId(
-            cardChangeSequenceReq.getCategoryId());
+        Category category = categoryRepository.findByCategoryId(cardChangeSequenceReq.getCategoryId());
         CategoryValidator.validate(category);
         TeamRoleValidator.checkIsTeamMember(category.getTeam().getTeamRoleList(), user);
 
         Double averageSequence =
-            getAverageSequence(
-                cardChangeSequenceReq.getPreSequence(), cardChangeSequenceReq.getPostSequence());
+                getAverageSequence(
+                        cardChangeSequenceReq.getPreSequence(), cardChangeSequenceReq.getPostSequence());
 
         cardRepository.save(
-            Card.builder()
-                .cardId(card.getCardId())
-                .name(card.getName())
-                .description(card.getDescription())
-                .fileUrl(card.getFileUrl())
-                .sequence(averageSequence)
-                .deadline(card.getDeadline())
-                .category(category)
-                .build());
+                Card.builder()
+                        .cardId(card.getCardId())
+                        .name(card.getName())
+                        .description(card.getDescription())
+                        .fileUrl(card.getFileUrl())
+                        .sequence(averageSequence)
+                        .deadline(card.getDeadline())
+                        .category(category)
+                        .build());
 
         return new CardChangeSequenceRes();
     }

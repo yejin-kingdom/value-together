@@ -52,28 +52,28 @@ public class UserController {
 
     @GetMapping("/signup/email/check")
     public RestResponse<UserConfirmEmailRes> confirmEmail(
-        @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
+            @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
         return RestResponse.success(userService.confirmEmail(email, code));
     }
 
     @PostMapping("/username")
     public RestResponse<UserCheckDuplicateUsernameRes> confirmUsername(
-        @RequestBody UserCheckDuplicateUsernameReq req) {
+            @RequestBody UserCheckDuplicateUsernameReq req) {
         return RestResponse.success(userService.checkDuplicateUsername(req));
     }
 
     @PostMapping("/password/verify")
     public RestResponse<UserVerifyPasswordRes> verifyPassword(
-        @RequestBody UserVerifyPasswordReq req, @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestBody UserVerifyPasswordReq req, @AuthenticationPrincipal UserDetails userDetails) {
         req.setUsername(userDetails.getUsername());
         return RestResponse.success(userService.verifyPassword(req));
     }
 
     @PatchMapping
     public RestResponse<UserUpdateProfileRes> updateProfile(
-        @RequestPart(name = "data") UserUpdateProfileReq req,
-        @RequestPart(name = "image", required = false) MultipartFile multipartfile,
-        @AuthenticationPrincipal UserDetails userDetails) {
+            @RequestPart(name = "data") UserUpdateProfileReq req,
+            @RequestPart(name = "image", required = false) MultipartFile multipartfile,
+            @AuthenticationPrincipal UserDetails userDetails) {
         req.setPreUsername(userDetails.getUsername());
         return RestResponse.success(userService.updateProfile(req, multipartfile));
     }

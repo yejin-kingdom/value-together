@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final MailUtil mailUtil;
     private final S3Util s3Util;
+
     @Value("${default.image.address}")
     private String defaultProfileImageUrl;
 
@@ -60,15 +61,15 @@ public class UserServiceImpl implements UserService {
         checkAuthorizedEmail(req.getEmail());
 
         userRepository.save(
-            User.builder()
-                .username(req.getUsername())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .email(req.getEmail())
-                .introduce(DEFAULT_PROFILE_INTRODUCE)
-                .profileImageUrl(defaultProfileImageUrl)
-                .provider(Provider.LOCAL)
-                .role(Role.USER)
-                .build());
+                User.builder()
+                        .username(req.getUsername())
+                        .password(passwordEncoder.encode(req.getPassword()))
+                        .email(req.getEmail())
+                        .introduce(DEFAULT_PROFILE_INTRODUCE)
+                        .profileImageUrl(defaultProfileImageUrl)
+                        .provider(Provider.LOCAL)
+                        .role(Role.USER)
+                        .build());
 
         return new UserSignupRes();
     }
@@ -94,8 +95,8 @@ public class UserServiceImpl implements UserService {
         UserValidator.validate(req);
 
         return UserCheckDuplicateUsernameRes.builder()
-            .isDuplicated(userRepository.existsByUsername(req.getUsername()))
-            .build();
+                .isDuplicated(userRepository.existsByUsername(req.getUsername()))
+                .build();
     }
 
     @Override
@@ -107,8 +108,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req,
-        MultipartFile multipartFile) {
+    public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile) {
 
         UserValidator.validate(req);
         User savedUser = getUser(req.getPreUsername());
@@ -125,16 +125,16 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(
-            User.builder()
-                .userId(savedUser.getUserId())
-                .username(req.getUsername())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .email(savedUser.getEmail())
-                .introduce(req.getIntroduce())
-                .profileImageUrl(imageUrl)
-                .provider(savedUser.getProvider())
-                .role(savedUser.getRole())
-                .build());
+                User.builder()
+                        .userId(savedUser.getUserId())
+                        .username(req.getUsername())
+                        .password(passwordEncoder.encode(req.getPassword()))
+                        .email(savedUser.getEmail())
+                        .introduce(req.getIntroduce())
+                        .profileImageUrl(imageUrl)
+                        .provider(savedUser.getProvider())
+                        .role(savedUser.getRole())
+                        .build());
 
         return new UserUpdateProfileRes();
     }

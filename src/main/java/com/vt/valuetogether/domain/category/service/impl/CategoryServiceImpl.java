@@ -45,12 +45,12 @@ public class CategoryServiceImpl implements CategoryService {
         TeamValidator.validate(team);
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
         List<CategoryGetRes> categoryGetReses =
-            CategoryServiceMapper.INSTANCE.toCategoryGetResList(
-                categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, FALSE));
+                CategoryServiceMapper.INSTANCE.toCategoryGetResList(
+                        categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, FALSE));
         return CategoryGetResList.builder()
-            .categories(categoryGetReses)
-            .total(categoryGetReses.size())
-            .build();
+                .categories(categoryGetReses)
+                .total(categoryGetReses.size())
+                .build();
     }
 
     @Override
@@ -62,13 +62,13 @@ public class CategoryServiceImpl implements CategoryService {
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
 
         return CategoryServiceMapper.INSTANCE.toCategorySaveRes(
-            categoryRepository.save(
-                Category.builder()
-                    .name(categorySaveReq.getName())
-                    .sequence(getMaxSequence(team.getTeamId()))
-                    .isDeleted(FALSE)
-                    .team(team)
-                    .build()));
+                categoryRepository.save(
+                        Category.builder()
+                                .name(categorySaveReq.getName())
+                                .sequence(getMaxSequence(team.getTeamId()))
+                                .isDeleted(FALSE)
+                                .team(team)
+                                .build()));
     }
 
     private Double getMaxSequence(Long teamId) {
@@ -89,13 +89,13 @@ public class CategoryServiceImpl implements CategoryService {
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
 
         categoryRepository.save(
-            Category.builder()
-                .categoryId(category.getCategoryId())
-                .name(req.getName())
-                .sequence(category.getSequence())
-                .team(team)
-                .isDeleted(false)
-                .build());
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(req.getName())
+                        .sequence(category.getSequence())
+                        .team(team)
+                        .isDeleted(false)
+                        .build());
 
         return new CategoryEditRes();
     }
@@ -103,26 +103,26 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryChangeSequenceRes changeCategorySequence(
-        CategoryChangeSequenceReq categoryChangeSequenceReq) {
+            CategoryChangeSequenceReq categoryChangeSequenceReq) {
         User user = getUserByUsername(categoryChangeSequenceReq.getUsername());
         Category category =
-            categoryRepository.findByCategoryId(categoryChangeSequenceReq.getCategoryId());
+                categoryRepository.findByCategoryId(categoryChangeSequenceReq.getCategoryId());
         CategoryValidator.validate(category);
         TeamRoleValidator.checkIsTeamMember(category.getTeam().getTeamRoleList(), user);
 
         Double sequence =
-            getAverageSequence(
-                categoryChangeSequenceReq.getPreSequence(),
-                categoryChangeSequenceReq.getPostSequence());
+                getAverageSequence(
+                        categoryChangeSequenceReq.getPreSequence(),
+                        categoryChangeSequenceReq.getPostSequence());
 
         categoryRepository.save(
-            Category.builder()
-                .categoryId(category.getCategoryId())
-                .name(category.getName())
-                .sequence(sequence)
-                .isDeleted(category.getIsDeleted())
-                .team(category.getTeam())
-                .build());
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(sequence)
+                        .isDeleted(category.getIsDeleted())
+                        .team(category.getTeam())
+                        .build());
 
         return new CategoryChangeSequenceRes();
     }
@@ -145,13 +145,13 @@ public class CategoryServiceImpl implements CategoryService {
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
 
         categoryRepository.save(
-            Category.builder()
-                .categoryId(category.getCategoryId())
-                .name(category.getName())
-                .sequence(0.0)
-                .team(team)
-                .isDeleted(true)
-                .build());
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(0.0)
+                        .team(team)
+                        .isDeleted(true)
+                        .build());
 
         return new CategoryDeleteRes();
     }
