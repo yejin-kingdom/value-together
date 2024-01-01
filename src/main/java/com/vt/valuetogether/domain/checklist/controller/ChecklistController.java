@@ -42,7 +42,9 @@ public class ChecklistController {
 
     @DeleteMapping
     public RestResponse<ChecklistDeleteRes> deleteChecklist(
-            @RequestBody ChecklistDeleteReq checklistDeleteReq) {
+            @RequestBody ChecklistDeleteReq checklistDeleteReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        checklistDeleteReq.setUsername(userDetails.getUsername());
         return RestResponse.success(checklistService.deleteChecklist(checklistDeleteReq));
     }
 }

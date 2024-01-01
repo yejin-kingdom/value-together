@@ -62,9 +62,12 @@ public class ChecklistServiceImpl implements ChecklistService {
     @Override
     @Transactional
     public ChecklistDeleteRes deleteChecklist(ChecklistDeleteReq checklistDeleteReq) {
+        User user = getUserByUsername(checklistDeleteReq.getUsername());
         Checklist checklist =
                 checklistRepository.findByChecklistId(checklistDeleteReq.getChecklistId());
         ChecklistValidator.validate(checklist);
+        TeamRoleValidator.checkIsTeamMember(
+                checklist.getCard().getCategory().getTeam().getTeamRoleList(), user);
         checklistRepository.delete(checklist);
         return new ChecklistDeleteRes();
     }
