@@ -175,6 +175,7 @@ include::{snippets}/team-controller-test/team_삭제/auto-section.adoc[]
 include::{snippets}/category-controller-test/category_저장/auto-section.adoc[]
 include::{snippets}/category-controller-test/category_순서_변경/auto-section.adoc[]
 include::{snippets}/category-controller-test/team-id_category_전체_조회/auto-section.adoc[]
+include::{snippets}/category-controller-test/category_복구/auto-section.adoc[]
 
 == card API
 
