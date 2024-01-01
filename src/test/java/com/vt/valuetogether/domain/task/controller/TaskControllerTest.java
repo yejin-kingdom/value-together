@@ -77,7 +77,8 @@ class TaskControllerTest extends BaseMvcTest {
                 .perform(
                         delete("/api/v1/tasks")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(taskDeleteReq)))
+                                .content(objectMapper.writeValueAsString(taskDeleteReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
