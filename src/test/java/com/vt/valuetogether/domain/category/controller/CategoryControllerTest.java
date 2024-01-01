@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,10 +17,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.card.dto.response.CardInnerCategoryRes;
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryRestoreReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
+import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
@@ -167,6 +170,27 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
                                 .principal(this.mockPrincipal)
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(req)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("카테고리 삭제 테스트")
+    void category_삭제() throws Exception {
+
+        CategoryDeleteReq req = CategoryDeleteReq.builder().categoryId(TEST_CATEGORY_ID).build();
+        req.setUsername(this.mockPrincipal.getName());
+
+        CategoryDeleteRes res = new CategoryDeleteRes();
+
+        given(categoryService.deleteCategory(req)).willReturn(res);
+
+        this.mockMvc
+                .perform(
+                        delete("/api/v1/categories")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(APPLICATION_JSON)
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
