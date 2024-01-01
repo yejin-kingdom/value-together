@@ -26,26 +26,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class TeamServiceImplTest {
 
-    @InjectMocks
-    private TeamServiceImpl teamService;
+    @InjectMocks private TeamServiceImpl teamService;
 
-    @Mock
-    private TeamRepository teamRepository;
+    @Mock private TeamRepository teamRepository;
 
-    @Mock
-    private TeamRoleRepository teamRoleRepository;
+    @Mock private TeamRoleRepository teamRoleRepository;
 
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
 
     @Test
     @DisplayName("team 생성 테스트")
     void team_생성() {
         // given
-        TeamCreateReq req = TeamCreateReq.builder()
-            .teamName("testName")
-            .backgroundColor("#12345")
-            .build();
+        TeamCreateReq req =
+                TeamCreateReq.builder().teamName("testName").backgroundColor("#12345").build();
 
         req.setUsername("username");
 
@@ -61,7 +55,6 @@ class TeamServiceImplTest {
         verify(userRepository, times(1)).findByUsername(anyString());
         verify(teamRepository, times(1)).save(any(Team.class));
         verify(teamRoleRepository, times(1)).save(any(TeamRole.class));
-        Assertions.assertThat(actual).extracting("teamId")
-            .isEqualTo(TEST_TEAM.getTeamId());
-     }
+        Assertions.assertThat(actual).extracting("teamId").isEqualTo(TEST_TEAM.getTeamId());
+    }
 }
