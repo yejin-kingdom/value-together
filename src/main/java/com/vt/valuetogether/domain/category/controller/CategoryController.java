@@ -30,6 +30,13 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    @GetMapping("/teams/{teamId}/categories")
+    public RestResponse<CategoryGetResList> getAllCategories(
+            @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
+        return RestResponse.success(
+                categoryService.getAllCategories(teamId, userDetails.getUsername()));
+    }
+
     @PostMapping("/categories")
     public RestResponse<CategorySaveRes> saveCategory(
             @RequestBody CategorySaveReq categorySaveReq,
@@ -45,13 +52,6 @@ public class CategoryController {
         return RestResponse.success(categoryService.editCategory(req));
     }
 
-    @DeleteMapping("/categories")
-    public RestResponse<CategoryDeleteRes> deleteCategory(
-            @RequestBody CategoryDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
-        req.setUsername(userDetails.getUsername());
-        return RestResponse.success(categoryService.deleteCategory(req));
-    }
-
     @PatchMapping("/categories/order")
     public RestResponse<CategoryChangeSequenceRes> changeCategorySequence(
             @RequestBody CategoryChangeSequenceReq categoryChangeSequenceReq,
@@ -60,10 +60,10 @@ public class CategoryController {
         return RestResponse.success(categoryService.changeCategorySequence(categoryChangeSequenceReq));
     }
 
-    @GetMapping("/teams/{teamId}/categories")
-    public RestResponse<CategoryGetResList> getAllCategories(
-            @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
-        return RestResponse.success(
-                categoryService.getAllCategories(teamId, userDetails.getUsername()));
+    @DeleteMapping("/categories")
+    public RestResponse<CategoryDeleteRes> deleteCategory(
+            @RequestBody CategoryDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
+        return RestResponse.success(categoryService.deleteCategory(req));
     }
 }

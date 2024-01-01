@@ -38,6 +38,22 @@ public class CategoryServiceImpl implements CategoryService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
+    public CategoryGetResList getAllCategories(Long teamId, String username) {
+        User user = getUserByUsername(username);
+        Team team = teamRepository.findByTeamId(teamId);
+        TeamValidator.validate(team);
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+        List<CategoryGetRes> categoryGetReses =
+                CategoryServiceMapper.INSTANCE.toCategoryGetResList(
+                        categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, FALSE));
+        return CategoryGetResList.builder()
+                .categories(categoryGetReses)
+                .total(categoryGetReses.size())
+                .build();
+    }
+
+    @Override
     @Transactional
     public CategorySaveRes saveCategory(CategorySaveReq categorySaveReq) {
         User user = getUserByUsername(categorySaveReq.getUsername());
@@ -53,6 +69,10 @@ public class CategoryServiceImpl implements CategoryService {
                                 .isDeleted(FALSE)
                                 .team(team)
                                 .build()));
+    }
+
+    private Double getMaxSequence(Long teamId) {
+        return categoryRepository.getMaxSequence(teamId);
     }
 
     @Override
@@ -82,31 +102,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDeleteRes deleteCategory(CategoryDeleteReq req) {
-        User user = getUserByUsername(req.getUsername());
-        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
-        CategoryValidator.validate(category);
-
-        Team team = category.getTeam();
-        TeamValidator.validate(team);
-
-        TeamRoleValidator.validate(team.getTeamRoleList());
-        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
-
-        categoryRepository.save(
-                Category.builder()
-                        .categoryId(category.getCategoryId())
-                        .name(category.getName())
-                        .sequence(0.0)
-                        .team(team)
-                        .isDeleted(true)
-                        .build());
-
-        return new CategoryDeleteRes();
-    }
-
-    @Override
-    @Transactional
     public CategoryChangeSequenceRes changeCategorySequence(
             CategoryChangeSequenceReq categoryChangeSequenceReq) {
         User user = getUserByUsername(categoryChangeSequenceReq.getUsername());
@@ -132,33 +127,38 @@ public class CategoryServiceImpl implements CategoryService {
         return new CategoryChangeSequenceRes();
     }
 
+    private Double getAverageSequence(Double preSequence, Double postSequence) {
+        return (preSequence + postSequence) / 2;
+    }
+
     @Override
-    @Transactional(readOnly = true)
-    public CategoryGetResList getAllCategories(Long teamId, String username) {
-        User user = getUserByUsername(username);
-        Team team = teamRepository.findByTeamId(teamId);
+    @Transactional
+    public CategoryDeleteRes deleteCategory(CategoryDeleteReq req) {
+        User user = getUserByUsername(req.getUsername());
+        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
+        CategoryValidator.validate(category);
+
+        Team team = category.getTeam();
         TeamValidator.validate(team);
+
+        TeamRoleValidator.validate(team.getTeamRoleList());
         TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
-        List<CategoryGetRes> categoryGetReses =
-                CategoryServiceMapper.INSTANCE.toCategoryGetResList(
-                        categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(teamId, FALSE));
-        return CategoryGetResList.builder()
-                .categories(categoryGetReses)
-                .total(categoryGetReses.size())
-                .build();
+
+        categoryRepository.save(
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(0.0)
+                        .team(team)
+                        .isDeleted(true)
+                        .build());
+
+        return new CategoryDeleteRes();
     }
 
     private User getUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
         UserValidator.validate(user);
         return user;
-    }
-
-    private Double getMaxSequence(Long teamId) {
-        return categoryRepository.getMaxSequence(teamId);
-    }
-
-    private Double getAverageSequence(Double preSequence, Double postSequence) {
-        return (preSequence + postSequence) / 2;
     }
 }
