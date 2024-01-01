@@ -5,12 +5,14 @@ import static java.lang.Boolean.FALSE;
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryRestoreReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
+import com.vt.valuetogether.domain.category.dto.response.CategoryRestoreRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
@@ -146,6 +148,31 @@ public class CategoryServiceImpl implements CategoryService {
                 .categories(categoryGetReses)
                 .total(categoryGetReses.size())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public CategoryRestoreRes restoreCategory(CategoryRestoreReq req) {
+        User user = getUserByUsername(req.getUsername());
+        Category category = categoryRepository.findByCategoryId(req.getCategoryId());
+        CategoryValidator.isSoftDeleted(category);
+
+        Team team = category.getTeam();
+        TeamValidator.validate(team);
+
+        TeamRoleValidator.validate(team.getTeamRoleList());
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+
+        categoryRepository.save(
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(category.getSequence())
+                        .team(team)
+                        .isDeleted(false)
+                        .build());
+
+        return new CategoryRestoreRes();
     }
 
     private User getUserByUsername(String username) {
