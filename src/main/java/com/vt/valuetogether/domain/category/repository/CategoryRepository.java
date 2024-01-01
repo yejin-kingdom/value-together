@@ -21,7 +21,7 @@ public interface CategoryRepository {
 
     List<Category> findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(Long teamId, Boolean isDeleted);
 
-    List<Category> findByOrderByTeamTeamIdAscSequenceAsc();
+    List<Category> findByIsDeletedOrderByTeamTeamIdAscSequenceAsc(Boolean isDeleted);
 
     List<Category> saveAll(Iterable<Category> categories);
 
