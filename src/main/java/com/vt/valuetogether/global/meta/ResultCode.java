@@ -45,6 +45,7 @@ public enum ResultCode {
 
     // 카테고리 4000번대
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 4000, "존재하지 않는 카테고리 입니다."),
+    NOT_DELETED_CATEGORY(HttpStatus.BAD_REQUEST, 4001, "해당 카테고리는 삭제되지 않은 카테고리 입니다."),
 
     // 카드 5000번대
     NOT_FOUND_CARD(HttpStatus.NOT_FOUND, 5000, "카드 정보를 찾을 수 없습니다."),
