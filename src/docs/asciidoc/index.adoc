@@ -166,12 +166,12 @@ include::{snippets}/user-controller-test/update-profile-test/auto-section.adoc[]
 include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
 
 == team API
+
 include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_조회/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_삭제/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_초대/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_member_삭제/auto-section.adoc[]
-
 
 == category API
 
@@ -179,6 +179,8 @@ include::{snippets}/category-controller-test/category_저장/auto-section.adoc[]
 include::{snippets}/category-controller-test/category_순서_변경/auto-section.adoc[]
 include::{snippets}/category-controller-test/team-id_category_전체_조회/auto-section.adoc[]
 include::{snippets}/category-controller-test/category_복구/auto-section.adoc[]
+include::{snippets}/category-controller-test/category_이름_수정/auto-section.adoc[]
+include::{snippets}/category-controller-test/category_삭제/auto-section.adoc[]
 
 == card API
 
