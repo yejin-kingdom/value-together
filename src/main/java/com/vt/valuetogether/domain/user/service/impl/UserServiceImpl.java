@@ -34,20 +34,44 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
-
-    private final MailUtil mailUtil;
-
-    private final S3Util s3Util;
-
     private static final String EMAIL_AUTHENTICATION = "이메일 인증";
-
     private static final String DEFAULT_PROFILE_INTRODUCE = "자기소개를 입력해주세요.";
-
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MailUtil mailUtil;
+    private final S3Util s3Util;
     @Value("${default.image.address}")
     private String defaultProfileImageUrl;
+
+    @Override
+    public UserGetProfileRes getProfile(Long userId) {
+        User user = userRepository.findByUserId(userId);
+        UserValidator.validate(user);
+
+        return UserServiceMapper.INSTANCE.toUserGetProfileRes(user);
+    }
+
+    @Override
+    public UserSignupRes signup(UserSignupReq req) {
+        UserValidator.validate(req);
+
+        UserValidator.checkDuplicatedUsername(userRepository.existsByUsername(req.getUsername()));
+
+        checkAuthorizedEmail(req.getEmail());
+
+        userRepository.save(
+            User.builder()
+                .username(req.getUsername())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .email(req.getEmail())
+                .introduce(DEFAULT_PROFILE_INTRODUCE)
+                .profileImageUrl(defaultProfileImageUrl)
+                .provider(Provider.LOCAL)
+                .role(Role.USER)
+                .build());
+
+        return new UserSignupRes();
+    }
 
     @Override
     public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
@@ -66,34 +90,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserSignupRes signup(UserSignupReq req) {
-        UserValidator.validate(req);
-
-        UserValidator.checkDuplicatedUsername(userRepository.existsByUsername(req.getUsername()));
-
-        checkAuthorizedEmail(req.getEmail());
-
-        userRepository.save(
-                User.builder()
-                        .username(req.getUsername())
-                        .password(passwordEncoder.encode(req.getPassword()))
-                        .email(req.getEmail())
-                        .introduce(DEFAULT_PROFILE_INTRODUCE)
-                        .profileImageUrl(defaultProfileImageUrl)
-                        .provider(Provider.LOCAL)
-                        .role(Role.USER)
-                        .build());
-
-        return new UserSignupRes();
-    }
-
-    @Override
     public UserCheckDuplicateUsernameRes checkDuplicateUsername(UserCheckDuplicateUsernameReq req) {
         UserValidator.validate(req);
 
         return UserCheckDuplicateUsernameRes.builder()
-                .isDuplicated(userRepository.existsByUsername(req.getUsername()))
-                .build();
+            .isDuplicated(userRepository.existsByUsername(req.getUsername()))
+            .build();
     }
 
     @Override
@@ -105,7 +107,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile) {
+    public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req,
+        MultipartFile multipartFile) {
 
         UserValidator.validate(req);
         User savedUser = getUser(req.getPreUsername());
@@ -122,26 +125,18 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(
-                User.builder()
-                        .userId(savedUser.getUserId())
-                        .username(req.getUsername())
-                        .password(passwordEncoder.encode(req.getPassword()))
-                        .email(savedUser.getEmail())
-                        .introduce(req.getIntroduce())
-                        .profileImageUrl(imageUrl)
-                        .provider(savedUser.getProvider())
-                        .role(savedUser.getRole())
-                        .build());
+            User.builder()
+                .userId(savedUser.getUserId())
+                .username(req.getUsername())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .email(savedUser.getEmail())
+                .introduce(req.getIntroduce())
+                .profileImageUrl(imageUrl)
+                .provider(savedUser.getProvider())
+                .role(savedUser.getRole())
+                .build());
 
         return new UserUpdateProfileRes();
-    }
-
-    @Override
-    public UserGetProfileRes getProfile(Long userId) {
-        User user = userRepository.findByUserId(userId);
-        UserValidator.validate(user);
-
-        return UserServiceMapper.INSTANCE.toUserGetProfileRes(user);
     }
 
     private void checkAuthorizedEmail(String email) {
