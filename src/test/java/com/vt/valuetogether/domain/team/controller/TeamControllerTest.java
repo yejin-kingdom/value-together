@@ -14,8 +14,10 @@ import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.test.TeamTest;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +30,25 @@ import org.springframework.http.MediaType;
 public class TeamControllerTest extends BaseMvcTest implements TeamTest {
 
     @MockBean private TeamService teamService;
+
+    @Test
+    @DisplayName("팀 조회 테스트")
+    void team_조회() throws Exception {
+        // given
+        TeamGetRes res =
+                TeamGetRes.builder()
+                        .teamName(TEST_TEAM_NAME)
+                        .teamDescription(TEST_TEAM_DESCRIPTION)
+                        .backgroundColor(TEST_BACKGROUND_COLOR)
+                        .build();
+
+        given(teamService.getTeamInfo(anyLong(), anyString())).willReturn(res);
+        // when, then
+        mockMvc
+                .perform(get("/api/v1/teams/" + TEST_TEAM_ID).principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 
     @Test
     @DisplayName("팀 생성 테스트")
@@ -54,20 +75,21 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     }
 
     @Test
-    @DisplayName("팀 조회 테스트")
-    void team_조회() throws Exception {
+    @DisplayName("팀 초대 테스트")
+    void team_초대() throws Exception {
         // given
-        TeamGetRes res =
-                TeamGetRes.builder()
-                        .teamName(TEST_TEAM_NAME)
-                        .teamDescription(TEST_TEAM_DESCRIPTION)
-                        .backgroundColor(TEST_BACKGROUND_COLOR)
-                        .build();
+        TeamMemberInviteReq req = TeamMemberInviteReq.builder().build();
+        TeamMemberInviteRes res = new TeamMemberInviteRes();
 
-        given(teamService.getTeamInfo(anyLong(), anyString())).willReturn(res);
+        given(teamService.inviteMember(req)).willReturn(res);
+
         // when, then
         mockMvc
-                .perform(get("/api/v1/teams/" + TEST_TEAM_ID).principal(mockPrincipal))
+                .perform(
+                        post("/api/v1/teams/members")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
