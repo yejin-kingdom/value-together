@@ -1,5 +1,8 @@
 package com.vt.valuetogether.domain.category.service.impl;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 import com.vt.valuetogether.domain.category.entity.Category;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
 import com.vt.valuetogether.domain.category.service.CategorySchedulingService;
@@ -26,7 +29,8 @@ public class CategorySchedulingServiceImpl implements CategorySchedulingService 
     @Scheduled(cron = "0 30 0 * * ?")
     @Transactional
     public void resetSequence() {
-        List<Category> categories = categoryRepository.findByOrderByTeamTeamIdAscSequenceAsc();
+        List<Category> categories =
+                categoryRepository.findByIsDeletedOrderByTeamTeamIdAscSequenceAsc(FALSE);
         if (CollectionUtils.isEmpty(categories)) {
             return;
         }
@@ -62,6 +66,6 @@ public class CategorySchedulingServiceImpl implements CategorySchedulingService 
         ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
         LocalDateTime localDateTime =
                 dateTime.toLocalDate().minusDays(CATEGORY_RETENTION_PERIOD).atStartOfDay();
-        categoryRepository.deleteByIsDeletedAndModifiedAtBefore(true, localDateTime);
+        categoryRepository.deleteByIsDeletedAndModifiedAtBefore(TRUE, localDateTime);
     }
 }
