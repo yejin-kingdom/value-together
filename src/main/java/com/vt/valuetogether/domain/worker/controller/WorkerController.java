@@ -23,7 +23,9 @@ public class WorkerController {
     private final WorkerService workerService;
 
     @PostMapping
-    public RestResponse<WorkerAddRes> addWorker(@RequestBody WorkerAddReq req) {
+    public RestResponse<WorkerAddRes> addWorker(
+            @RequestBody WorkerAddReq req, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        req.setUsername(userDetails.getUsername());
         return RestResponse.success(workerService.addWorker(req));
     }
 

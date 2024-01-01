@@ -14,7 +14,6 @@ import com.vt.valuetogether.domain.worker.dto.response.WorkerAddRes;
 import com.vt.valuetogether.domain.worker.dto.response.WorkerDeleteRes;
 import com.vt.valuetogether.domain.worker.service.WorkerService;
 import com.vt.valuetogether.test.WorkerTest;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,10 +30,7 @@ class WorkerControllerTest extends BaseMvcTest implements WorkerTest {
     void worker_저장() throws Exception {
         // given
         WorkerAddReq workerAddReq =
-                WorkerAddReq.builder()
-                        .cardId(TEST_CARD_ID)
-                        .userIds(List.of(TEST_USER_ID, TEST_ANOTHER_USER_ID))
-                        .build();
+                WorkerAddReq.builder().cardId(TEST_CARD_ID).addUsername(TEST_ANOTHER_USER_NAME).build();
         WorkerAddRes workerAddRes = new WorkerAddRes();
 
         // when - then
@@ -43,7 +39,8 @@ class WorkerControllerTest extends BaseMvcTest implements WorkerTest {
                 .perform(
                         post("/api/v1/workers")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(workerAddReq)))
+                                .content(objectMapper.writeValueAsString(workerAddReq))
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

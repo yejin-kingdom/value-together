@@ -5,8 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.vt.valuetogether.domain.card.entity.Card;
 import com.vt.valuetogether.domain.card.repository.CardRepository;
 import com.vt.valuetogether.domain.category.repository.CategoryRepository;
+import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
-import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
 import com.vt.valuetogether.domain.worker.entity.Worker;
 import com.vt.valuetogether.test.WorkerTest;
@@ -27,53 +28,59 @@ class WorkerRepositoryTest implements WorkerTest {
     @Autowired private WorkerRepository workerRepository;
     @Autowired private CategoryRepository categoryRepository;
     @Autowired private TeamRepository teamRepository;
+    @Autowired private TeamRoleRepository teamRoleRepository;
 
     @Test
     @DisplayName("worker 저장 테스트")
     void worker_저장() {
         // given
-        User savedUser = userRepository.save(User.builder().build());
+        userRepository.save(TEST_USER);
         teamRepository.save(TEST_TEAM);
+        TeamRole savedTeamRole = teamRoleRepository.save(TEST_TEAM_ROLE);
         categoryRepository.save(TEST_CATEGORY);
         cardRepository.save(TEST_CARD);
 
         // when
-        Worker worker = workerRepository.save(Worker.builder().user(savedUser).card(TEST_CARD).build());
+        Worker worker =
+                workerRepository.save(Worker.builder().teamRole(savedTeamRole).card(TEST_CARD).build());
 
         // then
-        assertThat(worker.getUser().getUserId()).isEqualTo(savedUser.getUserId());
+        assertThat(worker.getTeamRole().getTeamRoleId()).isEqualTo(savedTeamRole.getTeamRoleId());
     }
 
     @Test
     @DisplayName("id로 worker 조회 테스트")
     void id_worker_조회() {
         // given
-        User savedUser = userRepository.save(TEST_USER);
+        userRepository.save(TEST_USER);
         teamRepository.save(TEST_TEAM);
+        TeamRole savedTeamRole = teamRoleRepository.save(TEST_TEAM_ROLE);
         categoryRepository.save(TEST_CATEGORY);
         Card savedCard = cardRepository.save(TEST_CARD);
         Worker savedWorker = workerRepository.save(TEST_WORKER);
 
         // when
-        Worker worker = workerRepository.findByUserAndCard(savedUser, savedCard);
+        Worker worker = workerRepository.findByTeamRoleAndCard(savedTeamRole, savedCard);
 
         // then
-        assertThat(worker.getUser().getUserId()).isEqualTo(savedWorker.getUser().getUserId());
+        assertThat(worker.getTeamRole().getTeamRoleId())
+                .isEqualTo(savedWorker.getTeamRole().getTeamRoleId());
     }
 
     @Test
     @DisplayName("worker 삭제 테스트")
     void worker_삭제() {
         // given
-        User user = userRepository.save(User.builder().build());
+        userRepository.save(TEST_USER);
         teamRepository.save(TEST_TEAM);
+        TeamRole teamRole = teamRoleRepository.save(TEST_TEAM_ROLE);
         categoryRepository.save(TEST_CATEGORY);
         Card card = cardRepository.save(Card.builder().build());
-        Worker worker = workerRepository.save(Worker.builder().user(user).card(card).build());
+        Worker worker = workerRepository.save(Worker.builder().teamRole(teamRole).card(card).build());
 
         // when
         workerRepository.delete(worker);
-        Worker findWorker = workerRepository.findByUserAndCard(user, card);
+        Worker findWorker = workerRepository.findByTeamRoleAndCard(teamRole, card);
 
         // then
         assertThat(findWorker).isNull();
