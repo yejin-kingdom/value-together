@@ -158,7 +158,7 @@ class UserControllerTest extends BaseMvcTest implements UserTest {
 
         UserUpdateProfileReq request =
                 UserUpdateProfileReq.builder()
-                        .username(TEST_ANOTHER_USER_NAME)
+                        .username(TEST_USER_NAME)
                         .password(TEST_USER_PASSWORD)
                         .introduce(TEST_USER_INTRODUCE)
                         .build();
