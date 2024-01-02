@@ -156,3 +156,7 @@ TODO: API 명세 추가
 
 🔎 댓글 삭제
 - `팀장 및 팀원`은 댓글을 삭제할 수 있다.
+
+## 테스트
+### Jacoco 테스트 문서
+<img src="https://file.notion.so/f/f/83c75a39-3aba-4ba4-a792-7aefe4b07895/ff24bfc2-800f-408f-ab4c-c566dc3be595/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7_2024-01-02_%EC%98%A4%ED%9B%84_7.30.05.png?id=7d50d89d-fd3f-434c-a890-d807195aee7c&table=block&spaceId=83c75a39-3aba-4ba4-a792-7aefe4b07895&expirationTimestamp=1704283200000&signature=kvWDTRa_hRDhZPuMblDF6EHvuF4EPAMhGsO5STlGAdA&downloadName=%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7+2024-01-02+%EC%98%A4%ED%9B%84+7.30.05.png" width="700px" height="1000px">
