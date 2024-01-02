@@ -6,9 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
@@ -72,7 +71,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Test
     @DisplayName("category 저장 테스트")
     void category_저장() {
-        // given
+        // when
         Long teamId = 1L;
         String name = "category";
         CategorySaveReq categorySaveReq = CategorySaveReq.builder().teamId(teamId).name(name).build();
@@ -94,7 +93,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Test
     @DisplayName("category 순서 변경 테스트")
     void category_순서_변경() {
-        // given
+        // when
         Long categoryId = 1L;
         Double preSequence = 2.0;
         Double postSequence = 3.0;
@@ -120,7 +119,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Test
     @DisplayName("teamId로 category 전체 조회 테스트")
     void teamId_category_전체_조회() {
-        // given
+        // when
         when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
         when(teamRepository.findByTeamId(any())).thenReturn(team);
         when(categoryRepository.findByTeamTeamIdAndIsDeletedOrderBySequenceAsc(any(), any()))
@@ -138,7 +137,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Test
     @DisplayName("삭제된 카테고리 복구 테스트")
     void category_복구() {
-        // given
+        // when
         CategoryRestoreReq req =
                 CategoryRestoreReq.builder()
                         .categoryId(category.getCategoryId())
@@ -169,7 +168,7 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Test
     @DisplayName("카테고리 이름 변경 테스트")
     void category_이름_변경() throws Exception {
-        // given
+        // when
         CategoryEditReq req =
                 CategoryEditReq.builder()
                         .categoryId(TEST_CATEGORY_ID)
@@ -185,8 +184,8 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
                         .team(category.getTeam())
                         .build();
 
-        given(userRepository.findByUsername(any())).willReturn(TEST_USER);
-        given(categoryRepository.findByCategoryId(anyLong())).willReturn(category);
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(categoryRepository.findByCategoryId(anyLong())).thenReturn(category);
         when(categoryRepository.save(any(Category.class))).thenReturn(renamedCategory);
 
         // when
@@ -200,11 +199,10 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Test
     @DisplayName("카테고리 삭제 테스트")
     void category_삭제() throws Exception {
-        // given
+        // when
         CategoryDeleteReq req = CategoryDeleteReq.builder().categoryId(TEST_CATEGORY_ID).build();
-        req.setUsername(TEST_USER_NAME);
-        given(userRepository.findByUsername(any())).willReturn(TEST_USER);
-        given(categoryRepository.findByCategoryId(anyLong())).willReturn(category);
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(categoryRepository.findByCategoryId(anyLong())).thenReturn(category);
 
         // when
         categoryService.deleteCategory(req);

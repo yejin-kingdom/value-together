@@ -4,8 +4,7 @@ import static org.apache.commons.lang3.BooleanUtils.FALSE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -162,7 +161,7 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
 
         CategoryEditRes res = new CategoryEditRes();
 
-        given(categoryService.editCategory(any(CategoryEditReq.class))).willReturn(res);
+        when(categoryService.editCategory(any(CategoryEditReq.class))).thenReturn(res);
 
         this.mockMvc
                 .perform(
@@ -183,7 +182,7 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
 
         CategoryDeleteRes res = new CategoryDeleteRes();
 
-        given(categoryService.deleteCategory(any(CategoryDeleteReq.class))).willReturn(res);
+        when(categoryService.deleteCategory(any(CategoryDeleteReq.class))).thenReturn(res);
 
         this.mockMvc
                 .perform(
