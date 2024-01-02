@@ -127,12 +127,12 @@ class TeamServiceImplTest implements TeamTest {
     @DisplayName("team 수정 테스트")
     void team_수정() {
         TeamEditReq req =
-            TeamEditReq.builder()
-                .teamId(TEST_TEAM_ID)
-                .teamName(TEST_EDIT_TEAM_NAME)
-                .teamDescription(TEST_EDIT_TEAM_DESCRIPTION)
-                .backgroundColor("#12345")
-                .build();
+                TeamEditReq.builder()
+                        .teamId(TEST_TEAM_ID)
+                        .teamName(TEST_EDIT_TEAM_NAME)
+                        .teamDescription(TEST_EDIT_TEAM_DESCRIPTION)
+                        .backgroundColor("#12345")
+                        .build();
 
         given(teamRepository.findByTeamName(anyString())).willReturn(null);
         given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
@@ -141,9 +141,10 @@ class TeamServiceImplTest implements TeamTest {
         teamService.editTeam(req);
 
         verify(userRepository, times(1)).findByUsername(any());
-        verify(teamRepository,times(1)).findByTeamId(anyLong());
+        verify(teamRepository, times(1)).findByTeamId(anyLong());
         verify(teamRepository, times(1)).save(any(Team.class));
     }
+
     @Test
     @DisplayName("team 삭제 테스트")
     void team_삭제() {
