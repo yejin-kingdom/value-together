@@ -5,12 +5,14 @@ import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamRestoreReq;
 import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
 import com.vt.valuetogether.domain.team.entity.Role;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
@@ -169,6 +171,33 @@ public class TeamServiceImpl implements TeamService {
                         });
 
         return new TeamEditRes();
+    }
+
+    @Override
+    @Transactional
+    public TeamRestoreRes restoreTeam(TeamRestoreReq req) {
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        Team team = teamRepository.findByTeamId(req.getTeamId());
+        TeamValidator.isSoftDeleted(team);
+
+        TeamRole teamRole =
+                teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
+
+        TeamRoleValidator.validate(teamRole);
+        TeamRoleValidator.checkIsTeamLeader(teamRole);
+
+        teamRepository.save(
+                Team.builder()
+                        .teamId(req.getTeamId())
+                        .teamName(team.getTeamName())
+                        .teamDescription(team.getTeamDescription())
+                        .backgroundColor(team.getBackgroundColor())
+                        .isDeleted(false)
+                        .build());
+
+        return new TeamRestoreRes();
     }
 
     @Transactional
