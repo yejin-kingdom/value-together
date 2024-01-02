@@ -183,7 +183,7 @@ class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
 
         CategoryDeleteRes res = new CategoryDeleteRes();
 
-        given(categoryService.deleteCategory(req)).willReturn(res);
+        given(categoryService.deleteCategory(any(CategoryDeleteReq.class))).willReturn(res);
 
         this.mockMvc
                 .perform(
