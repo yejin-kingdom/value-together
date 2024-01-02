@@ -263,8 +263,7 @@ class UserServiceImplTest implements UserTest {
         // given
         UserUpdateProfileReq req =
                 UserUpdateProfileReq.builder()
-                        .preUsername(TEST_USER_NAME)
-                        .username(TEST_ANOTHER_USER_NAME)
+                        .username(TEST_USER_NAME)
                         .password(TEST_ANOTHER_USER_PASSWORD)
                         .introduce(TEST_ANOTHER_USER_INTRODUCE)
                         .build();
@@ -279,7 +278,7 @@ class UserServiceImplTest implements UserTest {
         User UPDATED_USER =
                 User.builder()
                         .userId(TEST_USER_ID)
-                        .username(TEST_ANOTHER_USER_NAME)
+                        .username(TEST_USER_NAME)
                         .password(TEST_ANOTHER_USER_PASSWORD)
                         .email(TEST_USER_EMAIL)
                         .introduce(TEST_ANOTHER_USER_INTRODUCE)
@@ -287,7 +286,7 @@ class UserServiceImplTest implements UserTest {
                         .role(Role.USER)
                         .build();
 
-        given(userRepository.findByUsername(req.getPreUsername())).willReturn(TEST_USER);
+        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_USER);
         given(passwordEncoder.encode(req.getPassword())).willReturn(req.getPassword());
         given(s3Util.uploadFile(multipartFile, FilePath.PROFILE))
                 .willReturn(TEST_ANOTHER_USER_PROFILE_URL);
@@ -298,7 +297,6 @@ class UserServiceImplTest implements UserTest {
 
         // then
         verify(userRepository).save(argumentCaptor.capture());
-        assertEquals(TEST_ANOTHER_USER_NAME, argumentCaptor.getValue().getUsername());
         assertEquals(TEST_ANOTHER_USER_PASSWORD, argumentCaptor.getValue().getPassword());
         assertEquals(TEST_ANOTHER_USER_INTRODUCE, argumentCaptor.getValue().getIntroduce());
         assertEquals(TEST_ANOTHER_USER_PROFILE_URL, argumentCaptor.getValue().getProfileImageUrl());
