@@ -226,7 +226,31 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public TeamRestoreRes restoreTeam(TeamRestoreReq req) {
-        return null;
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        Team team = teamRepository.findByTeamId(req.getTeamId());
+        TeamValidator.isSoftDeleted(team);
+
+        checkIsTeamLeader(team, user);
+
+        teamRepository.save(
+            Team.builder()
+                .teamId(req.getTeamId())
+                .teamName(team.getTeamName())
+                .teamDescription(team.getTeamDescription())
+                .backgroundColor(team.getBackgroundColor())
+                .isDeleted(false)
+                .build());
+
+        teamRoleRepository.save(
+            TeamRole.builder()
+                .team(team)
+                .user(user)
+                .role(Role.LEADER)
+                .build());
+
+        return new TeamRestoreRes();
     }
 
     private void sendInviteMail(List<User> matchingMemberList, Long teamId) {
@@ -239,5 +263,11 @@ public class TeamServiceImpl implements TeamService {
         TeamRole teamRole = teamRoleRepository.findByUserUsernameAndTeamTeamId(username, teamId);
         TeamRoleValidator.validate(teamRole);
         return teamRole;
+    }
+
+    private void checkIsTeamLeader(Team team, User user){
+        TeamRole teamRole = teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
+        TeamRoleValidator.validate(teamRole);
+        TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
     }
 }
