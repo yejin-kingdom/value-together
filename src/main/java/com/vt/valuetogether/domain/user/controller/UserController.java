@@ -40,6 +40,12 @@ public class UserController {
         return RestResponse.success(userService.getProfile(userId));
     }
 
+    @GetMapping("/signup/email/check")
+    public RestResponse<UserConfirmEmailRes> confirmEmail(
+        @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
+        return RestResponse.success(userService.confirmEmail(email, code));
+    }
+
     @PostMapping("/signup")
     public RestResponse<UserSignupRes> signup(@RequestBody UserSignupReq req) {
         return RestResponse.success(userService.signup(req));
@@ -48,12 +54,6 @@ public class UserController {
     @PostMapping("/signup/email")
     public RestResponse<UserVerifyEmailRes> sendEmail(@RequestBody UserVerifyEmailReq req) {
         return RestResponse.success(userService.sendEmail(req));
-    }
-
-    @GetMapping("/signup/email/check")
-    public RestResponse<UserConfirmEmailRes> confirmEmail(
-            @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
-        return RestResponse.success(userService.confirmEmail(email, code));
     }
 
     @PostMapping("/username")
