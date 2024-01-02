@@ -42,6 +42,12 @@ public class TeamValidator {
         }
     }
 
+    public static void checkIsDuplicateTeamName(Team team) {
+        if (!checkIsNull(team)) {
+            throw new GlobalException(DUPLICATED_TEAM_NAME);
+        }
+    }
+
     private static boolean checkIsNull(Team team) {
         return team == null;
     }
@@ -53,11 +59,4 @@ public class TeamValidator {
     private static boolean checkIsDeleted(Team team){
         return team.isDeleted();
     }
-
-    public static void checkIsDuplicateTeamName(Team team) {
-        if (!checkIsNull(team)) {
-            throw new GlobalException(DUPLICATED_TEAM_NAME);
-        }
-    }
-
 }
