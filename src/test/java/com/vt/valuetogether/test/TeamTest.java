@@ -6,8 +6,12 @@ public interface TeamTest {
 
     Long TEST_TEAM_ID = 1L;
     String TEST_TEAM_NAME = "team";
+    String TEST_EDIT_TEAM_NAME = "teamEdit";
     String TEST_TEAM_DESCRIPTION = "desc";
     String TEST_BACKGROUND_COLOR = "#AA1234";
+    String TEST_EDIT_TEAM_DESCRIPTION = "asc";
+    String TEST_EDIT_BACKGROUND_COLOR = "#DD1234";
+
     boolean TEST_TEAM_IS_DELETED = false;
 
     Team TEST_TEAM =
@@ -16,6 +20,15 @@ public interface TeamTest {
                     .teamName(TEST_TEAM_NAME)
                     .teamDescription(TEST_TEAM_DESCRIPTION)
                     .backgroundColor(TEST_BACKGROUND_COLOR)
+                    .isDeleted(TEST_TEAM_IS_DELETED)
+                    .build();
+
+    Team TEST_EDIT_TEAM =
+            Team.builder()
+                    .teamId(TEST_TEAM_ID)
+                    .teamName(TEST_EDIT_TEAM_NAME)
+                    .teamDescription(TEST_EDIT_TEAM_DESCRIPTION)
+                    .backgroundColor(TEST_EDIT_BACKGROUND_COLOR)
                     .isDeleted(TEST_TEAM_IS_DELETED)
                     .build();
 }
