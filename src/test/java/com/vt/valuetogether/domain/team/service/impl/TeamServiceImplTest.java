@@ -134,7 +134,7 @@ class TeamServiceImplTest implements TeamTest {
                         .teamId(TEST_TEAM_ID)
                         .teamName(TEST_EDIT_TEAM_NAME)
                         .teamDescription(TEST_EDIT_TEAM_DESCRIPTION)
-                        .backgroundColor("#12345")
+                        .backgroundColor(TEST_BACKGROUND_COLOR)
                         .build();
 
         given(teamRepository.findByTeamName(anyString())).willReturn(null);
