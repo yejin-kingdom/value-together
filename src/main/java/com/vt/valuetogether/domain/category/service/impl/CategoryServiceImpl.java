@@ -138,7 +138,7 @@ public class CategoryServiceImpl implements CategoryService {
                 Category.builder()
                         .categoryId(category.getCategoryId())
                         .name(category.getName())
-                        .sequence(category.getSequence())
+                        .sequence(getMaxSequence(category.getTeam().getTeamId()))
                         .team(category.getTeam())
                         .isDeleted(false)
                         .build());
