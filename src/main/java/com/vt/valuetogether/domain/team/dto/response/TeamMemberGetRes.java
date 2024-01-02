@@ -1,4 +1,4 @@
-package com.vt.valuetogether.domain.team.dto.reponse;
+package com.vt.valuetogether.domain.team.dto.response;
 
 import com.vt.valuetogether.domain.team.entity.Role;
 import lombok.AccessLevel;

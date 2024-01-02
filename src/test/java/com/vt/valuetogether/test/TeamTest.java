@@ -8,9 +8,10 @@ public interface TeamTest {
     String TEST_TEAM_NAME = "team";
     String TEST_EDIT_TEAM_NAME = "teamEdit";
     String TEST_TEAM_DESCRIPTION = "desc";
+    String TEST_BACKGROUND_COLOR = "#AA1234";
     String TEST_EDIT_TEAM_DESCRIPTION = "asc";
-    String TEST_BACKGROUND_COLOR = "#FFFFFF";
-    String TEST_EDIT_BACKGROUND_COLOR = "#DDDDDD";
+    String TEST_EDIT_BACKGROUND_COLOR = "#DD1234";
+
     boolean TEST_TEAM_IS_DELETED = false;
 
     Team TEST_TEAM =
