@@ -232,23 +232,26 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.isSoftDeleted(team);
 
-        checkIsTeamLeader(team, user);
-
         teamRepository.save(
-            Team.builder()
-                .teamId(req.getTeamId())
-                .teamName(team.getTeamName())
-                .teamDescription(team.getTeamDescription())
-                .backgroundColor(team.getBackgroundColor())
-                .isDeleted(false)
-                .build());
+                Team.builder()
+                        .teamId(req.getTeamId())
+                        .teamName(team.getTeamName())
+                        .teamDescription(team.getTeamDescription())
+                        .backgroundColor(team.getBackgroundColor())
+                        .isDeleted(false)
+                        .build());
 
+        TeamRole teamRole =
+                teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
+
+        TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
         teamRoleRepository.save(
-            TeamRole.builder()
-                .team(team)
-                .user(user)
-                .role(Role.LEADER)
-                .build());
+                TeamRole.builder()
+                        .teamRoleId(teamRole.getTeamRoleId())
+                        .team(team)
+                        .user(user)
+                        .role(Role.LEADER)
+                        .build());
 
         return new TeamRestoreRes();
     }
@@ -265,8 +268,8 @@ public class TeamServiceImpl implements TeamService {
         return teamRole;
     }
 
-    private void checkIsTeamLeader(Team team, User user){
-        TeamRole teamRole = teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
+    private void checkIsTeamLeader(TeamRole teamRole, User user) {
+
         TeamRoleValidator.validate(teamRole);
         TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
     }

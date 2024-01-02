@@ -34,10 +34,11 @@ public class TeamValidator {
         }
     }
 
-    public static void isSoftDeleted(Team team){
-        if(checkIsNull(team)){
+    public static void isSoftDeleted(Team team) {
+        if (checkIsNull(team)) {
             throw new GlobalException(NOT_FOUND_TEAM);
-        } if(!checkIsDeleted(team)){
+        }
+        if (!checkIsDeleted(team)) {
             throw new GlobalException(NOT_DELETED_TEAM);
         }
     }
@@ -56,7 +57,7 @@ public class TeamValidator {
         return Pattern.matches(TEAM_BACKGROUND_COLOR_REGEX, backgroundColor);
     }
 
-    private static boolean checkIsDeleted(Team team){
+    private static boolean checkIsDeleted(Team team) {
         return team.isDeleted();
     }
 }
