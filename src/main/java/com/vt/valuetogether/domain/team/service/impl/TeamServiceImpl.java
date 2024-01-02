@@ -182,26 +182,19 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.isSoftDeleted(team);
 
-        teamRepository.save(
-                Team.builder()
-                        .teamId(req.getTeamId())
-                        .teamName(team.getTeamName())
-                        .teamDescription(team.getTeamDescription())
-                        .backgroundColor(team.getBackgroundColor())
-                        .isDeleted(false)
-                        .build());
-
         TeamRole teamRole =
                 teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
 
         TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
-        teamRoleRepository.save(
-                TeamRole.builder()
-                        .teamRoleId(teamRole.getTeamRoleId())
-                        .team(team)
-                        .user(user)
-                        .role(Role.LEADER)
-                        .build());
+
+        teamRepository.save(
+            Team.builder()
+                .teamId(req.getTeamId())
+                .teamName(team.getTeamName())
+                .teamDescription(team.getTeamDescription())
+                .backgroundColor(team.getBackgroundColor())
+                .isDeleted(false)
+                .build());
 
         return new TeamRestoreRes();
     }
