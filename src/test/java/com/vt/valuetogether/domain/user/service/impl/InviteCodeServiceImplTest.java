@@ -52,4 +52,16 @@ class InviteCodeServiceImplTest implements InviteCodeTest {
         assertThat(inviteCode.getTeamId()).isEqualTo(TEST_TEAM_ID);
         verify(inviteRepository).save(any());
     }
+
+    @Test
+    @DisplayName("inviteCode 삭제 테스트")
+    void invite_code_삭제() {
+        // given
+
+        // when
+        inviteCodeService.deleteById(TEST_INVITE_CODE_CODE);
+
+        // then
+        verify(inviteRepository).deleteById(any());
+    }
 }
