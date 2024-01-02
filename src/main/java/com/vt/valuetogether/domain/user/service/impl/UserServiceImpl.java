@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
     public UserUpdateProfileRes updateProfile(UserUpdateProfileReq req, MultipartFile multipartFile) {
 
         UserValidator.validate(req);
-        User savedUser = getUser(req.getPreUsername());
+        User savedUser = getUser(req.getUsername());
 
         String imageUrl = savedUser.getProfileImageUrl();
         if (!imageUrl.equals(defaultProfileImageUrl)) {
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(
                 User.builder()
                         .userId(savedUser.getUserId())
-                        .username(req.getUsername())
+                        .username(savedUser.getUsername())
                         .password(passwordEncoder.encode(req.getPassword()))
                         .email(savedUser.getEmail())
                         .introduce(req.getIntroduce())
