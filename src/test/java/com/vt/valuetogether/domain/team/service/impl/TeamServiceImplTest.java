@@ -8,8 +8,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;

@@ -11,11 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.vt.valuetogether.domain.BaseMvcTest;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberDeleteRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
