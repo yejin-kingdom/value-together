@@ -10,6 +10,7 @@ import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberConfirmEmailRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
@@ -25,7 +26,7 @@ public interface TeamService {
 
     TeamMemberDeleteRes deleteMember(TeamMemberDeleteReq req);
 
-    TeamMemberInviteRes confirmEmail(String email, String code);
+    TeamMemberConfirmEmailRes confirmEmail(String email, String code);
 
     TeamGetRes getTeamInfo(Long teamId, String username);
 
