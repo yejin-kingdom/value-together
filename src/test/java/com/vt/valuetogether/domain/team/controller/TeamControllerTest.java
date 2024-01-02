@@ -17,12 +17,14 @@ import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamRestoreReq;
 import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.test.TeamTest;
 import java.util.List;
@@ -164,6 +166,26 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
         mockMvc
                 .perform(
                         delete("/api/v1/teams/members")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("팀 복구 테스트")
+    void team_복구() throws Exception {
+        TeamRestoreReq req =
+                TeamRestoreReq.builder().teamId(TEST_TEAM_ID).username(TEST_USER_NAME).build();
+
+        TeamRestoreRes res = new TeamRestoreRes();
+
+        given(teamService.restoreTeam(any(TeamRestoreReq.class))).willReturn(res);
+
+        mockMvc
+                .perform(
+                        patch("/api/v1/teams/restore")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
