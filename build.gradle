@@ -4,6 +4,35 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
     id 'com.diffplug.spotless' version '6.11.0'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'jacoco'
+}
+
+jacocoTestReport {
+    reports {
+        html.required = true
+        html.destination file("jacoco/jacocoHtml")
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            // 'element'가 없으면 프로젝트의 전체 파일을 합친 값을 기준으로 한다.
+            limit {
+                // 'counter'를 지정하지 않으면 default는 'INSTRUCTION'
+                // 'value'를 지정하지 않으면 default는 'COVEREDRATIO'
+                minimum = 0.30
+            }
+        }
+
+        rule {
+            // 룰을 간단히 켜고 끌 수 있다.
+            enabled = true
+
+            // 룰을 체크할 단위는 클래스 단위
+            element = 'CLASS'
+        }
+    }
 }
 
 group = 'com.vt'
