@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -25,6 +26,9 @@ import org.springframework.stereotype.Service;
 public class OAuth2Service extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+
+    @Value("${default.image.address}")
+    private String defaultProfileImageUrl;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -75,7 +79,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
                 User.builder()
                         .username(makeRandomName())
                         .email(oAuth2LoginReq.getEmail())
-                        .profileImageUrl(oAuth2LoginReq.getImageUrl())
+                        .profileImageUrl(defaultProfileImageUrl)
                         .oauthId(oAuth2LoginReq.getOauthId())
                         .provider(oAuth2LoginReq.getProvider())
                         .role(Role.USER)
