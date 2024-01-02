@@ -12,14 +12,12 @@ public class OAuth2LoginReq {
 
     private String oauthId;
     private String email;
-    private String imageUrl;
     private Provider provider;
 
     @Builder
-    private OAuth2LoginReq(String oauthId, String email, String imageUrl, Provider provider) {
+    private OAuth2LoginReq(String oauthId, String email, Provider provider) {
         this.oauthId = oauthId;
         this.email = email;
-        this.imageUrl = imageUrl;
         this.provider = provider;
     }
 }

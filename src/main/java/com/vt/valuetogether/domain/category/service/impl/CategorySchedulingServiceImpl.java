@@ -26,8 +26,9 @@ public class CategorySchedulingServiceImpl implements CategorySchedulingService 
     private final double ADD_SEQUENCE = 1.0;
     private final long CATEGORY_RETENTION_PERIOD = 90L;
 
-    @Scheduled(cron = "0 30 0 * * ?")
+    @Override
     @Transactional
+    @Scheduled(cron = "0 30 0 * * ?")
     public void resetSequence() {
         List<Category> categories =
                 categoryRepository.findByIsDeletedOrderByTeamTeamIdAscSequenceAsc(FALSE);
@@ -60,8 +61,9 @@ public class CategorySchedulingServiceImpl implements CategorySchedulingService 
         return sequence + ADD_SEQUENCE;
     }
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Override
     @Transactional
+    @Scheduled(cron = "0 0 1 * * ?")
     public void deleteAllCategory() {
         ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Asia/Seoul"));
         LocalDateTime localDateTime =
