@@ -10,6 +10,7 @@ import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberConfirmEmailRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
@@ -42,7 +43,7 @@ public class TeamController {
     }
 
     @GetMapping("/members/email")
-    public RestResponse<TeamMemberInviteRes> confirmEmail(
+    public RestResponse<TeamMemberConfirmEmailRes> confirmEmail(
             @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
         return RestResponse.success(teamService.confirmEmail(email, code));
     }

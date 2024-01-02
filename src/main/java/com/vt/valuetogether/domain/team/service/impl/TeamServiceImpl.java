@@ -10,6 +10,7 @@ import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberConfirmEmailRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
@@ -66,7 +67,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamMemberInviteRes confirmEmail(String email, String code) {
+    public TeamMemberConfirmEmailRes confirmEmail(String email, String code) {
         InviteCode inviteCode = inviteRepository.findById(code);
 
         mailUtil.checkInviteCode(inviteCode.getCode(), code);
@@ -79,7 +80,7 @@ public class TeamServiceImpl implements TeamService {
         teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
         inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
 
-        return new TeamMemberInviteRes();
+        return new TeamMemberConfirmEmailRes();
     }
 
     @Override
