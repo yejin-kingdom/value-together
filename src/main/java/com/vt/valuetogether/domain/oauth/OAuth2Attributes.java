@@ -10,18 +10,17 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum OAuth2Attributes {
-    GITHUB("GITHUB") {
+    GITHUB("GITHUB") { // image = avatar_url
         @Override
         public OAuth2LoginReq of(Map<String, Object> attributes) {
             return OAuth2LoginReq.builder()
                     .oauthId(attributes.get("id").toString())
                     .email((String) attributes.get("email"))
-                    .imageUrl((String) attributes.get("avatar_url"))
                     .provider(Provider.GITHUB)
                     .build();
         }
     },
-    NAVER("NAVER") {
+    NAVER("NAVER") {  // image = profile_image
         @Override
         @SuppressWarnings("unchecked")
         public OAuth2LoginReq of(Map<String, Object> attributes) {
@@ -29,18 +28,16 @@ public enum OAuth2Attributes {
             return OAuth2LoginReq.builder()
                     .oauthId((String) response.get("id"))
                     .email((String) response.get("email"))
-                    .imageUrl((String) response.get("profile_image"))
                     .provider(Provider.NAVER)
                     .build();
         }
     },
-    GOOGLE("GOOGLE") {
+    GOOGLE("GOOGLE") {  // image = picture
         @Override
         public OAuth2LoginReq of(Map<String, Object> attributes) {
             return OAuth2LoginReq.builder()
                     .oauthId((String) attributes.get("sub"))
                     .email((String) attributes.get("email"))
-                    .imageUrl((String) attributes.get("picture"))
                     .provider(Provider.GOOGLE)
                     .build();
         }
