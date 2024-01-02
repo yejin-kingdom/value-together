@@ -1,8 +1,8 @@
 package com.vt.valuetogether.domain.team.service;
 
-import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberGetRes;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
 import org.mapstruct.Mapper;

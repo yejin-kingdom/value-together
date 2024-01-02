@@ -53,12 +53,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserConfirmEmailRes confirmEmail(String email, String code) {
+        mailUtil.checkCode(email, code);
+
+        return UserConfirmEmailRes.builder().email(email).build();
+    }
+
+    @Override
     public UserSignupRes signup(UserSignupReq req) {
         UserValidator.validate(req);
 
         UserValidator.checkDuplicatedUsername(userRepository.existsByUsername(req.getUsername()));
 
         checkAuthorizedEmail(req.getEmail());
+        UserValidator.checkDuplicatedEmail(
+                userRepository.findByEmailAndProvider(req.getEmail(), Provider.LOCAL));
 
         userRepository.save(
                 User.builder()
@@ -81,13 +90,6 @@ public class UserServiceImpl implements UserService {
         mailUtil.sendMessage(req.getEmail(), EMAIL_AUTHENTICATION);
 
         return new UserVerifyEmailRes();
-    }
-
-    @Override
-    public UserConfirmEmailRes confirmEmail(String email, String code) {
-        mailUtil.checkCode(email, code);
-
-        return UserConfirmEmailRes.builder().email(email).build();
     }
 
     @Override

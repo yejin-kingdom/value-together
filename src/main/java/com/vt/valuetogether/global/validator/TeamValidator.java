@@ -11,7 +11,8 @@ import com.vt.valuetogether.global.exception.GlobalException;
 import java.util.regex.Pattern;
 
 public class TeamValidator {
-    private static final String TEAM_BACKGROUND_COLOR_REGEX = "^#[0-9]{5}$";
+    private static final String TEAM_BACKGROUND_COLOR_REGEX =
+            "^\\#(([0-9a-fA-F]){3}|([0-9a-fA-F]){6}|([0-9a-fA-F]){8})$";
 
     public static void validate(Team team) {
         if (checkIsNull(team) || team.isDeleted()) {

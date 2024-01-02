@@ -1,16 +1,16 @@
 package com.vt.valuetogether.domain.team.service.impl;
 
-import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberDeleteRes;
-import com.vt.valuetogether.domain.team.dto.reponse.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
 import com.vt.valuetogether.domain.team.entity.Role;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
@@ -50,6 +50,36 @@ public class TeamServiceImpl implements TeamService {
     private final InviteRepository inviteRepository;
     private final InviteCodeService inviteCodeService;
 
+    @Transactional
+    @Override
+    public TeamGetRes getTeamInfo(Long teamId, String username) {
+        User user = userRepository.findByUsername(username);
+        UserValidator.validate(user);
+
+        Team team = teamRepository.findByTeamId(teamId);
+        TeamValidator.validate(team);
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
+
+        return TeamServiceMapper.INSTANCE.toTeamGetRes(team);
+    }
+
+    @Override
+    public TeamMemberInviteRes confirmEmail(String email, String code) {
+        InviteCode inviteCode = inviteRepository.findById(code);
+
+        mailUtil.checkInviteCode(inviteCode.getCode(), code);
+        Team team = teamRepository.findByTeamId(inviteCode.getTeamId());
+        TeamValidator.validate(team);
+
+        User user = userRepository.findByUserId(inviteCode.getUserId());
+        UserValidator.validate(user);
+
+        teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
+        inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
+
+        return new TeamMemberInviteRes();
+    }
+
     @Override
     public TeamCreateRes createTeam(TeamCreateReq req) {
         TeamValidator.validate(req);
@@ -76,35 +106,34 @@ public class TeamServiceImpl implements TeamService {
         return TeamServiceMapper.INSTANCE.toTeamCreateRes(saveTeam);
     }
 
-    @Transactional
     @Override
-    public TeamDeleteRes deleteTeam(TeamDeleteReq req) {
-        User user = userRepository.findByUsername(req.getUsername());
-        UserValidator.validate(user);
-
+    @Transactional
+    public TeamMemberInviteRes inviteMember(TeamMemberInviteReq req) {
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.validate(team);
 
         List<TeamRole> teamRoleList = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
         TeamRoleValidator.validate(teamRoleList);
+        Map<Long, TeamRole> teamRoleByUserId =
+                teamRoleList.stream()
+                        .collect(
+                                Collectors.toMap(teamRole -> teamRole.getUser().getUserId(), Function.identity()));
 
-        team.getTeamRoleList().stream()
-                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
-                .findAny()
-                .ifPresentOrElse(
-                        t ->
-                                teamRepository.save(
-                                        Team.builder()
-                                                .teamId(team.getTeamId())
-                                                .teamName(team.getTeamName())
-                                                .teamDescription(team.getTeamDescription())
-                                                .isDeleted(true)
-                                                .build()),
-                        () -> {
-                            throw new GlobalException(ResultCode.FORBIDDEN_TEAM_LEADER);
-                        });
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+        TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
 
-        return new TeamDeleteRes();
+        List<User> memberList = userRepository.findAllByUsernameIn(req.getMemberNameList());
+
+        // 전달받은 username으로 조회한 memberList의 user가 이미 teamRoleList에 존재한다면 제외
+        List<User> matchingMemberList =
+                memberList.stream()
+                        .filter(member -> !teamRoleByUserId.containsKey(member.getUserId()))
+                        .collect(Collectors.toList());
+
+        sendInviteMail(matchingMemberList, team.getTeamId());
+
+        return new TeamMemberInviteRes();
     }
 
     @Transactional
@@ -140,70 +169,35 @@ public class TeamServiceImpl implements TeamService {
         return new TeamEditRes();
     }
 
-    @Override
     @Transactional
-    public TeamMemberInviteRes inviteMember(TeamMemberInviteReq req) {
+    @Override
+    public TeamDeleteRes deleteTeam(TeamDeleteReq req) {
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.validate(team);
 
         List<TeamRole> teamRoleList = teamRoleRepository.findByTeam_TeamId(team.getTeamId());
         TeamRoleValidator.validate(teamRoleList);
-        Map<Long, TeamRole> teamRoleByUserId =
-                teamRoleList.stream()
-                        .collect(
-                                Collectors.toMap(teamRole -> teamRole.getUser().getUserId(), Function.identity()));
 
-        User user = userRepository.findByUsername(req.getUsername());
-        UserValidator.validate(user);
-        TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
+        team.getTeamRoleList().stream()
+                .filter(t -> t.getRole() == Role.LEADER && t.getUser().equals(user))
+                .findAny()
+                .ifPresentOrElse(
+                        t ->
+                                teamRepository.save(
+                                        Team.builder()
+                                                .teamId(team.getTeamId())
+                                                .teamName(team.getTeamName())
+                                                .teamDescription(team.getTeamDescription())
+                                                .isDeleted(true)
+                                                .build()),
+                        () -> {
+                            throw new GlobalException(ResultCode.FORBIDDEN_TEAM_LEADER);
+                        });
 
-        List<User> memberList = userRepository.findAllByUsernameIn(req.getMemberNameList());
-
-        // 전달받은 username으로 조회한 memberList의 user가 이미 teamRoleList에 존재한다면 제외
-        List<User> matchingMemberList =
-                memberList.stream()
-                        .filter(member -> !teamRoleByUserId.containsKey(member.getUserId()))
-                        .collect(Collectors.toList());
-
-        sendInviteMail(matchingMemberList, team.getTeamId());
-
-        return new TeamMemberInviteRes();
-    }
-
-    private void sendInviteMail(List<User> matchingMemberList, Long teamId) {
-        for (User m : matchingMemberList) {
-            mailUtil.sendInviteMessage(m.getEmail(), EMAIL_AUTHENTICATION, teamId, m.getUserId());
-        }
-    }
-
-    @Override
-    public TeamMemberInviteRes confirmEmail(String email, String code) {
-        InviteCode inviteCode = inviteRepository.findById(code);
-
-        mailUtil.checkInviteCode(inviteCode.getCode(), code);
-        Team team = teamRepository.findByTeamId(inviteCode.getTeamId());
-        TeamValidator.validate(team);
-
-        User user = userRepository.findByUserId(inviteCode.getUserId());
-        UserValidator.validate(user);
-
-        teamRoleRepository.save(TeamRole.builder().team(team).user(user).role(Role.MEMBER).build());
-        inviteCodeService.deleteById(code); // 이미 등록된 사람 거르기
-
-        return new TeamMemberInviteRes();
-    }
-
-    @Transactional
-    @Override
-    public TeamGetRes getTeamInfo(Long teamId, String username) {
-        User user = userRepository.findByUsername(username);
-        UserValidator.validate(user);
-
-        Team team = teamRepository.findByTeamId(teamId);
-        TeamValidator.validate(team);
-        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
-
-        return TeamServiceMapper.INSTANCE.toTeamGetRes(team);
+        return new TeamDeleteRes();
     }
 
     @Transactional
@@ -222,6 +216,12 @@ public class TeamServiceImpl implements TeamService {
 
         teamRoleRepository.delete(teamRole);
         return new TeamMemberDeleteRes();
+    }
+
+    private void sendInviteMail(List<User> matchingMemberList, Long teamId) {
+        for (User m : matchingMemberList) {
+            mailUtil.sendInviteMessage(m.getEmail(), EMAIL_AUTHENTICATION, teamId, m.getUserId());
+        }
     }
 
     private TeamRole getTeamRole(String username, Long teamId) {

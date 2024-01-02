@@ -105,6 +105,9 @@ endif::[]
 |2013
 |로그인이 필요합니다.
 
+|2014
+|사용된 이메일입니다.
+
 |3000
 |존재하지 않는 팀입니다.
 
@@ -125,6 +128,9 @@ endif::[]
 
 |3006
 |팀의 멤버가 아닙니다.
+
+|3007
+|멤버 삭제 권한이 없습니다.
 
 |4000
 |존재하지 않는 카테고리 입니다.
@@ -167,10 +173,11 @@ include::{snippets}/user-controller-test/get-profile-test/auto-section.adoc[]
 
 == team API
 
-include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_조회/auto-section.adoc[]
-include::{snippets}/team-controller-test/team_삭제/auto-section.adoc[]
+include::{snippets}/team-controller-test/team_생성/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_초대/auto-section.adoc[]
+include::{snippets}/team-controller-test/team_수정/auto-section.adoc[]
+include::{snippets}/team-controller-test/team_삭제/auto-section.adoc[]
 include::{snippets}/team-controller-test/team_member_삭제/auto-section.adoc[]
 
 == category API
