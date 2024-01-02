@@ -1,5 +1,6 @@
 package com.vt.valuetogether.global.validator;
 
+import static com.vt.valuetogether.global.meta.ResultCode.DUPLICATED_EMAIL;
 import static com.vt.valuetogether.global.meta.ResultCode.DUPLICATED_USERNAME;
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_EMAIL_PATTERN;
 import static com.vt.valuetogether.global.meta.ResultCode.INVALID_PASSWORD_PATTERN;
@@ -65,6 +66,12 @@ public class UserValidator {
     public static void checkDuplicatedUsername(boolean isDuplicated) {
         if (isDuplicated) {
             throw new GlobalException(DUPLICATED_USERNAME);
+        }
+    }
+
+    public static void checkDuplicatedEmail(User user) {
+        if (!checkIsNull(user)) {
+            throw new GlobalException(DUPLICATED_EMAIL);
         }
     }
 

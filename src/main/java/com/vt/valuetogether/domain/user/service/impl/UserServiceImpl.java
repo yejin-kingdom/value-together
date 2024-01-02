@@ -66,6 +66,8 @@ public class UserServiceImpl implements UserService {
         UserValidator.checkDuplicatedUsername(userRepository.existsByUsername(req.getUsername()));
 
         checkAuthorizedEmail(req.getEmail());
+        UserValidator.checkDuplicatedEmail(
+                userRepository.findByEmailAndProvider(req.getEmail(), Provider.LOCAL));
 
         userRepository.save(
                 User.builder()
