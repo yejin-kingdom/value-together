@@ -5,10 +5,14 @@ import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryRestoreReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
@@ -33,13 +37,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
-    @InjectMocks private CategoryServiceImpl categoryService;
 
+    @Captor ArgumentCaptor<Category> argumentCaptor;
+    @InjectMocks private CategoryServiceImpl categoryService;
     @Mock private CategoryRepository categoryRepository;
     @Mock private TeamRepository teamRepository;
     @Mock private UserRepository userRepository;
-
-    @Captor ArgumentCaptor<Category> argumentCaptor;
     private List<Category> categories;
     private Category category;
     private Team team;
@@ -161,5 +164,53 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
         // then
         verify(categoryRepository).save(argumentCaptor.capture());
         assertEquals(FALSE, argumentCaptor.getValue().getIsDeleted());
+    }
+
+    @Test
+    @DisplayName("카테고리 이름 변경 테스트")
+    void category_이름_변경() throws Exception {
+        // given
+        CategoryEditReq req =
+                CategoryEditReq.builder()
+                        .categoryId(TEST_CATEGORY_ID)
+                        .name(TEST_ANOTHER_CATEGORY_NAME)
+                        .build();
+
+        Category renamedCategory =
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(req.getName())
+                        .sequence(category.getSequence())
+                        .isDeleted(FALSE)
+                        .team(category.getTeam())
+                        .build();
+
+        given(userRepository.findByUsername(any())).willReturn(TEST_USER);
+        given(categoryRepository.findByCategoryId(anyLong())).willReturn(category);
+        when(categoryRepository.save(any(Category.class))).thenReturn(renamedCategory);
+
+        // when
+        categoryService.editCategory(req);
+
+        // then
+        verify(categoryRepository).save(argumentCaptor.capture());
+        assertEquals(TEST_ANOTHER_CATEGORY_NAME, argumentCaptor.getValue().getName());
+    }
+
+    @Test
+    @DisplayName("카테고리 삭제 테스트")
+    void category_삭제() throws Exception {
+        // given
+        CategoryDeleteReq req = CategoryDeleteReq.builder().categoryId(TEST_CATEGORY_ID).build();
+        req.setUsername(TEST_USER_NAME);
+        given(userRepository.findByUsername(any())).willReturn(TEST_USER);
+        given(categoryRepository.findByCategoryId(anyLong())).willReturn(category);
+
+        // when
+        categoryService.deleteCategory(req);
+
+        // then
+        verify(categoryRepository).save(argumentCaptor.capture());
+        assertEquals(TRUE, argumentCaptor.getValue().getIsDeleted());
     }
 }
