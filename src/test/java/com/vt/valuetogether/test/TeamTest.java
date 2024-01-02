@@ -1,5 +1,8 @@
 package com.vt.valuetogether.test;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 import com.vt.valuetogether.domain.team.entity.Team;
 
 public interface TeamTest {
@@ -12,8 +15,8 @@ public interface TeamTest {
     String TEST_EDIT_TEAM_DESCRIPTION = "asc";
     String TEST_EDIT_BACKGROUND_COLOR = "#DD1234";
 
-    boolean TEST_TEAM_IS_DELETED = false;
-    boolean TEST_TEAM_DELETED = true;
+    Boolean TEST_TEAM_IS_DELETED = FALSE;
+    Boolean TEST_TEAM_DELETED = TRUE;
 
     Team TEST_TEAM =
             Team.builder()
