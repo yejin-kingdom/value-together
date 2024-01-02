@@ -17,7 +17,7 @@ public class TeamValidator {
 
     public static void validate(Team team) {
         // team이 존재하지 않거나 삭제된 경우 NOT_FOUND_TEAM Exception 발생
-        if (checkIsNull(team) || team.isDeleted()) {
+        if (checkIsNull(team) || team.getIsDeleted()) {
             throw new GlobalException(NOT_FOUND_TEAM);
         }
     }
@@ -58,6 +58,6 @@ public class TeamValidator {
     }
 
     private static boolean checkIsDeleted(Team team) {
-        return team.isDeleted();
+        return team.getIsDeleted();
     }
 }

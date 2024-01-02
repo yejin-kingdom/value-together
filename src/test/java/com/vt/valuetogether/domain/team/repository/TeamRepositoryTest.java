@@ -48,7 +48,7 @@ public class TeamRepositoryTest implements TeamTest {
                         team.getTeamName(),
                         team.getTeamDescription(),
                         team.getBackgroundColor(),
-                        team.isDeleted());
+                        team.getIsDeleted());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class TeamRepositoryTest implements TeamTest {
                         team.getTeamName(),
                         team.getTeamDescription(),
                         team.getBackgroundColor(),
-                        team.isDeleted());
+                        team.getIsDeleted());
     }
 
     @Test
