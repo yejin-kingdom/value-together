@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.team.service.impl;
 
+import static com.vt.valuetogether.test.TeamRoleTest.TEST_TEAM_ROLE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -13,6 +14,7 @@ import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamRestoreReq;
 import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.entity.Team;
@@ -20,7 +22,6 @@ import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
 import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
-import com.vt.valuetogether.test.TeamRoleTest;
 import com.vt.valuetogether.test.TeamTest;
 import com.vt.valuetogether.test.UserTest;
 import java.util.List;
@@ -42,6 +43,7 @@ class TeamServiceImplTest implements TeamTest {
     @Mock private UserRepository userRepository;
 
     private Team team;
+    private Team deletedTeam;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +54,17 @@ class TeamServiceImplTest implements TeamTest {
                         .teamDescription(TEST_TEAM_DESCRIPTION)
                         .backgroundColor(TEST_BACKGROUND_COLOR)
                         .isDeleted(TEST_TEAM_IS_DELETED)
-                        .teamRoleList(List.of(TeamRoleTest.TEST_TEAM_ROLE))
+                        .teamRoleList(List.of(TEST_TEAM_ROLE))
+                        .build();
+
+        deletedTeam =
+                Team.builder()
+                        .teamId(TEST_TEAM_ID)
+                        .teamName(TEST_TEAM_NAME)
+                        .teamDescription(TEST_TEAM_DESCRIPTION)
+                        .backgroundColor(TEST_BACKGROUND_COLOR)
+                        .isDeleted(TEST_TEAM_DELETED)
+                        .teamRoleList(List.of(TEST_TEAM_ROLE))
                         .build();
     }
 
@@ -111,8 +123,7 @@ class TeamServiceImplTest implements TeamTest {
                         .build();
 
         given(teamRepository.findByTeamId(anyLong())).willReturn(team);
-        given(teamRoleRepository.findByTeam_TeamId(anyLong()))
-                .willReturn(List.of(TeamRoleTest.TEST_TEAM_ROLE));
+        given(teamRoleRepository.findByTeam_TeamId(anyLong())).willReturn(List.of(TEST_TEAM_ROLE));
         given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(userRepository.findAllByUsernameIn(anyList())).willReturn(List.of(UserTest.TEST_USER));
 
@@ -149,6 +160,25 @@ class TeamServiceImplTest implements TeamTest {
     }
 
     @Test
+    @DisplayName("team 복구 테스트")
+    void team_복구() {
+        TeamRestoreReq req = TeamRestoreReq.builder().teamId(team.getTeamId()).build();
+        req.setUsername(UserTest.TEST_USER_NAME);
+
+        given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
+        given(teamRepository.findByTeamId(anyLong())).willReturn(deletedTeam);
+        given(teamRoleRepository.findByUserUsernameAndTeamTeamId(any(), anyLong()))
+                .willReturn(TEST_TEAM_ROLE);
+
+        teamService.restoreTeam(req);
+
+        verify(userRepository, times(1)).findByUsername(any());
+        verify(teamRepository, times(1)).findByTeamId(anyLong());
+        verify(teamRoleRepository, times(1)).findByUserUsernameAndTeamTeamId(any(), anyLong());
+        verify(teamRepository, times(1)).save(any(Team.class));
+    }
+
+    @Test
     @DisplayName("team 삭제 테스트")
     void team_삭제() {
         // given
@@ -157,8 +187,7 @@ class TeamServiceImplTest implements TeamTest {
         req.setUsername(UserTest.TEST_USER_NAME);
         given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(teamRepository.findByTeamId(anyLong())).willReturn(team);
-        given(teamRoleRepository.findByTeam_TeamId(anyLong()))
-                .willReturn(List.of(TeamRoleTest.TEST_TEAM_ROLE));
+        given(teamRoleRepository.findByTeam_TeamId(anyLong())).willReturn(List.of(TEST_TEAM_ROLE));
 
         // when
         teamService.deleteTeam(req);
@@ -184,7 +213,7 @@ class TeamServiceImplTest implements TeamTest {
 
         given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(teamRoleRepository.findByUserUsernameAndTeamTeamId(anyString(), anyLong()))
-                .willReturn(TeamRoleTest.TEST_TEAM_ROLE);
+                .willReturn(TEST_TEAM_ROLE);
 
         // when
         teamService.deleteMember(req);

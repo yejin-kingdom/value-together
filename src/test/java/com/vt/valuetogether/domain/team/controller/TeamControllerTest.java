@@ -17,12 +17,14 @@ import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamRestoreReq;
 import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.test.TeamTest;
 import java.util.List;
@@ -82,6 +84,31 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     }
 
     @Test
+    @DisplayName("팀 초대 테스트")
+    void team_초대() throws Exception {
+        // given
+        TeamMemberInviteReq req =
+                TeamMemberInviteReq.builder()
+                        .teamId(TEST_TEAM_ID)
+                        .memberNameList(List.of("testMember"))
+                        .build();
+
+        TeamMemberInviteRes res = new TeamMemberInviteRes();
+
+        given(teamService.inviteMember(any())).willReturn(res);
+
+        // when, then
+        mockMvc
+                .perform(
+                        post("/api/v1/teams/members")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("팀 수정 테스트")
     void team_수정() throws Exception {
         TeamEditReq req =
@@ -92,7 +119,7 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
                         .build();
         TeamEditRes res = new TeamEditRes();
 
-        given(teamService.editTeam(req)).willReturn(res);
+        given(teamService.editTeam(any())).willReturn(res);
 
         mockMvc
                 .perform(
@@ -105,23 +132,18 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
     }
 
     @Test
-    @DisplayName("팀 초대 테스트")
-    void team_초대() throws Exception {
-        // given
-        TeamMemberInviteReq req =
-                TeamMemberInviteReq.builder()
-                        .teamId(TEST_TEAM_ID)
-                        .memberNameList(List.of("testMember"))
-                        .build();
+    @DisplayName("팀 복구 테스트")
+    void team_복구() throws Exception {
+        TeamRestoreReq req =
+                TeamRestoreReq.builder().teamId(TEST_TEAM_ID).username(TEST_USER_NAME).build();
 
-        TeamMemberInviteRes res = new TeamMemberInviteRes();
+        TeamRestoreRes res = new TeamRestoreRes();
 
-        given(teamService.inviteMember(req)).willReturn(res);
+        given(teamService.restoreTeam(any(TeamRestoreReq.class))).willReturn(res);
 
-        // when, then
         mockMvc
                 .perform(
-                        post("/api/v1/teams/members")
+                        patch("/api/v1/teams/restore")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
