@@ -31,7 +31,7 @@ public class Team extends BaseEntity {
 
     private String teamDescription;
     private String backgroundColor;
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<TeamRole> teamRoleList = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Team extends BaseEntity {
             String teamName,
             String teamDescription,
             String backgroundColor,
-            boolean isDeleted,
+            Boolean isDeleted,
             List<TeamRole> teamRoleList) {
         this.teamId = teamId;
         this.teamName = teamName;
