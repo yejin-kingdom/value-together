@@ -36,4 +36,20 @@ class InviteCodeServiceImplTest implements InviteCodeTest {
         assertThat(inviteCode.getTeamId()).isEqualTo(TEST_TEAM_ID);
         verify(inviteRepository).findById(any());
     }
+
+    @Test
+    @DisplayName("inviteCode 저장 테스트")
+    void invite_code_저장() {
+        // given
+        when(inviteRepository.save(any())).thenReturn(TEST_INVITE_CODE);
+
+        // when
+        InviteCode inviteCode = inviteCodeService.save(TEST_INVITE_CODE);
+
+        // then
+        assertThat(inviteCode.getCode()).isEqualTo(TEST_INVITE_CODE_CODE);
+        assertThat(inviteCode.getUserId()).isEqualTo(TEST_USER_ID);
+        assertThat(inviteCode.getTeamId()).isEqualTo(TEST_TEAM_ID);
+        verify(inviteRepository).save(any());
+    }
 }
