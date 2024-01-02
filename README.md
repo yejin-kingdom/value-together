@@ -6,7 +6,8 @@
 [4. 협업 전략](#협업-전략) <br>
 [5. ERD](#ERD) <br>
 [6. API 명세](#API-명세) <br>
-[7. 프로젝트 주요 기능](#프로젝트-주요-기능)
+[7. 프로젝트 주요 기능](#프로젝트-주요-기능) <br>
+[8. 테스트](#테스트)
 
 ## 프로젝트 소개
 협업을 위한 가치있는 서비스를 제공하는 칸반보드 툴 구현 프로젝트입니다.
@@ -18,16 +19,66 @@
 |-회원가입<br>-mail<br>-프로필 기능<br>-댓글 기능| -카드 기능<br>-소셜 로그인: 깃허브, <br>네이버, 구글|-체크리스트 기능<br>-할일 기능<br>-배포<br>-RestDocs|-로컬 로그인, 로그아웃<br>-인증/인가<br>-작업자 기능|-팀 기능<br>-카테고리 기능<br>-전역 예외 처리|
 
 ## 기술 스택
-TODO: 기술 스택 추가
+### Backend
+- Java 17
+- Spring Boot 3.2.0
+- Spring Data JPA
+- OAuth 2
+- Spring Security 6.2.0
+- Mail
+### DB
+- MySQL 8.0.33
+- Redis 6.0.16
+- H2DB 2.1.214 (Test용)
+### Infra
+- AWS
+    - EC2
+    - S3
+    - CloudFront
+    - ACM
+    - RDS
+    - Route53
+### Docs
+- RestDocs
+- Jacoco
 
 ## 협업 전략
-TODO: 협업 전략 추가
-
+### Git flow
+- `main`
+- `develop` (default)
+- `feature/기능`
+### Commit Convention
+- `Feat` : 새로운 기능을 추가하는 경우
+- `Fix` : 버그를 고친경우
+- `Docs` : 문서를 수정한 경우
+- `Style` : 코드 포맷 변경, 세미콜론 누락, 코드 수정이 없는경우
+- `Refactor` : 코드 리팩토링
+- `Test`: 테스트 코드 작성
+### Issue, PR Convention
+- Issue, PR 템플릿 사용
+- 커스텀한 라벨 사용
+- PR마다 관련 이슈를 생성
+### Code Style
+- Spotless 적용
+### Code Convention
+- Entity: `setter`와 `method` 사용 x, `private Builder` 사용
+- 객체 간 변환: `org.mapstruct.Mapper` 사용
+- api 1개마다 req, res dto 1개씩 사용
+- Custom `ResultCode`, `ResponseEntity` 사용
+- `Optional` 제외: validator file로 검증 로직을 분리
+- Service 인터페이스와 impl로 분리
+- Repository 기능을 제한: `@RepositoryDefinition`
+- 네이밍 규칙
+    - dto: 도메인 + 기능 + Req/Res
+    - Entity: 도메인명 그대로
+    - 테이블명: tb_도메인명
+    - id: 도메인명 + id
+  
 ## ERD
 <img src="https://file.notion.so/f/f/83c75a39-3aba-4ba4-a792-7aefe4b07895/f53e300f-8b8a-42af-8cb3-f1d2fc0299a9/erd.png?id=3b195ece-5cb5-4a7f-91d6-cb96504d92a3&table=block&spaceId=83c75a39-3aba-4ba4-a792-7aefe4b07895&expirationTimestamp=1704276000000&signature=-CsN6qGS-C_u4V0Q3j92hVroYJ7tlhXF5v22mWy2rKI&downloadName=erd.png" width="700px" height="500px">
 
 ## API 명세
-TODO: API 명세 추가
+[API 명세서](https://teamsparta.notion.site/API-6c31cb6ffb6647bc8e935f6bf4fc6a17)
 
 ## 프로젝트 주요 기능
 ### [회원가입 & 로그인 및 로그아웃]
