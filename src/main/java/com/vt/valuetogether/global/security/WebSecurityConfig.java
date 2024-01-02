@@ -1,4 +1,4 @@
-package com.vt.valuetogether.global.config;
+package com.vt.valuetogether.global.security;
 
 import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginFailureHandler;
 import com.vt.valuetogether.domain.oauth.handler.OAuth2LoginSuccessHandler;
