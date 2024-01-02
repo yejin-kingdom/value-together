@@ -95,7 +95,7 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
 
         TeamMemberInviteRes res = new TeamMemberInviteRes();
 
-        given(teamService.inviteMember(req)).willReturn(res);
+        given(teamService.inviteMember(any())).willReturn(res);
 
         // when, then
         mockMvc
@@ -119,7 +119,7 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
                         .build();
         TeamEditRes res = new TeamEditRes();
 
-        given(teamService.editTeam(req)).willReturn(res);
+        given(teamService.editTeam(any())).willReturn(res);
 
         mockMvc
                 .perform(
