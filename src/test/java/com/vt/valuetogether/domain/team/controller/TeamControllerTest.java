@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
@@ -71,6 +73,29 @@ public class TeamControllerTest extends BaseMvcTest implements TeamTest {
         mockMvc
                 .perform(
                         post("/api/v1/teams")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("팀 수정 테스트")
+    void team_수정() throws Exception {
+        TeamEditReq req =
+                TeamEditReq.builder()
+                        .teamId(TEST_TEAM_ID)
+                        .teamName(TEST_EDIT_TEAM_NAME)
+                        .teamDescription(TEST_EDIT_TEAM_DESCRIPTION)
+                        .build();
+        TeamEditRes res = new TeamEditRes();
+
+        given(teamService.editTeam(req)).willReturn(res);
+
+        mockMvc
+                .perform(
+                        patch("/api/v1/teams")
                                 .content(objectMapper.writeValueAsString(req))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .principal(mockPrincipal))
