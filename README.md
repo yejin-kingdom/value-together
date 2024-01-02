@@ -78,7 +78,7 @@
 <img src="image/ERD.png" width="700px" height="500px">
 
 ## API 명세
-[API 명세서](https://teamsparta.notion.site/API-6c31cb6ffb6647bc8e935f6bf4fc6a17)
+[API 명세서](https://docs.whenwheres.com/)
 
 ## 프로젝트 주요 기능
 ### [회원가입 & 로그인 및 로그아웃]
