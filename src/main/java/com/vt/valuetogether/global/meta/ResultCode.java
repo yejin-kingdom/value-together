@@ -32,6 +32,7 @@ public enum ResultCode {
     INVALID_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, 2011, "올바르지 않은 로그인 접근입니다."),
     INVALID_PROFILE_IMAGE_FILE(HttpStatus.BAD_REQUEST, 2012, "이미지 파일만 업로드 가능합니다."),
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, 2013, "로그인이 필요합니다."),
+    DUPLICATED_EMAIL(HttpStatus.UNAUTHORIZED, 2014, "사용된 이메일입니다."),
 
     // 팀 3000번대
     NOT_FOUND_TEAM(HttpStatus.NOT_FOUND, 3000, "존재하지 않는 팀입니다."),
