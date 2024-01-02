@@ -95,6 +95,7 @@ public class TeamServiceImpl implements TeamService {
                         .teamName(req.getTeamName())
                         .teamDescription(req.getTeamDescription())
                         .backgroundColor(req.getBackgroundColor())
+                        .isDeleted(false)
                         .build();
 
         TeamRole teamRole = TeamRole.builder().user(user).team(team).role(Role.LEADER).build();
@@ -161,6 +162,7 @@ public class TeamServiceImpl implements TeamService {
                                                 .teamName(req.getTeamName())
                                                 .teamDescription(req.getTeamDescription())
                                                 .backgroundColor(req.getBackgroundColor())
+                                                .isDeleted(false)
                                                 .build()),
                         () -> {
                             throw new GlobalException(ResultCode.FORBIDDEN_TEAM_LEADER);
@@ -191,6 +193,7 @@ public class TeamServiceImpl implements TeamService {
                                                 .teamId(team.getTeamId())
                                                 .teamName(team.getTeamName())
                                                 .teamDescription(team.getTeamDescription())
+                                                .backgroundColor(team.getBackgroundColor())
                                                 .isDeleted(true)
                                                 .build()),
                         () -> {
