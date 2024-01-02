@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class TeamValidator {
     private static final String TEAM_BACKGROUND_COLOR_REGEX =
-            "^\\#(([0-9a-f]){3}|([0-9a-f]){6}|([0-9a-f]){8})$";
+            "^\\#(([0-9a-fA-F]){3}|([0-9a-fA-F]){6}|([0-9a-fA-F]){8})$";
 
     public static void validate(Team team) {
         if (checkIsNull(team) || team.isDeleted()) {
