@@ -1,11 +1,15 @@
 package com.vt.valuetogether.domain.category.service.impl;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryRestoreReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
 import com.vt.valuetogether.domain.category.entity.Category;
@@ -21,6 +25,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,6 +38,8 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
     @Mock private CategoryRepository categoryRepository;
     @Mock private TeamRepository teamRepository;
     @Mock private UserRepository userRepository;
+
+    @Captor ArgumentCaptor<Category> argumentCaptor;
     private List<Category> categories;
     private Category category;
     private Team team;
@@ -117,10 +125,41 @@ class CategoryServiceImplTest implements CategoryTest, UserTest, TeamRoleTest {
 
         // when
         CategoryGetResList categoryGetResList =
-                categoryService.getAllCategories(team.getTeamId(), TEST_USER_NAME);
+                categoryService.getAllCategories(team.getTeamId(), FALSE, TEST_USER_NAME);
 
         // then
         assertThat(categoryGetResList.getCategories().get(0).getName()).isEqualTo(category.getName());
         assertThat(categoryGetResList.getTotal()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("삭제된 카테고리 복구 테스트")
+    void category_복구() {
+        // given
+        CategoryRestoreReq req =
+                CategoryRestoreReq.builder()
+                        .categoryId(category.getCategoryId())
+                        .username(TEST_USER_NAME)
+                        .build();
+
+        Category restoredCategory =
+                Category.builder()
+                        .categoryId(category.getCategoryId())
+                        .name(category.getName())
+                        .sequence(category.getSequence())
+                        .isDeleted(TRUE)
+                        .team(category.getTeam())
+                        .build();
+
+        when(userRepository.findByUsername(any())).thenReturn(TEST_USER);
+        when(categoryRepository.findByCategoryId(any())).thenReturn(restoredCategory);
+        when(categoryRepository.save(any())).thenReturn(category);
+
+        // when
+        categoryService.restoreCategory(req);
+
+        // then
+        verify(categoryRepository).save(argumentCaptor.capture());
+        assertEquals(FALSE, argumentCaptor.getValue().getIsDeleted());
     }
 }

@@ -1,7 +1,5 @@
 package com.vt.valuetogether.domain.team.service.impl;
 
-import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_TEAM_MEMBER;
-
 import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamEditRes;
@@ -31,13 +29,13 @@ import com.vt.valuetogether.global.validator.TeamRoleValidator;
 import com.vt.valuetogether.global.validator.TeamValidator;
 import com.vt.valuetogether.global.validator.UserValidator;
 import com.vt.valuetogether.infra.mail.MailUtil;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -78,7 +76,6 @@ public class TeamServiceImpl implements TeamService {
         return TeamServiceMapper.INSTANCE.toTeamCreateRes(saveTeam);
     }
 
-    // team의 leader와 user가 일치할 경우에만 팀을 삭제할 수 있다.
     @Transactional
     @Override
     public TeamDeleteRes deleteTeam(TeamDeleteReq req) {
@@ -106,21 +103,6 @@ public class TeamServiceImpl implements TeamService {
                         () -> {
                             throw new GlobalException(ResultCode.FORBIDDEN_TEAM_LEADER);
                         });
-
-        List<TeamRole> allNewTeamRoleList =
-                teamRoleList.stream()
-                        .map(
-                                t ->
-                                        TeamRole.builder()
-                                                .teamRoleId(t.getTeamRoleId())
-                                                .role(t.getRole())
-                                                .team(team)
-                                                .user(user)
-                                                .isDeleted(true)
-                                                .build())
-                        .toList();
-
-        teamRoleRepository.saveAll(allNewTeamRoleList);
 
         return new TeamDeleteRes();
     }
@@ -159,6 +141,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
     public TeamMemberInviteRes inviteMember(TeamMemberInviteReq req) {
         Team team = teamRepository.findByTeamId(req.getTeamId());
         TeamValidator.validate(team);
@@ -172,6 +155,7 @@ public class TeamServiceImpl implements TeamService {
 
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.validate(user);
+        TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
 
         List<User> memberList = userRepository.findAllByUsernameIn(req.getMemberNameList());
 
@@ -217,9 +201,7 @@ public class TeamServiceImpl implements TeamService {
 
         Team team = teamRepository.findByTeamId(teamId);
         TeamValidator.validate(team);
-
-        List<TeamRole> teamRoleList = team.getTeamRoleList();
-        TeamRoleValidator.checkIsTeamMember(teamRoleList, user);
+        TeamRoleValidator.checkIsTeamMember(team.getTeamRoleList(), user);
 
         return TeamServiceMapper.INSTANCE.toTeamGetRes(team);
     }
@@ -227,36 +209,24 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     @Override
     public TeamMemberDeleteRes deleteMember(TeamMemberDeleteReq req) {
+
         User user = userRepository.findByUsername(req.getUsername());
         UserValidator.validate(user);
 
         User member = userRepository.findByUsername(req.getMemberName());
         UserValidator.validate(member);
 
-        Team team = teamRepository.findByTeamId(req.getTeamId());
-        TeamValidator.validate(team);
+        TeamRole myTeamRole = getTeamRole(req.getUsername(), req.getTeamId());
+        TeamRole teamRole = getTeamRole(req.getMemberName(), req.getTeamId());
+        TeamRoleValidator.validate(myTeamRole, req.getMemberName());
 
-        team.getTeamRoleList().stream()
-                .filter(
-                        t ->
-                                (t.getRole() == Role.LEADER && t.getUser().equals(user))
-                                        || t.getUser().equals(member))
-                .filter(teamRole -> teamRole.getUser().getUsername().equals(member.getUsername()))
-                .findAny()
-                .ifPresentOrElse(
-                        teamRole ->
-                                teamRoleRepository.save(
-                                        TeamRole.builder()
-                                                .teamRoleId(teamRole.getTeamRoleId())
-                                                .team(team)
-                                                .user(member)
-                                                .isDeleted(true)
-                                                .role(teamRole.getRole())
-                                                .build()),
-                        () -> {
-                            throw new GlobalException(NOT_FOUND_TEAM_MEMBER);
-                        });
-
+        teamRoleRepository.delete(teamRole);
         return new TeamMemberDeleteRes();
+    }
+
+    private TeamRole getTeamRole(String username, Long teamId) {
+        TeamRole teamRole = teamRoleRepository.findByUserUsernameAndTeamTeamId(username, teamId);
+        TeamRoleValidator.validate(teamRole);
+        return teamRole;
     }
 }

@@ -13,9 +13,11 @@ public class WorkerDeleteReq {
 
     private Long cardId;
     private String username;
+    private String deleteUsername;
 
     @Builder
-    private WorkerDeleteReq(Long cardId) {
+    private WorkerDeleteReq(Long cardId, String deleteUsername) {
         this.cardId = cardId;
+        this.deleteUsername = deleteUsername;
     }
 }

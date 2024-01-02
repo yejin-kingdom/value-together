@@ -1,6 +1,6 @@
 package com.vt.valuetogether.domain.comment.service.impl;
 
-import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_ROLE;
+import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_TEAM_ROLE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -15,7 +15,7 @@ import com.vt.valuetogether.domain.comment.dto.request.CommentUpdateReq;
 import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.comment.repository.CommentRepository;
 import com.vt.valuetogether.domain.team.entity.Team;
-import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.test.CommentTest;
 import java.util.List;
@@ -33,7 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class CommentServiceImplTest implements CommentTest {
     @Mock CommentRepository commentRepository;
 
-    @Mock UserRepository userRepository;
+    @Mock TeamRoleRepository teamRoleRepository;
 
     @Mock CardRepository cardRepository;
 
@@ -80,7 +80,7 @@ class CommentServiceImplTest implements CommentTest {
                 Comment.builder()
                         .commentId(TEST_COMMENT_ID)
                         .content(TEST_COMMENT_CONTENT)
-                        .user(TEST_USER)
+                        .teamRole(TEST_TEAM_ROLE)
                         .card(card)
                         .build();
     }
@@ -96,17 +96,19 @@ class CommentServiceImplTest implements CommentTest {
                         .username(TEST_USER_NAME)
                         .build();
 
-        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_USER);
+        given(teamRoleRepository.findByUserUsernameAndTeamTeamId(any(), any()))
+                .willReturn(TEST_TEAM_ROLE);
         given(cardRepository.findByCardId(req.getCardId())).willReturn(card);
 
         // when
         commentService.saveComment(req);
 
         // then
+        verify(teamRoleRepository).findByUserUsernameAndTeamTeamId(any(), any());
         verify(commentRepository).save(argumentCaptor.capture());
         assertEquals(TEST_COMMENT_CONTENT, argumentCaptor.getValue().getContent());
         assertEquals(TEST_DESCRIPTION, argumentCaptor.getValue().getCard().getDescription());
-        assertEquals(TEST_USER_EMAIL, argumentCaptor.getValue().getUser().getEmail());
+        assertEquals(TEST_USER_EMAIL, argumentCaptor.getValue().getTeamRole().getUser().getEmail());
     }
 
     @Test
@@ -120,7 +122,6 @@ class CommentServiceImplTest implements CommentTest {
                         .username(TEST_USER_NAME)
                         .build();
 
-        given(userRepository.findByUsername(req.getUsername())).willReturn(TEST_ANOTHER_USER);
         given(cardRepository.findByCardId(req.getCardId())).willReturn(card);
 
         // when
@@ -132,7 +133,7 @@ class CommentServiceImplTest implements CommentTest {
                         });
 
         // then
-        assertEquals(FORBIDDEN_TEAM_ROLE.getMessage(), exception.getResultCode().getMessage());
+        assertEquals(NOT_FOUND_TEAM_ROLE.getMessage(), exception.getResultCode().getMessage());
     }
 
     @Test

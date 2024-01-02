@@ -1,7 +1,7 @@
 package com.vt.valuetogether.domain.worker.entity;
 
 import com.vt.valuetogether.domain.card.entity.Card;
-import com.vt.valuetogether.domain.user.entity.User;
+import com.vt.valuetogether.domain.team.entity.TeamRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -25,9 +25,9 @@ public class Worker {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "teamRoleId")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+    private TeamRole teamRole;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,8 +35,8 @@ public class Worker {
     private Card card;
 
     @Builder
-    private Worker(User user, Card card) {
-        this.user = user;
+    private Worker(TeamRole teamRole, Card card) {
+        this.teamRole = teamRole;
         this.card = card;
     }
 }

@@ -29,9 +29,12 @@ public class MailUtil {
     private final EmailAuthService emailService;
     private final InviteCodeService inviteCodeService;
 
-    private static final String EMAIL_LINK = "http://localhost:8080/api/v1/users/signup/email/check?";
-    private static final String INVITE_EMAIL_LINK =
-            "http://localhost:8080/api/v1/teams/members/email?";
+    @Value("${spring.mail.url.auth}")
+    private String authEmailLink;
+
+    @Value("${spring.mail.url.invite}")
+    private String inviteEmailLink;
+
     private static final String PATH_AND = "&";
     private static final String PATH_KEY_EMAIL = "email=";
     private static final String PATH_KEY_CODE = "authCode=";
@@ -46,7 +49,7 @@ public class MailUtil {
     public void sendMessage(String to, String subject) {
         try {
             String code = createAuthCode();
-            MimeMessage message = createMessage(to, subject, code);
+            MimeMessage message = createMessage(to, subject, code, authEmailLink);
 
             if (emailService.hasMail(to)) {
                 emailService.delete(to);
@@ -63,7 +66,7 @@ public class MailUtil {
     public void sendInviteMessage(String to, String subject, Long teamId, Long userId) {
         try {
             String code = createAuthCode();
-            MimeMessage message = createInviteMessage(to, subject, code);
+            MimeMessage message = createMessage(to, subject, code, inviteEmailLink);
 
             InviteCode inviteCode = InviteCode.builder().teamId(teamId).userId(userId).code(code).build();
 
@@ -95,7 +98,7 @@ public class MailUtil {
         return emailAuth;
     }
 
-    private MimeMessage createMessage(String to, String subject, String code)
+    private MimeMessage createMessage(String to, String subject, String code, String emailLink)
             throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
@@ -103,21 +106,7 @@ public class MailUtil {
         message.addRecipients(RecipientType.TO, to);
         message.setSubject(subject, StandardCharsets.UTF_8.name());
         message.setContent(
-                EMAIL_LINK + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
-                ContentType.TEXT_HTML.getMimeType());
-
-        return message;
-    }
-
-    private MimeMessage createInviteMessage(String to, String subject, String code)
-            throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-
-        message.setFrom(email);
-        message.addRecipients(RecipientType.TO, to);
-        message.setSubject(subject, StandardCharsets.UTF_8.name());
-        message.setContent(
-                INVITE_EMAIL_LINK + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
+                emailLink + PATH_KEY_EMAIL + to + PATH_AND + PATH_KEY_CODE + code,
                 ContentType.TEXT_HTML.getMimeType());
 
         return message;

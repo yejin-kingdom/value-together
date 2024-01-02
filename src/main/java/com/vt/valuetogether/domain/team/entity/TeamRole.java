@@ -42,14 +42,11 @@ public class TeamRole {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    private boolean isDeleted;
-
     @Builder
-    private TeamRole(Long teamRoleId, User user, Team team, Role role, boolean isDeleted) {
+    private TeamRole(Long teamRoleId, User user, Team team, Role role) {
         this.teamRoleId = teamRoleId;
         this.user = user;
         this.team = team;
         this.role = role;
-        this.isDeleted = isDeleted;
     }
 }

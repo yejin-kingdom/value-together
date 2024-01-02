@@ -12,4 +12,8 @@ public interface TeamRoleRepository {
     List<TeamRole> saveAll(Iterable<TeamRole> teamRoleList);
 
     List<TeamRole> findByTeam_TeamId(Long teamId);
+
+    TeamRole findByUserUsernameAndTeamTeamId(String username, Long teamId);
+
+    void delete(TeamRole teamRole);
 }

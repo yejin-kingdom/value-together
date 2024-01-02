@@ -12,12 +12,11 @@ import com.vt.valuetogether.domain.comment.entity.Comment;
 import com.vt.valuetogether.domain.comment.repository.CommentRepository;
 import com.vt.valuetogether.domain.comment.service.CommentService;
 import com.vt.valuetogether.domain.comment.service.CommentServiceMapper;
-import com.vt.valuetogether.domain.user.entity.User;
-import com.vt.valuetogether.domain.user.repository.UserRepository;
+import com.vt.valuetogether.domain.team.entity.TeamRole;
+import com.vt.valuetogether.domain.team.repository.TeamRoleRepository;
 import com.vt.valuetogether.global.validator.CardValidator;
 import com.vt.valuetogether.global.validator.CommentValidator;
 import com.vt.valuetogether.global.validator.TeamRoleValidator;
-import com.vt.valuetogether.global.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,36 +26,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-
-    private final UserRepository userRepository;
-
     private final CardRepository cardRepository;
+    private final TeamRoleRepository teamRoleRepository;
 
     @Override
     @Transactional
     public CommentSaveRes saveComment(CommentSaveReq req) {
-        User user = findUser(req.getUsername());
         Card card = findCard(req.getCardId());
-
-        TeamRoleValidator.checkIsTeamMember(card.getCategory().getTeam().getTeamRoleList(), user);
+        TeamRole teamRole = findTeamRole(req.getUsername(), card.getCategory().getTeam().getTeamId());
 
         return CommentServiceMapper.INSTANCE.toCommentSaveRes(
                 commentRepository.save(
-                        Comment.builder().content(req.getContent()).card(card).user(user).build()));
+                        Comment.builder().content(req.getContent()).card(card).teamRole(teamRole).build()));
     }
 
     @Override
     @Transactional
     public CommentUpdateRes updateComment(CommentUpdateReq req) {
         Comment comment = findComment(req.getCommentId());
-        CommentValidator.checkCommentUser(comment.getUser().getUsername(), req.getUsername());
+        CommentValidator.checkCommentUser(
+                comment.getTeamRole().getUser().getUsername(), req.getUsername());
 
         commentRepository.save(
                 Comment.builder()
                         .commentId(req.getCommentId())
                         .content(req.getContent())
                         .card(comment.getCard())
-                        .user(comment.getUser())
+                        .teamRole(comment.getTeamRole())
                         .build());
 
         return new CommentUpdateRes();
@@ -66,15 +62,10 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentDeleteRes deleteComment(CommentDeleteReq req) {
         Comment comment = findComment(req.getCommentId());
-        CommentValidator.checkCommentUser(comment.getUser().getUsername(), req.getUsername());
+        CommentValidator.checkCommentUser(
+                comment.getTeamRole().getUser().getUsername(), req.getUsername());
         commentRepository.delete(comment);
         return new CommentDeleteRes();
-    }
-
-    private User findUser(String username) {
-        User user = userRepository.findByUsername(username);
-        UserValidator.validate(user);
-        return user;
     }
 
     private Card findCard(Long cardId) {
@@ -87,5 +78,11 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findByCommentId(commentId);
         CommentValidator.validate(comment);
         return comment;
+    }
+
+    private TeamRole findTeamRole(String username, Long teamId) {
+        TeamRole teamRole = teamRoleRepository.findByUserUsernameAndTeamTeamId(username, teamId);
+        TeamRoleValidator.validate(teamRole);
+        return teamRole;
     }
 }

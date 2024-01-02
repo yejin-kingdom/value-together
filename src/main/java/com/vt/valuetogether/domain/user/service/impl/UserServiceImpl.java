@@ -34,35 +34,22 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
-
-    private final MailUtil mailUtil;
-
-    private final S3Util s3Util;
-
     private static final String EMAIL_AUTHENTICATION = "이메일 인증";
-
     private static final String DEFAULT_PROFILE_INTRODUCE = "자기소개를 입력해주세요.";
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MailUtil mailUtil;
+    private final S3Util s3Util;
 
     @Value("${default.image.address}")
     private String defaultProfileImageUrl;
 
     @Override
-    public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
-        UserValidator.validate(req);
+    public UserGetProfileRes getProfile(Long userId) {
+        User user = userRepository.findByUserId(userId);
+        UserValidator.validate(user);
 
-        mailUtil.sendMessage(req.getEmail(), EMAIL_AUTHENTICATION);
-
-        return new UserVerifyEmailRes();
-    }
-
-    @Override
-    public UserConfirmEmailRes confirmEmail(String email, String code) {
-        mailUtil.checkCode(email, code);
-
-        return UserConfirmEmailRes.builder().email(email).build();
+        return UserServiceMapper.INSTANCE.toUserGetProfileRes(user);
     }
 
     @Override
@@ -85,6 +72,22 @@ public class UserServiceImpl implements UserService {
                         .build());
 
         return new UserSignupRes();
+    }
+
+    @Override
+    public UserVerifyEmailRes sendEmail(UserVerifyEmailReq req) {
+        UserValidator.validate(req);
+
+        mailUtil.sendMessage(req.getEmail(), EMAIL_AUTHENTICATION);
+
+        return new UserVerifyEmailRes();
+    }
+
+    @Override
+    public UserConfirmEmailRes confirmEmail(String email, String code) {
+        mailUtil.checkCode(email, code);
+
+        return UserConfirmEmailRes.builder().email(email).build();
     }
 
     @Override
@@ -134,14 +137,6 @@ public class UserServiceImpl implements UserService {
                         .build());
 
         return new UserUpdateProfileRes();
-    }
-
-    @Override
-    public UserGetProfileRes getProfile(Long userId) {
-        User user = userRepository.findByUserId(userId);
-        UserValidator.validate(user);
-
-        return UserServiceMapper.INSTANCE.toUserGetProfileRes(user);
     }
 
     private void checkAuthorizedEmail(String email) {

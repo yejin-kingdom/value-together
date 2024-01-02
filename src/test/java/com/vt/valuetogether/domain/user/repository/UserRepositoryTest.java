@@ -1,9 +1,12 @@
 package com.vt.valuetogether.domain.user.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.test.UserTest;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,5 +78,21 @@ class UserRepositoryTest implements UserTest {
 
         // then
         assertTrue(isDuplicated);
+    }
+
+    @Test
+    @DisplayName("유저 이름 리스트로 유저 조회하기")
+    void findAllByUsernameIn() {
+        // given
+        userRepository.save(TEST_USER);
+
+        List<String> nameList = List.of(TEST_USER_NAME, "test2");
+
+        // when
+        List<User> actual = userRepository.findAllByUsernameIn(nameList);
+
+        // then
+        assertThat(actual).hasSize(1);
+        assertThat(actual.get(0).getUsername()).isEqualTo(TEST_USER_NAME);
     }
 }

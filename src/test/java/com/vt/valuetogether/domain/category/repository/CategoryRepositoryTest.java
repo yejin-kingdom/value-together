@@ -114,9 +114,11 @@ class CategoryRepositoryTest implements CategoryTest {
     @DisplayName("teamId별 category list 조회 테스트")
     void teamId_category_list_조회() {
         // given
+        Boolean isDeleted = FALSE;
 
         // when
-        List<Category> categories = categoryRepository.findByOrderByTeamTeamIdAscSequenceAsc();
+        List<Category> categories =
+                categoryRepository.findByIsDeletedOrderByTeamTeamIdAscSequenceAsc(isDeleted);
 
         // then
         assertThat(categories.get(0)).isEqualTo(saveCategory1);
