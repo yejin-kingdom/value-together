@@ -2,8 +2,10 @@ package com.vt.valuetogether.domain.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.vt.valuetogether.domain.user.entity.Provider;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.test.UserTest;
 import java.util.List;
@@ -94,5 +96,18 @@ class UserRepositoryTest implements UserTest {
         // then
         assertThat(actual).hasSize(1);
         assertThat(actual.get(0).getUsername()).isEqualTo(TEST_USER_NAME);
+    }
+
+    @Test
+    @DisplayName("로컬 유저 email 중복 확인")
+    void findByEmailAndProviderTest() {
+        // given
+        userRepository.save(TEST_USER);
+
+        // when
+        User duplicatedUser = userRepository.findByEmailAndProvider(TEST_USER_EMAIL, Provider.LOCAL);
+
+        // then
+        assertNotNull(duplicatedUser);
     }
 }
