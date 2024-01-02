@@ -8,12 +8,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
-import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.team.repository.TeamRepository;
@@ -79,7 +79,10 @@ class TeamServiceImplTest implements TeamTest {
     void team_생성() {
         // given
         TeamCreateReq req =
-                TeamCreateReq.builder().teamName("testName").backgroundColor("#12345").build();
+                TeamCreateReq.builder()
+                        .teamName(TEST_TEAM_NAME)
+                        .backgroundColor(TEST_BACKGROUND_COLOR)
+                        .build();
 
         req.setUsername("username");
 

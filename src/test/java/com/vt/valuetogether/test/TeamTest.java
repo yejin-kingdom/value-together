@@ -7,7 +7,7 @@ public interface TeamTest {
     Long TEST_TEAM_ID = 1L;
     String TEST_TEAM_NAME = "team";
     String TEST_TEAM_DESCRIPTION = "desc";
-    String TEST_BACKGROUND_COLOR = "#FFFFFF";
+    String TEST_BACKGROUND_COLOR = "#4287f5";
     boolean TEST_TEAM_IS_DELETED = false;
 
     Team TEST_TEAM =
