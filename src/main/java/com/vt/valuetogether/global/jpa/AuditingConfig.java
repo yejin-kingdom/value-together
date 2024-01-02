@@ -1,4 +1,4 @@
-package com.vt.valuetogether.global.config;
+package com.vt.valuetogether.global.jpa;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
