@@ -173,6 +173,39 @@ public class TeamServiceImpl implements TeamService {
         return new TeamEditRes();
     }
 
+    @Override
+    @Transactional
+    public TeamRestoreRes restoreTeam(TeamRestoreReq req) {
+        User user = userRepository.findByUsername(req.getUsername());
+        UserValidator.validate(user);
+
+        Team team = teamRepository.findByTeamId(req.getTeamId());
+        TeamValidator.isSoftDeleted(team);
+
+        teamRepository.save(
+                Team.builder()
+                        .teamId(req.getTeamId())
+                        .teamName(team.getTeamName())
+                        .teamDescription(team.getTeamDescription())
+                        .backgroundColor(team.getBackgroundColor())
+                        .isDeleted(false)
+                        .build());
+
+        TeamRole teamRole =
+                teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
+
+        TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
+        teamRoleRepository.save(
+                TeamRole.builder()
+                        .teamRoleId(teamRole.getTeamRoleId())
+                        .team(team)
+                        .user(user)
+                        .role(Role.LEADER)
+                        .build());
+
+        return new TeamRestoreRes();
+    }
+
     @Transactional
     @Override
     public TeamDeleteRes deleteTeam(TeamDeleteReq req) {
@@ -221,39 +254,6 @@ public class TeamServiceImpl implements TeamService {
 
         teamRoleRepository.delete(teamRole);
         return new TeamMemberDeleteRes();
-    }
-
-    @Override
-    @Transactional
-    public TeamRestoreRes restoreTeam(TeamRestoreReq req) {
-        User user = userRepository.findByUsername(req.getUsername());
-        UserValidator.validate(user);
-
-        Team team = teamRepository.findByTeamId(req.getTeamId());
-        TeamValidator.isSoftDeleted(team);
-
-        teamRepository.save(
-                Team.builder()
-                        .teamId(req.getTeamId())
-                        .teamName(team.getTeamName())
-                        .teamDescription(team.getTeamDescription())
-                        .backgroundColor(team.getBackgroundColor())
-                        .isDeleted(false)
-                        .build());
-
-        TeamRole teamRole =
-                teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
-
-        TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
-        teamRoleRepository.save(
-                TeamRole.builder()
-                        .teamRoleId(teamRole.getTeamRoleId())
-                        .team(team)
-                        .user(user)
-                        .role(Role.LEADER)
-                        .build());
-
-        return new TeamRestoreRes();
     }
 
     private void sendInviteMail(List<User> matchingMemberList, Long teamId) {
