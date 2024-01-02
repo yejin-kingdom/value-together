@@ -5,12 +5,14 @@ import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamRestoreReq;
 import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
 import com.vt.valuetogether.domain.team.service.TeamService;
 import com.vt.valuetogether.global.response.RestResponse;
 import lombok.RequiredArgsConstructor;
@@ -78,5 +80,12 @@ public class TeamController {
             @RequestBody TeamMemberDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
         req.setUsername(userDetails.getUsername());
         return RestResponse.success(teamService.deleteMember(req));
+    }
+
+    @PatchMapping("/restore")
+    public RestResponse<TeamRestoreRes> restoreTeam(
+            @RequestBody TeamRestoreReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
+        return RestResponse.success(teamService.restoreTeam(req));
     }
 }

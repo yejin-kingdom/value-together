@@ -1,6 +1,7 @@
 package com.vt.valuetogether.global.validator;
 
 import static com.vt.valuetogether.domain.team.entity.Role.LEADER;
+import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_LEADER;
 import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_ROLE;
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_AUTHORITY_TEAM_ROLE;
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_TEAM_ROLE;
@@ -38,6 +39,12 @@ public class TeamRoleValidator {
     public static void validate(TeamRole teamRole, String deleteUsername) {
         if (!isLeader(teamRole) && !isMe(teamRole.getUser().getUsername(), deleteUsername)) {
             throw new GlobalException(NOT_AUTHORITY_TEAM_ROLE);
+        }
+    }
+
+    public static void checkIsTeamLeader(TeamRole teamRole) {
+        if (!isLeader(teamRole)) {
+            throw new GlobalException(FORBIDDEN_TEAM_LEADER);
         }
     }
 
