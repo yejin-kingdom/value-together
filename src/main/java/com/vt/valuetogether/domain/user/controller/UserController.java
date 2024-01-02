@@ -42,7 +42,7 @@ public class UserController {
 
     @GetMapping("/signup/email/check")
     public RestResponse<UserConfirmEmailRes> confirmEmail(
-        @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
+            @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
         return RestResponse.success(userService.confirmEmail(email, code));
     }
 
