@@ -4,8 +4,9 @@ import static org.apache.commons.lang3.BooleanUtils.FALSE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,15 +16,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.vt.valuetogether.domain.BaseMvcTest;
 import com.vt.valuetogether.domain.card.dto.response.CardInnerCategoryRes;
 import com.vt.valuetogether.domain.category.dto.request.CategoryChangeSequenceReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryDeleteReq;
+import com.vt.valuetogether.domain.category.dto.request.CategoryEditReq;
 import com.vt.valuetogether.domain.category.dto.request.CategoryRestoreReq;
 import com.vt.valuetogether.domain.category.dto.request.CategorySaveReq;
 import com.vt.valuetogether.domain.category.dto.response.CategoryChangeSequenceRes;
+import com.vt.valuetogether.domain.category.dto.response.CategoryDeleteRes;
+import com.vt.valuetogether.domain.category.dto.response.CategoryEditRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetRes;
 import com.vt.valuetogether.domain.category.dto.response.CategoryGetResList;
 import com.vt.valuetogether.domain.category.dto.response.CategoryRestoreRes;
 import com.vt.valuetogether.domain.category.dto.response.CategorySaveRes;
 import com.vt.valuetogether.domain.category.service.CategoryService;
 import com.vt.valuetogether.domain.worker.dto.response.WorkerGetRes;
+import com.vt.valuetogether.test.CategoryTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +37,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @WebMvcTest(controllers = {CategoryController.class})
-class CategoryControllerTest extends BaseMvcTest {
+class CategoryControllerTest extends BaseMvcTest implements CategoryTest {
+
     @MockBean private CategoryService categoryService;
 
     @Test
@@ -118,7 +125,7 @@ class CategoryControllerTest extends BaseMvcTest {
                 .thenReturn(categoryGetResList);
         this.mockMvc
                 .perform(
-                        get("/api/v1/teams/" + teamId + "/categories")
+                        get("/api/v1/teams/{teamId}/categories", teamId)
                                 .param("isDeleted", FALSE)
                                 .principal(this.mockPrincipal))
                 .andDo(print())
@@ -138,6 +145,51 @@ class CategoryControllerTest extends BaseMvcTest {
                                 .contentType(APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(req))
                                 .principal(mockPrincipal))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("카테고리 이름 수정")
+    void category_이름_수정() throws Exception {
+        CategoryEditReq req =
+                CategoryEditReq.builder()
+                        .categoryId(TEST_CATEGORY_ID)
+                        .name(TEST_ANOTHER_CATEGORY_NAME)
+                        .build();
+        req.setName(this.mockPrincipal.getName());
+
+        CategoryEditRes res = new CategoryEditRes();
+
+        when(categoryService.editCategory(any(CategoryEditReq.class))).thenReturn(res);
+
+        this.mockMvc
+                .perform(
+                        patch("/api/v1/categories")
+                                .principal(this.mockPrincipal)
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("카테고리 삭제 테스트")
+    void category_삭제() throws Exception {
+
+        CategoryDeleteReq req = CategoryDeleteReq.builder().categoryId(TEST_CATEGORY_ID).build();
+        req.setUsername(this.mockPrincipal.getName());
+
+        CategoryDeleteRes res = new CategoryDeleteRes();
+
+        when(categoryService.deleteCategory(any(CategoryDeleteReq.class))).thenReturn(res);
+
+        this.mockMvc
+                .perform(
+                        delete("/api/v1/categories")
+                                .content(objectMapper.writeValueAsString(req))
+                                .contentType(APPLICATION_JSON)
+                                .principal(this.mockPrincipal))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
