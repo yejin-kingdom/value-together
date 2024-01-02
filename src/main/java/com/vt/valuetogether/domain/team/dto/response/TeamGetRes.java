@@ -1,4 +1,4 @@
-package com.vt.valuetogether.domain.team.dto.reponse;
+package com.vt.valuetogether.domain.team.dto.response;
 
 import java.util.ArrayList;
 import java.util.List;

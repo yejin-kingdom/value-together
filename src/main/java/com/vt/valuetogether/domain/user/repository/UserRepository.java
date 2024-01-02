@@ -1,5 +1,6 @@
 package com.vt.valuetogether.domain.user.repository;
 
+import com.vt.valuetogether.domain.user.entity.Provider;
 import com.vt.valuetogether.domain.user.entity.User;
 import java.util.List;
 import org.springframework.data.repository.RepositoryDefinition;
@@ -17,4 +18,6 @@ public interface UserRepository {
     User findByUserId(Long userId);
 
     List<User> findAllByUsernameIn(List<String> username);
+
+    User findByEmailAndProvider(String email, Provider provider);
 }
