@@ -1,8 +1,8 @@
 package com.vt.valuetogether.domain.oauth;
 
 import com.vt.valuetogether.domain.oauth.dto.request.OAuth2LoginReq;
-import com.vt.valuetogether.domain.oauth.exception.OAuth2ProviderInvalidException;
 import com.vt.valuetogether.domain.user.entity.Provider;
+import com.vt.valuetogether.global.exception.GlobalException;
 import com.vt.valuetogether.global.meta.ResultCode;
 import java.util.Arrays;
 import java.util.Map;
@@ -52,7 +52,7 @@ public enum OAuth2Attributes {
         return Arrays.stream(values())
                 .filter(provider -> providerName.equals(provider.providerName))
                 .findAny()
-                .orElseThrow(() -> new OAuth2ProviderInvalidException(ResultCode.INVALID_OAUTH_PROVIDER))
+                .orElseThrow(() -> new GlobalException(ResultCode.INVALID_OAUTH_PROVIDER))
                 .of(attributes);
     }
 
