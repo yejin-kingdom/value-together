@@ -12,6 +12,7 @@ import com.vt.valuetogether.domain.team.dto.reponse.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.reponse.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.request.TeamCreateReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
 import com.vt.valuetogether.domain.team.entity.Team;
@@ -59,14 +60,14 @@ class TeamServiceImplTest implements TeamTest {
     @DisplayName("team 조회 테스트")
     void team_조회() {
         // given
-        given(userRepository.findByUsername(anyString())).willReturn(UserTest.TEST_USER);
+        given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(teamRepository.findByTeamId(anyLong())).willReturn(team);
 
         // when
         TeamGetRes actual = teamService.getTeamInfo(team.getTeamId(), UserTest.TEST_USER_NAME);
 
         // then
-        verify(userRepository, times(1)).findByUsername(anyString());
+        verify(userRepository, times(1)).findByUsername(any());
         verify(teamRepository, times(1)).findByTeamId(anyLong());
         Assertions.assertThat(actual.getMemberGetResList()).hasSize(1);
         Assertions.assertThat(actual)
@@ -81,10 +82,8 @@ class TeamServiceImplTest implements TeamTest {
         TeamCreateReq req =
                 TeamCreateReq.builder().teamName("testName").backgroundColor("#12345").build();
 
-        req.setUsername("username");
-
         given(teamRepository.findByTeamName(anyString())).willReturn(null);
-        given(userRepository.findByUsername(anyString())).willReturn(UserTest.TEST_USER);
+        given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(teamRepository.save(any())).willReturn(TEST_TEAM);
 
         // when
@@ -92,7 +91,7 @@ class TeamServiceImplTest implements TeamTest {
 
         // then
         verify(teamRepository, times(1)).findByTeamName(anyString());
-        verify(userRepository, times(1)).findByUsername(anyString());
+        verify(userRepository, times(1)).findByUsername(any());
         verify(teamRepository, times(1)).save(any(Team.class));
         verify(teamRoleRepository, times(1)).save(any(TeamRole.class));
         Assertions.assertThat(actual).extracting("teamId").isEqualTo(TEST_TEAM.getTeamId());
@@ -108,12 +107,10 @@ class TeamServiceImplTest implements TeamTest {
                         .memberNameList(List.of(UserTest.TEST_USER_NAME))
                         .build();
 
-        req.setUsername("username");
-
         given(teamRepository.findByTeamId(anyLong())).willReturn(team);
         given(teamRoleRepository.findByTeam_TeamId(anyLong()))
                 .willReturn(List.of(TeamRoleTest.TEST_TEAM_ROLE));
-        given(userRepository.findByUsername(anyString())).willReturn(UserTest.TEST_USER);
+        given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(userRepository.findAllByUsernameIn(anyList())).willReturn(List.of(UserTest.TEST_USER));
 
         // when
@@ -122,10 +119,31 @@ class TeamServiceImplTest implements TeamTest {
         // then
         verify(teamRepository, times(1)).findByTeamId(anyLong());
         verify(teamRoleRepository, times(1)).findByTeam_TeamId(anyLong());
-        verify(userRepository, times(1)).findByUsername(anyString());
+        verify(userRepository, times(1)).findByUsername(any());
         verify(userRepository, times(1)).findAllByUsernameIn(anyList());
     }
 
+    @Test
+    @DisplayName("team 수정 테스트")
+    void team_수정() {
+        TeamEditReq req =
+            TeamEditReq.builder()
+                .teamId(TEST_TEAM_ID)
+                .teamName(TEST_EDIT_TEAM_NAME)
+                .teamDescription(TEST_EDIT_TEAM_DESCRIPTION)
+                .backgroundColor("#12345")
+                .build();
+
+        given(teamRepository.findByTeamName(anyString())).willReturn(null);
+        given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
+        given(teamRepository.findByTeamId(anyLong())).willReturn(team);
+
+        teamService.editTeam(req);
+
+        verify(userRepository, times(1)).findByUsername(any());
+        verify(teamRepository,times(1)).findByTeamId(anyLong());
+        verify(teamRepository, times(1)).save(any(Team.class));
+    }
     @Test
     @DisplayName("team 삭제 테스트")
     void team_삭제() {
@@ -133,7 +151,7 @@ class TeamServiceImplTest implements TeamTest {
         TeamDeleteReq req = TeamDeleteReq.builder().teamId(team.getTeamId()).build();
 
         req.setUsername(UserTest.TEST_USER_NAME);
-        given(userRepository.findByUsername(anyString())).willReturn(UserTest.TEST_USER);
+        given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(teamRepository.findByTeamId(anyLong())).willReturn(team);
         given(teamRoleRepository.findByTeam_TeamId(anyLong()))
                 .willReturn(List.of(TeamRoleTest.TEST_TEAM_ROLE));
@@ -142,7 +160,7 @@ class TeamServiceImplTest implements TeamTest {
         teamService.deleteTeam(req);
 
         // then
-        verify(userRepository, times(1)).findByUsername(anyString());
+        verify(userRepository, times(1)).findByUsername(any());
         verify(teamRepository, times(1)).findByTeamId(anyLong());
         verify(teamRoleRepository, times(1)).findByTeam_TeamId(anyLong());
         verify(teamRepository, times(1)).save(any(Team.class));
@@ -160,7 +178,7 @@ class TeamServiceImplTest implements TeamTest {
 
         req.setUsername(UserTest.TEST_USER_NAME);
 
-        given(userRepository.findByUsername(anyString())).willReturn(UserTest.TEST_USER);
+        given(userRepository.findByUsername(any())).willReturn(UserTest.TEST_USER);
         given(teamRoleRepository.findByUserUsernameAndTeamTeamId(anyString(), anyLong()))
                 .willReturn(TeamRoleTest.TEST_TEAM_ROLE);
 
@@ -168,7 +186,7 @@ class TeamServiceImplTest implements TeamTest {
         teamService.deleteMember(req);
 
         // then
-        verify(userRepository, times(2)).findByUsername(anyString());
+        verify(userRepository, times(2)).findByUsername(any());
         verify(teamRoleRepository, times(2)).findByUserUsernameAndTeamTeamId(anyString(), anyLong());
         verify(teamRoleRepository, times(1)).delete(any(TeamRole.class));
     }
