@@ -43,6 +43,7 @@ public enum ResultCode {
     FORBIDDEN_TEAM_ROLE(HttpStatus.FORBIDDEN, 3005, "팀의 멤버만 해당 작업을 수행할 수 있습니다."),
     NOT_FOUND_TEAM_MEMBER(HttpStatus.NOT_FOUND, 3006, "팀의 멤버가 아닙니다."),
     NOT_AUTHORITY_TEAM_ROLE(HttpStatus.UNAUTHORIZED, 3007, "멤버 삭제 권한이 없습니다."),
+    NOT_DELETED_TEAM(HttpStatus.BAD_REQUEST, 3008, "해당 팀은 삭제되지 않은 팀 입니다."),
 
     // 카테고리 4000번대
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, 4000, "존재하지 않는 카테고리 입니다."),
