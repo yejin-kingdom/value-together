@@ -33,25 +33,23 @@ public class TeamController {
 
     private final TeamService teamService;
 
+    @GetMapping("/{teamId}")
+    public RestResponse<TeamGetRes> getTeamInfo(
+            @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
+        return RestResponse.success(teamService.getTeamInfo(teamId, userDetails.getUsername()));
+    }
+
+    @GetMapping("/members/email")
+    public RestResponse<TeamMemberInviteRes> confirmEmail(
+            @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
+        return RestResponse.success(teamService.confirmEmail(email, code));
+    }
+
     @PostMapping
     public RestResponse<TeamCreateRes> createTeam(
             @RequestBody TeamCreateReq req, @AuthenticationPrincipal UserDetails userDetails) {
         req.setUsername(userDetails.getUsername());
         return RestResponse.success(teamService.createTeam(req));
-    }
-
-    @DeleteMapping
-    public RestResponse<TeamDeleteRes> deleteTeam(
-            @RequestBody TeamDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
-        req.setUsername(userDetails.getUsername());
-        return RestResponse.success(teamService.deleteTeam(req));
-    }
-
-    @PatchMapping
-    public RestResponse<TeamEditRes> editTeam(
-            @RequestBody TeamEditReq req, @AuthenticationPrincipal UserDetails userDetails) {
-        req.setUsername(userDetails.getUsername());
-        return RestResponse.success(teamService.editTeam(req));
     }
 
     @PostMapping("/members")
@@ -61,16 +59,18 @@ public class TeamController {
         return RestResponse.success(teamService.inviteMember(req));
     }
 
-    @GetMapping("/members/email")
-    public RestResponse<TeamMemberInviteRes> confirmEmail(
-            @RequestParam(name = "email") String email, @RequestParam(name = "authCode") String code) {
-        return RestResponse.success(teamService.confirmEmail(email, code));
+    @PatchMapping
+    public RestResponse<TeamEditRes> editTeam(
+            @RequestBody TeamEditReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
+        return RestResponse.success(teamService.editTeam(req));
     }
 
-    @GetMapping("/{teamId}")
-    public RestResponse<TeamGetRes> getTeamInfo(
-            @PathVariable Long teamId, @AuthenticationPrincipal UserDetails userDetails) {
-        return RestResponse.success(teamService.getTeamInfo(teamId, userDetails.getUsername()));
+    @DeleteMapping
+    public RestResponse<TeamDeleteRes> deleteTeam(
+            @RequestBody TeamDeleteReq req, @AuthenticationPrincipal UserDetails userDetails) {
+        req.setUsername(userDetails.getUsername());
+        return RestResponse.success(teamService.deleteTeam(req));
     }
 
     @DeleteMapping("/members")

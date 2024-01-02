@@ -53,7 +53,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
                 customAttribute(attributes, userNameAttributeName, oAuth2LoginReq, saveUser.getUsername());
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(Role.USER.getValue())),
+                Collections.singleton(new SimpleGrantedAuthority(saveUser.getRole().getValue())),
                 customAttribute,
                 userNameAttributeName);
     }
