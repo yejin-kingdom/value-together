@@ -7,7 +7,6 @@ import com.vt.valuetogether.domain.oauth.dto.request.OAuth2LoginReq;
 import com.vt.valuetogether.domain.user.entity.Role;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.domain.user.repository.UserRepository;
-import com.vt.valuetogether.infra.s3.S3Util;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;

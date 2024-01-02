@@ -20,7 +20,7 @@ public enum OAuth2Attributes {
                     .build();
         }
     },
-    NAVER("NAVER") {  // image = profile_image
+    NAVER("NAVER") { // image = profile_image
         @Override
         @SuppressWarnings("unchecked")
         public OAuth2LoginReq of(Map<String, Object> attributes) {
@@ -32,7 +32,7 @@ public enum OAuth2Attributes {
                     .build();
         }
     },
-    GOOGLE("GOOGLE") {  // image = picture
+    GOOGLE("GOOGLE") { // image = picture
         @Override
         public OAuth2LoginReq of(Map<String, Object> attributes) {
             return OAuth2LoginReq.builder()
