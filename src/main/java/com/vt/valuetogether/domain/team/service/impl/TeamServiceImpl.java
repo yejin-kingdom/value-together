@@ -5,12 +5,14 @@ import com.vt.valuetogether.domain.team.dto.request.TeamDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamEditReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberDeleteReq;
 import com.vt.valuetogether.domain.team.dto.request.TeamMemberInviteReq;
+import com.vt.valuetogether.domain.team.dto.request.TeamRestoreReq;
 import com.vt.valuetogether.domain.team.dto.response.TeamCreateRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamEditRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamGetRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberDeleteRes;
 import com.vt.valuetogether.domain.team.dto.response.TeamMemberInviteRes;
+import com.vt.valuetogether.domain.team.dto.response.TeamRestoreRes;
 import com.vt.valuetogether.domain.team.entity.Role;
 import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
@@ -219,6 +221,12 @@ public class TeamServiceImpl implements TeamService {
 
         teamRoleRepository.delete(teamRole);
         return new TeamMemberDeleteRes();
+    }
+
+    @Override
+    @Transactional
+    public TeamRestoreRes restoreTeam(TeamRestoreReq req) {
+        return null;
     }
 
     private void sendInviteMail(List<User> matchingMemberList, Long teamId) {
