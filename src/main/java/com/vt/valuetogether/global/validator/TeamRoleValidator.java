@@ -1,10 +1,12 @@
 package com.vt.valuetogether.global.validator;
 
 import static com.vt.valuetogether.domain.team.entity.Role.LEADER;
+import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_LEADER;
 import static com.vt.valuetogether.global.meta.ResultCode.FORBIDDEN_TEAM_ROLE;
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_AUTHORITY_TEAM_ROLE;
 import static com.vt.valuetogether.global.meta.ResultCode.NOT_FOUND_TEAM_ROLE;
 
+import com.vt.valuetogether.domain.team.entity.Team;
 import com.vt.valuetogether.domain.team.entity.TeamRole;
 import com.vt.valuetogether.domain.user.entity.User;
 import com.vt.valuetogether.global.exception.GlobalException;
@@ -41,12 +43,22 @@ public class TeamRoleValidator {
         }
     }
 
+    public static void checkIsTeamMemberAndLeader(TeamRole teamRole, User user) {
+        if(!isMember(teamRole, user) || !isLeader(teamRole)){
+            throw new GlobalException(FORBIDDEN_TEAM_LEADER);
+        }
+    }
+
     private static boolean isLeader(TeamRole teamRole) {
         return LEADER.equals(teamRole.getRole());
     }
 
     private static boolean isMe(String username, String deleteUsername) {
         return username.equals(deleteUsername);
+    }
+
+    private static boolean isMember(TeamRole teamRole, User user) {
+        return teamRole.getUser().getUsername().equals(user.getUsername());
     }
 
     private static boolean isNullTeamRole(TeamRole teamRole) {
