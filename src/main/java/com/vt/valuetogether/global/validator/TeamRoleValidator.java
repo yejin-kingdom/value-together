@@ -42,8 +42,8 @@ public class TeamRoleValidator {
         }
     }
 
-    public static void checkIsTeamMemberAndLeader(TeamRole teamRole, User user) {
-        if (!isMember(teamRole, user) || !isLeader(teamRole)) {
+    public static void checkIsTeamLeader(TeamRole teamRole) {
+        if (!isLeader(teamRole)) {
             throw new GlobalException(FORBIDDEN_TEAM_LEADER);
         }
     }
@@ -54,10 +54,6 @@ public class TeamRoleValidator {
 
     private static boolean isMe(String username, String deleteUsername) {
         return username.equals(deleteUsername);
-    }
-
-    private static boolean isMember(TeamRole teamRole, User user) {
-        return teamRole.getUser().getUsername().equals(user.getUsername());
     }
 
     private static boolean isNullTeamRole(TeamRole teamRole) {

@@ -185,16 +185,17 @@ public class TeamServiceImpl implements TeamService {
         TeamRole teamRole =
                 teamRoleRepository.findByUserUsernameAndTeamTeamId(user.getUsername(), team.getTeamId());
 
-        TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
+        TeamRoleValidator.validate(teamRole);
+        TeamRoleValidator.checkIsTeamLeader(teamRole);
 
         teamRepository.save(
-            Team.builder()
-                .teamId(req.getTeamId())
-                .teamName(team.getTeamName())
-                .teamDescription(team.getTeamDescription())
-                .backgroundColor(team.getBackgroundColor())
-                .isDeleted(false)
-                .build());
+                Team.builder()
+                        .teamId(req.getTeamId())
+                        .teamName(team.getTeamName())
+                        .teamDescription(team.getTeamDescription())
+                        .backgroundColor(team.getBackgroundColor())
+                        .isDeleted(false)
+                        .build());
 
         return new TeamRestoreRes();
     }
@@ -259,11 +260,5 @@ public class TeamServiceImpl implements TeamService {
         TeamRole teamRole = teamRoleRepository.findByUserUsernameAndTeamTeamId(username, teamId);
         TeamRoleValidator.validate(teamRole);
         return teamRole;
-    }
-
-    private void checkIsTeamLeader(TeamRole teamRole, User user) {
-
-        TeamRoleValidator.validate(teamRole);
-        TeamRoleValidator.checkIsTeamMemberAndLeader(teamRole, user);
     }
 }
