@@ -15,7 +15,7 @@
 ## 팀원 소개
 | <img src ="https://avatars.githubusercontent.com/u/99391320?v=4" width="160px" height="160px"> | <img src ="https://avatars.githubusercontent.com/u/75934088?v=4" width="160px" height="160px"> | <img src ="https://avatars.githubusercontent.com/u/60142959?v=4" width="160px" height="160px"> | <img src ="https://avatars.githubusercontent.com/u/55584664?v=4" width="160px" height="160px"> | <img src ="https://avatars.githubusercontent.com/u/109781694?v=4" width="160px" height="160px"> |
 |:---------------------------------:|:---------------------------------:|:----------------------------------:|:--------------------------------:|:----------------------------------:|
-|이예진<br>[@dlwls423](https://github.com/dlwls423)|최준영<br>[@junxtar](https://github.com/junxtar)|강용수<br>[@emost22](https://github.com/emost22)|김재윤<br>[@lycoris62](https://github.com/lycoris62)|용소희<br>[@yongcowhee](https://github.com/yongcowhee)|
+|이예진<br>[@dlwls423](https://github.com/dlwls423)|최준영<br>[@junxtar](https://github.com/junxtar)|강용수<br>[@emost22](https://github.com/emost22)|김재윤<br>[@yunjae62](https://github.com/yunjae62)|용소희<br>[@yongcowhee](https://github.com/yongcowhee)|
 |-회원가입<br>-mail<br>-프로필 기능<br>-댓글 기능| -카드 기능<br>-소셜 로그인: 깃허브, <br>네이버, 구글|-체크리스트 기능<br>-할일 기능<br>-배포<br>-RestDocs|-로컬 로그인, 로그아웃<br>-인증/인가<br>-작업자 기능|-팀 기능<br>-카테고리 기능<br>-전역 예외 처리|
 
 ## 기술 스택
